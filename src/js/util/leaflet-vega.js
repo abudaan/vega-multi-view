@@ -35,7 +35,8 @@ export default () => {
             map._panes.overlayPane.appendChild(this.vegaContainer);
 
             this.view
-                .initialize(this.vegaContainer);
+                .initialize(this.vegaContainer)
+                .padding({ top: 0, left: 0, right: 0, bottom: 0 });
 
             const onSignal = (sig, value) => this.onSignalChange(sig, value);
 
@@ -68,17 +69,17 @@ export default () => {
             let zoom = this.map.getZoom();
 
             switch (sig) {
-                case 'latitude':
-                    center.lat = value;
-                    break;
-                case 'longitude':
-                    center.lng = value;
-                    break;
-                case 'zoom':
-                    zoom = value;
-                    break;
-                default:
-                    return; // ignore
+            case 'latitude':
+                center.lat = value;
+                break;
+            case 'longitude':
+                center.lng = value;
+                break;
+            case 'zoom':
+                zoom = value;
+                break;
+            default:
+                return; // ignore
             }
 
             this.map.setView(center, zoom);

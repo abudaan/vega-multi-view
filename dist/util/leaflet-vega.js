@@ -43,7 +43,7 @@ exports.default = function () {
             this.vegaContainer = _leaflet2.default.DomUtil.create('div', 'leaflet-vega-container');
             map._panes.overlayPane.appendChild(this.vegaContainer);
 
-            this.view.initialize(this.vegaContainer);
+            this.view.initialize(this.vegaContainer).padding({ top: 0, left: 0, right: 0, bottom: 0 });
 
             var onSignal = function onSignal(sig, value) {
                 return _this.onSignalChange(sig, value);

@@ -1140,8 +1140,8 @@ browser-resolve@^1.11.0, browser-resolve@^1.7.0:
     resolve "1.1.7"
 
 browserify-aes@^1.0.0, browserify-aes@^1.0.4:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/browserify-aes/-/browserify-aes-1.0.7.tgz#cf6ecb9c6a651d720c9e28b37bc87d10d35d6dbe"
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/browserify-aes/-/browserify-aes-1.0.8.tgz#c8fa3b1b7585bb7ba77c5560b60996ddec6d5309"
   dependencies:
     buffer-xor "^1.0.3"
     cipher-base "^1.0.0"

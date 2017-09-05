@@ -7,7 +7,7 @@
     "main": "dist/index.js",
     "module": "src/js/index.js",
     "scripts": {
-        "watch": "watchify ./src/js/index.js -t [ babelify ] -o ./dist/vega-multi-view.js --debug --verbose",
+        "watch": "watchify ./src/js/index.js -t [ babelify ] -o ./build/vega-multi-view.js --debug --verbose",
         "watch-css": "node-sass -w ./src/styles/main.sass > ./dist/vega-multi-view.css",
         "build": "rollup -c",
         "compile": "babel src/js --out-dir ./dist"

@@ -4,7 +4,7 @@
     "description": "add multiple separate vega views to a page and connect the signals of these views",
     "license": "MIT",
     "author": "abudaan",
-    "main": "build/vega-multi-view.js",
+    "main": "src/js/index.js",
     "module": "src/js/index.js",
     "scripts": {
         "watch": "watchify ./src/js/index.js -t [ babelify ] -o ./build/vega-multi-view.js --debug --verbose",
@@ -12,9 +12,7 @@
         "build": "rollup -c"
     },
     "dependencies": {
-        "babel-cli": "^6.26.0",
         "cson-parser": "^2.0.0",
-        "gulp-rollup": "^2.14.0",
         "leaflet": "^1.2.0",
         "leaflet-vega": "^0.4.0",
         "ramda": "0.23.0",
@@ -25,6 +23,8 @@
         "yamljs": "^0.3.0"
     },
     "devDependencies": {
+        "gulp-rollup": "^2.14.0",
+        "babel-cli": "^6.26.0",
         "babel-eslint": "^7.2.3",
         "babel-loader": "^7.1.2",
         "babel-plugin-external-helpers": "^6.22.0",

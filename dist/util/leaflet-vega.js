@@ -1,22 +1,29 @@
-/* eslint no-underscore-dangle: 0 */
-/* eslint no-bitwise: 0 */
+'use strict';
 
-import L from 'leaflet';
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
-export default (function () {
-    if (L.VegaLayer) {
-        console.info('VegaLayer has already been initialized:', L.VegaLayer);
+var _leaflet = require('leaflet');
+
+var _leaflet2 = _interopRequireDefault(_leaflet);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function () {
+    if (_leaflet2.default.VegaLayer) {
+        console.info('VegaLayer has already been initialized:', _leaflet2.default.VegaLayer);
         return;
     }
 
-    L.VegaLayer = (L.Layer ? L.Layer : L.Class).extend({
+    _leaflet2.default.VegaLayer = (_leaflet2.default.Layer ? _leaflet2.default.Layer : _leaflet2.default.Class).extend({
         options: {
             // If true, graph will be repainted only after the map has finished moving (faster)
             delayRepaint: true
         },
 
         initialize: function initialize(view, options) {
-            L.Util.setOptions(this, options);
+            _leaflet2.default.Util.setOptions(this, options);
             this.view = view;
         },
 
@@ -33,7 +40,7 @@ export default (function () {
             var _this = this;
 
             this.map = map;
-            this.vegaContainer = L.DomUtil.create('div', 'leaflet-vega-container');
+            this.vegaContainer = _leaflet2.default.DomUtil.create('div', 'leaflet-vega-container');
             map._panes.overlayPane.appendChild(this.vegaContainer);
 
             this.view.initialize(this.vegaContainer);
@@ -93,7 +100,7 @@ export default (function () {
             var _this2 = this;
 
             var topLeft = this.map.containerPointToLayerPoint([0, 0]);
-            L.DomUtil.setPosition(this.vegaContainer, topLeft);
+            _leaflet2.default.DomUtil.setPosition(this.vegaContainer, topLeft);
 
             var size = this.map.getSize();
             var center = this.map.getCenter();
@@ -122,7 +129,8 @@ export default (function () {
         }
     });
 
-    L.vega = function (spec, options) {
-        return new L.VegaLayer(spec, options);
+    _leaflet2.default.vega = function (spec, options) {
+        return new _leaflet2.default.VegaLayer(spec, options);
     };
-});
+}; /* eslint no-underscore-dangle: 0 */
+/* eslint no-bitwise: 0 */

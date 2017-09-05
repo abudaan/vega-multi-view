@@ -1,36 +1,63 @@
-// fetch helpers
-// import fetch from 'isomorphic-fetch';
-import CSON from 'cson-parser';
-import YAML from 'yamljs';
+'use strict';
 
-export function status(response) {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); // fetch helpers
+// import fetch from 'isomorphic-fetch';
+
+
+exports.status = status;
+exports.json = json;
+exports.cson = cson;
+exports.yaml = yaml;
+exports.arrayBuffer = arrayBuffer;
+exports.fetchJSON = fetchJSON;
+exports.fetchCSON = fetchCSON;
+exports.fetchYAML = fetchYAML;
+exports.fetchJSONFiles = fetchJSONFiles;
+exports.fetchJSONFiles2 = fetchJSONFiles2;
+exports.fetchArraybuffer = fetchArraybuffer;
+
+var _csonParser = require('cson-parser');
+
+var _csonParser2 = _interopRequireDefault(_csonParser);
+
+var _yamljs = require('yamljs');
+
+var _yamljs2 = _interopRequireDefault(_yamljs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function status(response) {
     if (response.status >= 200 && response.status < 300) {
         return Promise.resolve(response);
     }
     return Promise.reject(new Error(response.statusText));
 }
 
-export function json(response) {
+function json(response) {
     return response.json();
 }
 
-export function cson(response) {
+function cson(response) {
     return response.text().then(function (data) {
-        return Promise.resolve(CSON.parse(data));
+        return Promise.resolve(_csonParser2.default.parse(data));
     });
 }
 
-export function yaml(response) {
+function yaml(response) {
     return response.text().then(function (data) {
-        return Promise.resolve(YAML.parse(data));
+        return Promise.resolve(_yamljs2.default.parse(data));
     });
 }
 
-export function arrayBuffer(response) {
+function arrayBuffer(response) {
     return response.arrayBuffer();
 }
 
-export function fetchJSON(url) {
+function fetchJSON(url) {
     return new Promise(function (resolve, reject) {
         // fetch(url, {
         //   mode: 'no-cors'
@@ -43,7 +70,7 @@ export function fetchJSON(url) {
     });
 }
 
-export function fetchCSON(url) {
+function fetchCSON(url) {
     return new Promise(function (resolve, reject) {
         // fetch(url, {
         //   mode: 'no-cors'
@@ -56,7 +83,7 @@ export function fetchCSON(url) {
     });
 }
 
-export function fetchYAML(url) {
+function fetchYAML(url) {
     return new Promise(function (resolve, reject) {
         // fetch(url, {
         //   mode: 'no-cors'
@@ -69,7 +96,7 @@ export function fetchYAML(url) {
     });
 }
 
-export function fetchJSONFiles(urlArray) {
+function fetchJSONFiles(urlArray) {
     return new Promise(function (resolve, reject) {
         var promises = [];
         var errors = [];
@@ -94,14 +121,14 @@ export function fetchJSONFiles(urlArray) {
     });
 }
 
-export function fetchJSONFiles2(object, baseurl) {
+function fetchJSONFiles2(object, baseurl) {
     return new Promise(function (resolve, reject) {
         var promises = [];
         var errors = [];
         var keys = [];
 
         Object.entries(object).forEach(function (_ref) {
-            var _ref2 = babelHelpers.slicedToArray(_ref, 2),
+            var _ref2 = _slicedToArray(_ref, 2),
                 key = _ref2[0],
                 url = _ref2[1];
 
@@ -128,7 +155,7 @@ export function fetchJSONFiles2(object, baseurl) {
     });
 }
 
-export function fetchArraybuffer(url) {
+function fetchArraybuffer(url) {
     return new Promise(function (resolve, reject) {
         // fetch(url, {
         //   mode: 'no-cors'

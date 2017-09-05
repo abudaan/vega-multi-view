@@ -10,7 +10,7 @@
         "watch": "watchify ./src/js/index.js -t [ babelify ] -o ./dist/vega-multi-view.js --debug --verbose",
         "watch-css": "node-sass -w ./src/styles/main.sass > ./dist/vega-multi-view.css",
         "build": "rollup -c",
-        "compile": "babel ./src/js --out-dir ./dist"
+        "compile": "babel src/js --out-dir ./dist"
     },
     "dependencies": {
         "cson-parser": "^2.0.0",

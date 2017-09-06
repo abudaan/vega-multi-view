@@ -26,8 +26,6 @@ var _leafletVega2 = _interopRequireDefault(_leafletVega);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 var Rx = require('rxjs/Rx');
 
 var mapIndexed = _ramda2.default.addIndex(_ramda2.default.map);
@@ -96,6 +94,13 @@ const debug = (data) => {
     }, 10);
 };
 */
+
+var loadSpec = function loadSpec(spec) {
+    if (typeof spec !== 'string') {
+        return spec;
+    }
+    return (0, _fetchHelpers.fetchJSON)(spec);
+};
 
 var loadSpecs = async function loadSpecs(urls) {
     var specs = [];
@@ -194,7 +199,10 @@ var connectSignals = function connectSignals(data) {
 var addElements = function addElements(data, container, className) {
     return _ramda2.default.map(function (d) {
         var element = d.runtime.element;
-        if (_ramda2.default.isNil(element) === false) {
+        if (element === false) {
+            // headless rendering
+            element = null;
+        } else if (_ramda2.default.isNil(element) === false) {
             if (typeof element === 'string') {
                 element = document.getElementById(d.runtime.element);
                 if (_ramda2.default.isNil(element)) {
@@ -218,17 +226,43 @@ var addElements = function addElements(data, container, className) {
                 element.className = className;
             }
         }
-
-        element.style.width = d.spec.width + 'px';
-        element.style.height = d.spec.height + 'px';
-        container.appendChild(element);
+        if (element !== null) {
+            element.style.width = d.spec.width + 'px';
+            element.style.height = d.spec.height + 'px';
+            container.appendChild(element);
+        }
         return _extends({}, d, {
             element: element
         });
     }, data);
 };
 
-var createViews = function createViews(config) {
+var createSpecData = function createSpecData(specs, runtimes) {
+    var promises = mapIndexed(async function (s, i) {
+        var spec = await loadSpec(s);
+        var id = 'spec_' + i;
+        var runtime = {};
+        var specClone = _extends({}, spec);
+        if (typeof specClone.runtime !== 'undefined') {
+            runtime = _extends({}, specClone.runtime);
+            delete specClone.runtime;
+        } else if (_ramda2.default.isNil(runtimes[i]) === false) {
+            runtime = runtimes[i];
+        }
+        var view = new _vega.View((0, _vega.parse)(specClone));
+        return new Promise(function (resolve) {
+            resolve({
+                id: id,
+                spec: specClone,
+                view: view,
+                runtime: runtime
+            });
+        });
+    }, specs);
+    return Promise.all(promises);
+};
+
+var createViews = async function createViews(config) {
     var _config$container = config.container,
         container = _config$container === undefined ? document.body : _config$container,
         specs = config.specs;
@@ -247,47 +281,20 @@ var createViews = function createViews(config) {
         specs = [specs];
     }
 
-    var specUrls = _ramda2.default.filter(function (spec) {
-        return typeof spec === 'string';
-    }, specs);
-    specs = _ramda2.default.filter(function (spec) {
-        return typeof spec !== 'string';
-    }, specs);
+    var data = await createSpecData(specs, runtimes);
+    data = addElements(data, container, className);
+    addTooltips(data);
+    connectSignals(data);
 
-    return new Promise(function (resolve, reject) {
-        var data = void 0;
-        loadSpecs(specUrls).then(function (loadedSpecs) {
-            specs = [].concat(_toConsumableArray(specs), _toConsumableArray(loadedSpecs));
-            data = mapIndexed(function (s, i) {
-                var id = 'spec_' + i;
-                var runtime = {};
-                var spec = _extends({}, s);
-                if (typeof spec.runtime !== 'undefined') {
-                    runtime = _extends({}, spec.runtime);
-                    delete spec.runtime;
-                } else if (_ramda2.default.isNil(runtimes[i]) === false) {
-                    runtime = runtimes[i];
-                }
-                var view = new _vega.View((0, _vega.parse)(spec));
-                return {
-                    id: id,
-                    spec: spec,
-                    view: view,
-                    runtime: runtime
-                };
-            }, specs);
-            data = addElements(data, container, className);
-            addTooltips(data);
-            connectSignals(data);
-            // wait until the next paint cycle so the created elements
-            // are added to the DOM
-            setTimeout(function () {
-                addViews(data, renderer);
-                resolve({
-                    data: data
-                });
-            }, 0);
-        });
+    return new Promise(function (resolve) {
+        // wait until the next paint cycle so the created elements
+        // are added to the DOM, add the viewsm, then resolve
+        setTimeout(function () {
+            addViews(data, renderer);
+            resolve({
+                data: data
+            });
+        }, 0);
     });
 };
 

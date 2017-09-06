@@ -46,36 +46,50 @@ const createLeafletVega = async (data, renderer) => {
     }).addTo(map);
 };
 
-/*
-const debug = (data) => {
+
+const addDebug = (datas) => {
     R.forEach((d) => {
         const {
             spec,
             view,
         } = d;
-        view.addSignalListener(signal.name, (name, data) => {
-            console.log(spec.description, name, data);
-        });
-    }, view.vega.signals || []);
 
+        R.forEach((signal) => {
+            view.addSignalListener(signal.name, (signalName, signalData) => {
+                console.log('[SIGNAL] %s %s %O', spec.description || ' - ', signalName, signalData);
+            });
+        }, spec.signals || []);
+    }, datas);
 
-    const numDataSources = spec.data.length;
-    let numLoaded = 0;
-    const dataPoller = setInterval(() => {
-        R.forEach((data) => {
-            const loaded = view.data(data.name);
-            if (loaded !== null) {
-                console.log('[DATA]:', spec.description, data.name, loaded);
-                numLoaded += 1;
-            }
-            if (numLoaded === numDataSources) {
-                // console.log('all data loaded');
-                clearInterval(dataPoller);
-            }
-        }, views);
-    }, 10);
+    const promises = R.map(d => new Promise((resolve) => {
+        const {
+            spec,
+            view,
+        } = d;
+        const numDataSources = spec.data.length;
+        let numLoaded = 0;
+        if (R.isNil(spec.data)) {
+            resolve();
+        }
+        const dataPoller = setInterval(() => {
+            R.forEach((data) => {
+                const loaded = view.data(data.name);
+                if (loaded !== null) {
+                    console.log('[DATA] %s %s %O', spec.description || ' - ', data.name, loaded);
+                    numLoaded += 1;
+                }
+                if (numLoaded === numDataSources) {
+                    // console.log('all data loaded');
+                    clearInterval(dataPoller);
+                    resolve();
+                }
+            }, spec.data);
+        }, 10);
+    }), datas);
+
+    return Promise.all(promises);
 };
-*/
+
 
 const loadSpec = (spec) => {
     if (typeof spec !== 'string') {
@@ -266,6 +280,7 @@ const createViews = async (config) => {
         className = false,
         runtimes,
         renderer = 'canvas',
+        debug = true, // false
     } = config;
 
     if (R.isNil(container)) {
@@ -280,6 +295,9 @@ const createViews = async (config) => {
     data = addElements(data, container, className);
     addTooltips(data);
     connectSignals(data);
+    if (debug) {
+        await addDebug(data);
+    }
 
     return new Promise((resolve) => {
         // wait until the next paint cycle so the created elements

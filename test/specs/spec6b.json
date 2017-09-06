@@ -1,0 +1,249 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+    "autosize": "none",
+    "axes": [
+        {
+            "encode": {
+                "domain": {
+                    "enter": {
+                        "stroke": {
+                            "value": "white"
+                        }
+                    }
+                },
+                "labels": {
+                    "enter": {
+                        "fill": {
+                            "value": "white"
+                        }
+                    }
+                },
+                "ticks": {
+                    "enter": {
+                        "stroke": {
+                            "value": "white"
+                        }
+                    }
+                }
+            },
+            "orient": "bottom",
+            "scale": "xOverview"
+        }
+    ],
+    "data": [
+        {
+            "format": {
+                "parse": {
+                    "date": "date",
+                    "price": "number"
+                },
+                "type": "csv"
+            },
+            "name": "sp500",
+            "url": "./data//sp500.csv"
+        }
+    ],
+    "height": 70,
+    "marks": [
+        {
+            "encode": {
+                "update": {
+                    "fill": {
+                        "value": "#f7b6d2"
+                    },
+                    "x": {
+                        "field": "date",
+                        "scale": "xOverview"
+                    },
+                    "y": {
+                        "field": "price",
+                        "scale": "yOverview"
+                    },
+                    "y2": {
+                        "scale": "yOverview",
+                        "value": 0
+                    }
+                }
+            },
+            "from": {
+                "data": "sp500"
+            },
+            "interactive": false,
+            "type": "area"
+        },
+        {
+            "encode": {
+                "enter": {
+                    "fill": {
+                        "value": "#333"
+                    },
+                    "fillOpacity": {
+                        "value": 0.2
+                    },
+                    "height": {
+                        "value": 70
+                    },
+                    "y": {
+                        "value": 0
+                    }
+                },
+                "update": {
+                    "x": {
+                        "signal": "brush[0]"
+                    },
+                    "x2": {
+                        "signal": "brush[1]"
+                    }
+                }
+            },
+            "name": "brush",
+            "type": "rect"
+        },
+        {
+            "encode": {
+                "enter": {
+                    "fill": {
+                        "value": "firebrick"
+                    },
+                    "height": {
+                        "value": 70
+                    },
+                    "width": {
+                        "value": 1
+                    },
+                    "y": {
+                        "value": 0
+                    }
+                },
+                "update": {
+                    "x": {
+                        "signal": "brush[0]"
+                    }
+                }
+            },
+            "interactive": false,
+            "type": "rect"
+        },
+        {
+            "encode": {
+                "enter": {
+                    "fill": {
+                        "value": "yellow"
+                    },
+                    "height": {
+                        "value": 70
+                    },
+                    "width": {
+                        "value": 1
+                    },
+                    "y": {
+                        "value": 0
+                    }
+                },
+                "update": {
+                    "x": {
+                        "signal": "brush[1]"
+                    }
+                }
+            },
+            "interactive": false,
+            "type": "rect"
+        }
+    ],
+    "padding": 30,
+    "projections": [],
+    "scales": [
+        {
+            "domain": {
+                "data": "sp500",
+                "field": "date"
+            },
+            "name": "xOverview",
+            "range": [
+                0,
+                {
+                    "signal": "width"
+                }
+            ],
+            "type": "time"
+        },
+        {
+            "domain": {
+                "data": "sp500",
+                "field": "price"
+            },
+            "name": "yOverview",
+            "nice": true,
+            "range": [
+                70,
+                0
+            ],
+            "type": "linear",
+            "zero": true
+        }
+    ],
+    "signals": [
+        {
+            "name": "brush",
+            "on": [
+                {
+                    "events": "mousedown",
+                    "update": "[x(), x()]"
+                },
+                {
+                    "events": "[mousedown, window:mouseup] > window:mousemove!",
+                    "update": "[brush[0], clamp(x(), 0, width)]"
+                },
+                {
+                    "events": {
+                        "signal": "delta"
+                    },
+                    "update": "clampRange([anchor[0] + delta, anchor[1] + delta], 0, width)"
+                }
+            ],
+            "value": 0
+        },
+        {
+            "name": "anchor",
+            "on": [
+                {
+                    "events": "@brush:mousedown",
+                    "update": "slice(brush)"
+                }
+            ],
+            "value": null
+        },
+        {
+            "name": "xdown",
+            "on": [
+                {
+                    "events": "@brush:mousedown",
+                    "update": "x()"
+                }
+            ],
+            "value": 0
+        },
+        {
+            "name": "delta",
+            "on": [
+                {
+                    "events": "[@brush:mousedown, window:mouseup] > window:mousemove!",
+                    "update": "x() - xdown"
+                }
+            ],
+            "value": 0
+        },
+        {
+            "name": "detailDomain",
+            "on": [
+                {
+                    "events": {
+                        "signal": "brush"
+                    },
+                    "update": "span(brush) ? invert(xOverview, brush) : null"
+                }
+            ]
+        }
+    ],
+    "width": 720
+}

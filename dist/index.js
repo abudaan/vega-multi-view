@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _ramda = require('ramda');
 
 var _ramda2 = _interopRequireDefault(_ramda);
@@ -25,6 +23,8 @@ var _leafletVega = require('./util/leaflet-vega');
 var _leafletVega2 = _interopRequireDefault(_leafletVega);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var Rx = require('rxjs/Rx');
 
@@ -58,7 +58,7 @@ var createLeafletVega = async function createLeafletVega(elem, spec, view) {
 };
 
 // const loadSpecs = async (urls: string[]) => {
-var loadSpecs = async function loadSpecs(urls) {
+var loadSpecs2 = async function loadSpecs2(urls) {
     var i = 0;
     var specs = {};
     await Promise.all(urls.map(async function (url) {
@@ -100,6 +100,15 @@ var loadSpecs = async function loadSpecs(urls) {
             view: view
         };
         i += 1;
+    }));
+    return specs;
+};
+
+var loadSpecs = async function loadSpecs(urls) {
+    var specs = [];
+    await Promise.all(urls.map(async function (url) {
+        var spec = await (0, _fetchHelpers.fetchJSON)(url);
+        specs.push(spec);
     }));
     return specs;
 };
@@ -190,31 +199,54 @@ var addDivs = function addDivs(specs, container, cssClass) {
 
 var createViews = function createViews(data) {
     var container = data.container,
-        cssClass = data.cssClass,
-        urls = data.urls;
+        specs = data.specs;
+    var cssClass = data.cssClass;
 
+
+    if (_ramda2.default.isNil(container)) {
+        container = document.body;
+    }
+
+    if (_ramda2.default.isArrayLike(specs) === false) {
+        specs = [specs];
+    }
+
+    var specUrls = _ramda2.default.filter(function (spec) {
+        return typeof spec === 'string';
+    }, specs);
+    specs = _ramda2.default.filter(function (spec) {
+        return _ramda2.default.isArrayLike(spec);
+    }, specs);
+
+    console.log(specUrls, specs);
 
     return new Promise(function (resolve, reject) {
-        loadSpecs(urls).then(function (specs) {
-            var streams = {};
-            _ramda2.default.forEach(function (spec) {
-                streams = _extends({}, streams, createStream(spec));
-            }, _ramda2.default.values(specs));
-
-            _ramda2.default.forEach(function (spec) {
-                subscribeToStream(spec, streams);
-            }, _ramda2.default.values(specs));
-
-            var specsArray = _ramda2.default.map(function (id) {
-                return specs[id];
-            }, _ramda2.default.keys(specs));
-            var divs = addDivs(specsArray, container, cssClass);
-            setTimeout(function () {
-                addViews(specsArray, divs);
-                resolve('done');
-            }, 0);
+        loadSpecs(specUrls).then(function (loadedSpecs) {
+            specs = [].concat(_toConsumableArray(specs), _toConsumableArray(loadedSpecs));
+            console.log(specs);
         });
     });
+
+    // return new Promise((resolve, reject) => {
+    //     loadSpecs(urls)
+    //         .then((specs) => {
+    //             let streams = {};
+    //             R.forEach((spec) => {
+    //                 streams = { ...streams, ...createStream(spec) };
+    //             }, R.values(specs));
+
+    //             R.forEach((spec) => {
+    //                 subscribeToStream(spec, streams);
+    //             }, R.values(specs));
+
+    //             const specsArray = R.map(id => specs[id], R.keys(specs));
+    //             const divs = addDivs(specsArray, container, cssClass);
+    //             setTimeout(() => {
+    //                 addViews(specsArray, divs);
+    //                 resolve('done');
+    //             }, 0);
+    //         });
+    // });
 };
 
 exports.default = createViews;

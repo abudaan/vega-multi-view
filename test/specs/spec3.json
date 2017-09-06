@@ -1,0 +1,104 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+    "autosize": "none",
+    "data": [
+        {
+            "name": "reports",
+            "values": [
+                {
+                    "datetime": 1419980400000
+                },
+                {
+                    "datetime": 1409522400000
+                },
+                {
+                    "datetime": 1404165600000
+                },
+                {
+                    "datetime": 1391209200000
+                }
+            ]
+        }
+    ],
+    "height": 600,
+    "marks": [
+        {
+            "encode": {
+                "enter": {
+                    "align": {
+                        "value": "left"
+                    },
+                    "baseline": {
+                        "value": "bottom"
+                    },
+                    "fill": {
+                        "value": "#fff"
+                    },
+                    "fontSize": {
+                        "value": 20
+                    },
+                    "width": {
+                        "value": 50
+                    },
+                    "x": {
+                        "value": 100
+                    },
+                    "y": {
+                        "value": 100
+                    }
+                },
+                "update": {
+                    "text": {
+                        "signal": "selected_date_range"
+                    }
+                }
+            },
+            "type": "text"
+        }
+    ],
+    "projections": [],
+    "scales": [
+        {
+            "domain": {
+                "data": "reports",
+                "field": "datetime"
+            },
+            "name": "date_scale",
+            "range": [
+                0,
+                100
+            ],
+            "type": "time"
+        },
+        {
+            "name": "xscale",
+            "type": "time"
+        }
+    ],
+    "signals": [
+        {
+            "bind": {
+                "input": "range",
+                "max": 100,
+                "min": 0
+            },
+            "name": "date_start",
+            "value": 0
+        },
+        {
+            "bind": {
+                "input": "range",
+                "label": "date_end",
+                "max": 100,
+                "min": 0
+            },
+            "name": "date_end",
+            "value": 10
+        },
+        {
+            "name": "selected_date_range",
+            "update": "[invert(\"date_scale\", date_start), invert(\"date_scale\", date_end)]"
+        }
+    ],
+    "width": 900
+}

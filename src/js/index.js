@@ -7,9 +7,17 @@ import initLeafletVega from './util/leaflet-vega';
 
 const Rx = require('rxjs/Rx');
 
+const mapIndexed = R.addIndex(R.map);
+
 initLeafletVega();
 
-const createLeafletVega = async (elem, spec, view) => {
+const createLeafletVega = async (data, renderer) => {
+    const {
+        spec,
+        view,
+        runtime,
+        element,
+    } = data;
     const signals = spec.signals || [];
     const zoom = R.find(R.propEq('name', 'zoom'))(signals);
     const latitude = R.find(R.propEq('name', 'latitude'))(signals);
@@ -20,7 +28,7 @@ const createLeafletVega = async (elem, spec, view) => {
         return;
     }
 
-    const map = L.map(elem, {
+    const map = L.map(element, {
         zoomAnimation: false,
     }).setView([latitude.value, longitude.value], zoom.value);
 
@@ -32,71 +40,61 @@ const createLeafletVega = async (elem, spec, view) => {
     ).addTo(map);
 
     L.vega(view, {
-        renderer: spec.runtime.renderer || 'canvas',
+        renderer: runtime.renderer || renderer,
         // Make sure the legend stays in place
         delayRepaint: true,
     }).addTo(map);
 };
 
-
-// const loadSpecs = async (urls: string[]) => {
-const loadSpecs = async (urls) => {
-    let i = 0;
-    const specs = {};
-    await Promise.all(urls.map(async (url) => {
-        const spec = await fetchJSON(url);
-        const id = `spec_${i}`;
-        const view = new View(parse(spec));
-        if (spec.runtime && spec.runtime.tooltipOptions) {
-            vegaTooltip(view, spec.runtime.tooltipOptions);
-        }
-
-        const debug = false;
-        if (debug) {
-            R.forEach((signal) => {
-                view.addSignalListener(signal.name, (name, data) => {
-                    console.log(spec.description, name, data);
-                });
-            }, spec.signals || []);
-
-
-            const numDataSources = spec.data.length;
-            let numLoaded = 0;
-            const dataPoller = setInterval(() => {
-                R.forEach((data) => {
-                    const loaded = view.data(data.name);
-                    if (loaded !== null) {
-                        console.log('[DATA]:', spec.description, data.name, loaded);
-                        numLoaded += 1;
-                    }
-                    if (numLoaded === numDataSources) {
-                        // console.log('all data loaded');
-                        clearInterval(dataPoller);
-                    }
-                }, spec.data || []);
-            }, 10);
-        }
-
-        specs[id] = {
-            id,
+/*
+const debug = (data) => {
+    R.forEach((d) => {
+        const {
             spec,
             view,
-        };
-        i += 1;
+        } = d;
+        view.addSignalListener(signal.name, (name, data) => {
+            console.log(spec.description, name, data);
+        });
+    }, view.vega.signals || []);
+
+
+    const numDataSources = spec.data.length;
+    let numLoaded = 0;
+    const dataPoller = setInterval(() => {
+        R.forEach((data) => {
+            const loaded = view.data(data.name);
+            if (loaded !== null) {
+                console.log('[DATA]:', spec.description, data.name, loaded);
+                numLoaded += 1;
+            }
+            if (numLoaded === numDataSources) {
+                // console.log('all data loaded');
+                clearInterval(dataPoller);
+            }
+        }, views);
+    }, 10);
+};
+*/
+
+const loadSpecs = async (urls) => {
+    const specs = [];
+    await Promise.all(urls.map(async (url) => {
+        const spec = await fetchJSON(url);
+        specs.push(spec);
     }));
     return specs;
 };
 
 
-const createStream = (data) => {
+const publishSignal = (data) => {
     const {
-        spec,
+        runtime,
         view,
     } = data;
-
     const streams = {};
 
-    if (R.isNil(spec.runtime) || R.isNil(spec.runtime.publish)) {
+    if (R.isNil(runtime.publish)) {
         return streams;
     }
 
@@ -110,19 +108,20 @@ const createStream = (data) => {
         } catch (e) {
             console.error(e.message);
         }
-    }, spec.runtime.publish);
+    }, runtime.publish);
 
     return streams;
 };
 
 
-const subscribeToStream = (data, streams) => {
+const subscribeToSignal = (data, streams) => {
     const {
-        spec,
         view,
+        spec,
+        runtime,
     } = data;
 
-    if (R.isNil(spec.runtime) || R.isNil(spec.runtime.subscribe)) {
+    if (R.isNil(runtime.subscribe)) {
         return;
     }
 
@@ -140,76 +139,145 @@ const subscribeToStream = (data, streams) => {
             // console.log(subscribe.as, value);
             view.signal(subscribe.as, value).run();
         });
-    }, spec.runtime.subscribe);
+    }, runtime.subscribe);
 };
 
 
-const addViews = (specs, divs) => {
-    specs.forEach((d, i) => {
+const addViews = (data, renderer) => {
+    data.forEach((d, i) => {
         const {
-            id,
-            spec,
             view,
+            runtime,
+            element,
         } = d;
-        const div = divs[i];
-        if (spec.runtime.leaflet === true) {
-            createLeafletVega(div, spec, view);
+        if (runtime.leaflet === true) {
+            createLeafletVega(d, renderer);
         } else {
-            view.renderer(spec.runtime.renderer || 'canvas')
-                .initialize(`#${id}`);
+            view.renderer(runtime.renderer || renderer)
+                .initialize(element);
         }
     });
 };
 
 
-const addDivs = (specs, container, cssClass) => {
-    const divs = [];
-    specs.forEach((d) => {
-        const elem = document.createElement('div');
-        const {
-            id,
-            spec,
-        } = d;
-        elem.id = id;
-        elem.className = cssClass;
-        elem.style.width = `${spec.width}px`;
-        elem.style.height = `${spec.height}px`;
-        container.appendChild(elem);
-        divs.push(elem);
+const addTooltips = (data) => {
+    data.forEach((d) => {
+        if (typeof d.runtime.tooltipOptions !== 'undefined') {
+            vegaTooltip(d.view, d.runtime.tooltipOptions);
+        }
     });
-    return divs;
+};
+
+const connectSignals = (data) => {
+    let streams = {};
+    R.forEach((d) => {
+        streams = { ...streams, ...publishSignal(d) };
+    }, R.values(data));
+
+    R.forEach((d) => {
+        subscribeToSignal(d, streams);
+    }, R.values(data));
 };
 
 
-const createViews = (data) => {
+const addElements = (data, container, className) => R.map((d) => {
+    let element = d.runtime.element;
+    if (R.isNil(element) === false) {
+        if (typeof element === 'string') {
+            element = document.getElementById(d.runtime.element);
+            if (R.isNil(element)) {
+                console.error(`element "${d.runtime.element}" could not be found`);
+                return {
+                    ...d,
+                    element: null,
+                };
+            }
+        } else if (element instanceof HTMLElement !== true) {
+            console.error(`element "${d.runtime.element}" is not a valid HTMLElement`);
+            return {
+                ...d,
+                element: null,
+            };
+        }
+    } else {
+        element = document.createElement('div');
+        element.id = d.id;
+        if (typeof d.className === 'string') {
+            element.className = d.className;
+        } else if (typeof className === 'string') {
+            element.className = className;
+        }
+    }
+
+    element.style.width = `${d.spec.width}px`;
+    element.style.height = `${d.spec.height}px`;
+    container.appendChild(element);
+    return {
+        ...d,
+        element,
+    };
+}, data);
+
+
+const createViews = (config) => {
+    let {
+        container = document.body,
+        specs,
+    } = config;
     const {
-        container,
-        cssClass,
-        urls,
-    } = data;
+        className = false,
+        runtimes,
+        renderer = 'canvas',
+    } = config;
+
+    if (R.isNil(container)) {
+        container = document.body;
+    }
+
+    if (R.isArrayLike(specs) === false) {
+        specs = [specs];
+    }
+
+    const specUrls = R.filter(spec => typeof spec === 'string', specs);
+    specs = R.filter(spec => typeof spec !== 'string', specs);
 
     return new Promise((resolve, reject) => {
-        loadSpecs(urls)
-            .then((specs) => {
-                let streams = {};
-                R.forEach((spec) => {
-                    streams = { ...streams, ...createStream(spec) };
-                }, R.values(specs));
-
-                R.forEach((spec) => {
-                    subscribeToStream(spec, streams);
-                }, R.values(specs));
-
-                const specsArray = R.map(id => specs[id], R.keys(specs));
-                const divs = addDivs(specsArray, container, cssClass);
+        let data;
+        loadSpecs(specUrls)
+            .then((loadedSpecs) => {
+                specs = [...specs, ...loadedSpecs];
+                data = mapIndexed((s, i) => {
+                    const id = `spec_${i}`;
+                    let runtime = {};
+                    const spec = { ...s };
+                    if (typeof spec.runtime !== 'undefined') {
+                        runtime = { ...spec.runtime };
+                        delete spec.runtime;
+                    } else if (R.isNil(runtimes[i]) === false) {
+                        runtime = runtimes[i];
+                    }
+                    const view = new View(parse(spec));
+                    return {
+                        id,
+                        spec,
+                        view,
+                        runtime,
+                    };
+                }, specs);
+                data = addElements(data, container, className);
+                addTooltips(data);
+                connectSignals(data);
+                // wait until the next paint cycle so the created elements
+                // are added to the DOM
                 setTimeout(() => {
-                    addViews(specsArray, divs);
-                    resolve('done');
+                    addViews(data, renderer);
+                    resolve({
+                        data,
+                    });
                 }, 0);
             });
     });
 };
-
 
 export default createViews;
 

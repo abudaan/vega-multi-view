@@ -64,36 +64,48 @@ var createLeafletVega = async function createLeafletVega(data, renderer) {
     }).addTo(map);
 };
 
-/*
-const debug = (data) => {
-    R.forEach((d) => {
-        const {
-            spec,
-            view,
-        } = d;
-        view.addSignalListener(signal.name, (name, data) => {
-            console.log(spec.description, name, data);
+var addDebug = function addDebug(datas) {
+    _ramda2.default.forEach(function (d) {
+        var spec = d.spec,
+            view = d.view;
+
+
+        _ramda2.default.forEach(function (signal) {
+            view.addSignalListener(signal.name, function (signalName, signalData) {
+                console.log('[SIGNAL] %s %s %O', spec.description || ' - ', signalName, signalData);
+            });
+        }, spec.signals || []);
+    }, datas);
+
+    var promises = _ramda2.default.map(function (d) {
+        return new Promise(function (resolve) {
+            var spec = d.spec,
+                view = d.view;
+
+            var numDataSources = spec.data.length;
+            var numLoaded = 0;
+            if (_ramda2.default.isNil(spec.data)) {
+                resolve();
+            }
+            var dataPoller = setInterval(function () {
+                _ramda2.default.forEach(function (data) {
+                    var loaded = view.data(data.name);
+                    if (loaded !== null) {
+                        console.log('[DATA] %s %s %O', spec.description || ' - ', data.name, loaded);
+                        numLoaded += 1;
+                    }
+                    if (numLoaded === numDataSources) {
+                        // console.log('all data loaded');
+                        clearInterval(dataPoller);
+                        resolve();
+                    }
+                }, spec.data);
+            }, 10);
         });
-    }, view.vega.signals || []);
+    }, datas);
 
-
-    const numDataSources = spec.data.length;
-    let numLoaded = 0;
-    const dataPoller = setInterval(() => {
-        R.forEach((data) => {
-            const loaded = view.data(data.name);
-            if (loaded !== null) {
-                console.log('[DATA]:', spec.description, data.name, loaded);
-                numLoaded += 1;
-            }
-            if (numLoaded === numDataSources) {
-                // console.log('all data loaded');
-                clearInterval(dataPoller);
-            }
-        }, views);
-    }, 10);
+    return Promise.all(promises);
 };
-*/
 
 var loadSpec = function loadSpec(spec) {
     if (typeof spec !== 'string') {
@@ -270,7 +282,9 @@ var createViews = async function createViews(config) {
         className = _config$className === undefined ? false : _config$className,
         runtimes = config.runtimes,
         _config$renderer = config.renderer,
-        renderer = _config$renderer === undefined ? 'canvas' : _config$renderer;
+        renderer = _config$renderer === undefined ? 'canvas' : _config$renderer,
+        _config$debug = config.debug,
+        debug = _config$debug === undefined ? true : _config$debug;
 
 
     if (_ramda2.default.isNil(container)) {
@@ -285,6 +299,9 @@ var createViews = async function createViews(config) {
     data = addElements(data, container, className);
     addTooltips(data);
     connectSignals(data);
+    if (debug) {
+        await addDebug(data);
+    }
 
     return new Promise(function (resolve) {
         // wait until the next paint cycle so the created elements

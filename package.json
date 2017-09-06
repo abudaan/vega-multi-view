@@ -8,12 +8,9 @@
     "module": "src/js/index.js",
     "scripts": {
         "watch": "watchify ./src/js/index.js -t [ babelify ] -o ./build/vega-multi-view.js --debug --verbose",
-        "watch-css": "node-sass -w ./src/styles/main.sass > ./dist/vega-multi-view.css",
+        "build-css": "node-sass ./src/styles/main.sass > ./dist/vega-multi-view.css",
         "build": "rollup -c",
-        "compile": "babel src/js --out-dir ./dist",
-        "copy-dist": "cp -R ../vega-multi-view/dist ../fffact/node_modules/vega-multi-view/",
-        "copy-src": "cp -R ../vega-multi-view/src ../fffact/node_modules/vega-multi-view/",
-        "update": "npm run compile && npm run copy-dist && npm run copy-src"
+        "compile": "babel src/js --out-dir ./dist"
     },
     "dependencies": {
         "cson-parser": "^2.0.0",

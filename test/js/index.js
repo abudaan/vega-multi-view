@@ -17,7 +17,7 @@ window.addEventListener('DOMContentLoaded', () => {
             },
         ],
         renderer: 'canvas', // default value
-        element: null,
+        element: null, // use 'false' for headless rendering
         className: null,
         container: null,
         leaflet: true,
@@ -51,11 +51,11 @@ window.addEventListener('DOMContentLoaded', () => {
             spec,
         ],
         runtimes: [
+            null,
+            null,
             {
-                element: 'aap',
+                element: false,
             },
-            null,
-            null,
         ],
         // css class that will be applied to every rendered vega spec
         // unless you overrule the cssClass property in the runtime

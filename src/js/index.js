@@ -77,6 +77,14 @@ const debug = (data) => {
 };
 */
 
+const loadSpec = (spec) => {
+    if (typeof spec !== 'string') {
+        return spec;
+    }
+    return fetchJSON(spec);
+};
+
+
 const loadSpecs = async (urls) => {
     const specs = [];
     await Promise.all(urls.map(async (url) => {
@@ -182,7 +190,10 @@ const connectSignals = (data) => {
 
 const addElements = (data, container, className) => R.map((d) => {
     let element = d.runtime.element;
-    if (R.isNil(element) === false) {
+    if (element === false) {
+        // headless rendering
+        element = null;
+    } else if (R.isNil(element) === false) {
         if (typeof element === 'string') {
             element = document.getElementById(d.runtime.element);
             if (R.isNil(element)) {
@@ -208,10 +219,11 @@ const addElements = (data, container, className) => R.map((d) => {
             element.className = className;
         }
     }
-
-    element.style.width = `${d.spec.width}px`;
-    element.style.height = `${d.spec.height}px`;
-    container.appendChild(element);
+    if (element !== null) {
+        element.style.width = `${d.spec.width}px`;
+        element.style.height = `${d.spec.height}px`;
+        container.appendChild(element);
+    }
     return {
         ...d,
         element,
@@ -219,7 +231,33 @@ const addElements = (data, container, className) => R.map((d) => {
 }, data);
 
 
-const createViews = (config) => {
+const createSpecData = (specs, runtimes) => {
+    const promises = mapIndexed(async (s, i) => {
+        const spec = await loadSpec(s);
+        const id = `spec_${i}`;
+        let runtime = {};
+        const specClone = { ...spec };
+        if (typeof specClone.runtime !== 'undefined') {
+            runtime = { ...specClone.runtime };
+            delete specClone.runtime;
+        } else if (R.isNil(runtimes[i]) === false) {
+            runtime = runtimes[i];
+        }
+        const view = new View(parse(specClone));
+        return new Promise((resolve) => {
+            resolve({
+                id,
+                spec: specClone,
+                view,
+                runtime,
+            });
+        });
+    }, specs);
+    return Promise.all(promises);
+};
+
+
+const createViews = async (config) => {
     let {
         container = document.body,
         specs,
@@ -238,44 +276,20 @@ const createViews = (config) => {
         specs = [specs];
     }
 
-    const specUrls = R.filter(spec => typeof spec === 'string', specs);
-    specs = R.filter(spec => typeof spec !== 'string', specs);
+    let data = await createSpecData(specs, runtimes);
+    data = addElements(data, container, className);
+    addTooltips(data);
+    connectSignals(data);
 
-    return new Promise((resolve, reject) => {
-        let data;
-        loadSpecs(specUrls)
-            .then((loadedSpecs) => {
-                specs = [...specs, ...loadedSpecs];
-                data = mapIndexed((s, i) => {
-                    const id = `spec_${i}`;
-                    let runtime = {};
-                    const spec = { ...s };
-                    if (typeof spec.runtime !== 'undefined') {
-                        runtime = { ...spec.runtime };
-                        delete spec.runtime;
-                    } else if (R.isNil(runtimes[i]) === false) {
-                        runtime = runtimes[i];
-                    }
-                    const view = new View(parse(spec));
-                    return {
-                        id,
-                        spec,
-                        view,
-                        runtime,
-                    };
-                }, specs);
-                data = addElements(data, container, className);
-                addTooltips(data);
-                connectSignals(data);
-                // wait until the next paint cycle so the created elements
-                // are added to the DOM
-                setTimeout(() => {
-                    addViews(data, renderer);
-                    resolve({
-                        data,
-                    });
-                }, 0);
+    return new Promise((resolve) => {
+        // wait until the next paint cycle so the created elements
+        // are added to the DOM, add the viewsm, then resolve
+        setTimeout(() => {
+            addViews(data, renderer);
+            resolve({
+                data,
             });
+        }, 0);
     });
 };
 

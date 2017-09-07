@@ -85,7 +85,7 @@ var addDebug = function addDebug(datas) {
 
             var numDataSources = spec.data.length;
             var numLoaded = 0;
-            if (_ramda2.default.isNil(spec.data)) {
+            if (_ramda2.default.isNil(spec.data) || spec.data.length === 0) {
                 resolve();
             }
             var dataPoller = setInterval(function () {
@@ -110,7 +110,7 @@ var addDebug = function addDebug(datas) {
 
 var loadSpec = function loadSpec(spec) {
     if (typeof spec !== 'string') {
-        return spec;
+        return Promise.resolve(spec);
     }
     return (0, _fetchHelpers.fetchJSON)(spec);
 };
@@ -238,12 +238,11 @@ var addElements = function addElements(data, container, className) {
             } else if (typeof className === 'string') {
                 element.className = className;
             }
-        }
-        if (element !== null) {
             element.style.width = d.spec.width + 'px';
             element.style.height = d.spec.height + 'px';
             container.appendChild(element);
         }
+
         return _extends({}, d, {
             element: element
         });
@@ -256,7 +255,7 @@ var createSpecData = function createSpecData(specs, runtimes) {
         var id = 'spec_' + i;
         var runtime = {};
         var specClone = _extends({}, spec);
-        if (typeof specClone.runtime !== 'undefined') {
+        if (_ramda2.default.isNil(specClone.runtime) === false) {
             runtime = _extends({}, specClone.runtime);
             delete specClone.runtime;
         } else if (_ramda2.default.isNil(runtimes[i]) === false) {
@@ -276,28 +275,39 @@ var createSpecData = function createSpecData(specs, runtimes) {
 };
 
 var createViews = async function createViews(config) {
-    var _config$container = config.container,
-        container = _config$container === undefined ? document.body : _config$container,
-        specs = config.specs;
-    var _config$className = config.className,
+    var _config$run = config.run,
+        run = _config$run === undefined ? false : _config$run,
+        specs = config.specs,
+        element = config.element,
+        _config$className = config.className,
         className = _config$className === undefined ? false : _config$className,
-        runtimes = config.runtimes,
+        _config$runtimes = config.runtimes,
+        runtimes = _config$runtimes === undefined ? [] : _config$runtimes,
         _config$renderer = config.renderer,
         renderer = _config$renderer === undefined ? 'canvas' : _config$renderer,
         _config$debug = config.debug,
-        debug = _config$debug === undefined ? true : _config$debug;
+        debug = _config$debug === undefined ? false : _config$debug;
 
 
-    if (_ramda2.default.isNil(container)) {
-        container = document.body;
+    var specsArray = specs;
+    var containerElement = null;
+
+    if (_ramda2.default.isNil(element)) {
+        containerElement = document.body;
+    } else if (typeof element === 'string') {
+        containerElement = document.getElementById(element);
+        if (_ramda2.default.isNil(containerElement)) {
+            console.error('element "' + element + '" could not be found');
+            return Promise.reject('element "' + element + '" could not be found');
+        }
     }
 
-    if (_ramda2.default.isArrayLike(specs) === false) {
-        specs = [specs];
+    if (_ramda2.default.isArrayLike(specsArray) === false) {
+        specsArray = [specsArray];
     }
 
-    var data = await createSpecData(specs, runtimes);
-    data = addElements(data, container, className);
+    var data = await createSpecData(specsArray, runtimes);
+    data = addElements(data, containerElement, className);
     addTooltips(data);
     connectSignals(data);
     if (debug) {
@@ -306,12 +316,15 @@ var createViews = async function createViews(config) {
 
     return new Promise(function (resolve) {
         // wait until the next paint cycle so the created elements
-        // are added to the DOM, add the viewsm, then resolve
+        // are added to the DOM, add the views, then resolve
         setTimeout(function () {
             addViews(data, renderer);
-            resolve({
-                data: data
+            data.forEach(function (d) {
+                if (d.runtime.run === true || run === true && d.runtime.run !== false) {
+                    d.view.run();
+                }
             });
+            resolve(data);
         }, 0);
     });
 };

@@ -68,7 +68,7 @@ const addDebug = (datas) => {
         } = d;
         const numDataSources = spec.data.length;
         let numLoaded = 0;
-        if (R.isNil(spec.data)) {
+        if (R.isNil(spec.data) || spec.data.length === 0) {
             resolve();
         }
         const dataPoller = setInterval(() => {
@@ -93,7 +93,7 @@ const addDebug = (datas) => {
 
 const loadSpec = (spec) => {
     if (typeof spec !== 'string') {
-        return spec;
+        return Promise.resolve(spec);
     }
     return fetchJSON(spec);
 };
@@ -232,12 +232,11 @@ const addElements = (data, container, className) => R.map((d) => {
         } else if (typeof className === 'string') {
             element.className = className;
         }
-    }
-    if (element !== null) {
         element.style.width = `${d.spec.width}px`;
         element.style.height = `${d.spec.height}px`;
         container.appendChild(element);
     }
+
     return {
         ...d,
         element,
@@ -251,7 +250,7 @@ const createSpecData = (specs, runtimes) => {
         const id = `spec_${i}`;
         let runtime = {};
         const specClone = { ...spec };
-        if (typeof specClone.runtime !== 'undefined') {
+        if (R.isNil(specClone.runtime) === false) {
             runtime = { ...specClone.runtime };
             delete specClone.runtime;
         } else if (R.isNil(runtimes[i]) === false) {
@@ -272,27 +271,35 @@ const createSpecData = (specs, runtimes) => {
 
 
 const createViews = async (config) => {
-    let {
-        container = document.body,
-        specs,
-    } = config;
     const {
+        run = false,
+        specs,
+        element,
         className = false,
-        runtimes,
+        runtimes = [],
         renderer = 'canvas',
-        debug = true, // false
+        debug = false,
     } = config;
 
-    if (R.isNil(container)) {
-        container = document.body;
+    let specsArray = specs;
+    let containerElement = null;
+
+    if (R.isNil(element)) {
+        containerElement = document.body;
+    } else if (typeof element === 'string') {
+        containerElement = document.getElementById(element);
+        if (R.isNil(containerElement)) {
+            console.error(`element "${element}" could not be found`);
+            return Promise.reject(`element "${element}" could not be found`);
+        }
     }
 
-    if (R.isArrayLike(specs) === false) {
-        specs = [specs];
+    if (R.isArrayLike(specsArray) === false) {
+        specsArray = [specsArray];
     }
 
-    let data = await createSpecData(specs, runtimes);
-    data = addElements(data, container, className);
+    let data = await createSpecData(specsArray, runtimes);
+    data = addElements(data, containerElement, className);
     addTooltips(data);
     connectSignals(data);
     if (debug) {
@@ -301,12 +308,18 @@ const createViews = async (config) => {
 
     return new Promise((resolve) => {
         // wait until the next paint cycle so the created elements
-        // are added to the DOM, add the viewsm, then resolve
+        // are added to the DOM, add the views, then resolve
         setTimeout(() => {
             addViews(data, renderer);
-            resolve({
-                data,
+            data.forEach(d => {
+                if (
+                    d.runtime.run === true ||
+                    (run === true && d.runtime.run !== false)
+                ) {
+                    d.view.run();
+                }
             });
+            resolve(data);
         }, 0);
     });
 };

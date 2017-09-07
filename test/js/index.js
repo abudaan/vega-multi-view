@@ -62,7 +62,7 @@ window.addEventListener('DOMContentLoaded', () => {
         cssClass: 'view',
         // the HTML element where all the specs will be added to, defaults
         // to document.body
-        container: document.getElementById('container'),
+        element: document.getElementById('container'),
     };
     createViews(data)
         .then(result => console.log(result));

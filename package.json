@@ -12,7 +12,11 @@
         "build-css": "node-sass ./src/styles/main.sass > ./dist/vega-multi-view.css",
         "build": "rollup -c",
         "compile": "babel src/js --out-dir ./dist",
-        "server": "python -m SimpleHTTPServer 9001"
+        "server": "python -m SimpleHTTPServer 9001",
+        "copy-dist": "cp -R ../vega-multi-view/dist ../fffact/node_modules/vega-multi-view/",
+        "copy-src": "cp -R ../vega-multi-view/src ../fffact/node_modules/vega-multi-view/",
+        "copy": "npm run copy-dist && npm run copy-src",
+        "update": "npm run compile && npm run copy"
     },
     "dependencies": {
         "cson-parser": "^2.0.0",

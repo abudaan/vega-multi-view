@@ -76,12 +76,21 @@ An array containing information about the rendered Vega view.
     cssClass: 'view',
 
     // All Vega views will be added to this HTML element, defaults
-    // to document.body
-    container: null,
+    // to document.body. Will be overridden if you specify an element
+    // in the view specific settings, see below
+    element: null,
 
     // Renderer to use for all Vega views, defaults to 'canvas'
     // can be overridden in the view specific settings, see below
     renderer: 'canvas',
+
+    // Print signal and data updates to the console, defaults to false
+    debug: false,
+
+    // Call `run` on a Vega view after it has been added the the DOM,
+    // defaults to false and can be overridden in the view specific
+    // options, see below
+    run: false,
 }
 ```
 
@@ -113,14 +122,19 @@ An array containing information about the rendered Vega view.
     renderer: 'canvas',
 
     // The Vega view will be rendered inside this HTML element
-    // use 'false' for headless rendering
+    // use 'false' for headless rendering. Overrides the value
+    // of `container` in the global options, see above
     element: null,
 
     // The css class that will be added to the HTML element
     cssClass: null,
 
     // Render Vega view as leaflet layer
-    leaflet: true,
+    leaflet: '<boolean>',
+
+    // Call `run` on a Vega view after is has been added to the DOM,
+    // overrides the global setting, see above
+    run: '<boolean>',
 
     // Options that will be passed on to Vega tooltip
     tooltipOptions: {

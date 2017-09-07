@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.showSpecInTab = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -313,6 +314,16 @@ var createViews = async function createViews(config) {
             });
         }, 0);
     });
+};
+
+var showSpecInTab = exports.showSpecInTab = function showSpecInTab(spec) {
+    // const json = encodeURIComponent(JSON.stringify(TestSpec4));
+    // window.open(`data:application/json, ${json}`, '_blank');
+    var json = JSON.stringify(spec, null, 4);
+    var w = window.open();
+    w.document.open();
+    w.document.write('<html><body><pre>' + json + '</pre></body></html>');
+    w.document.close();
 };
 
 exports.default = createViews;

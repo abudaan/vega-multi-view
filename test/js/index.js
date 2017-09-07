@@ -19,7 +19,6 @@ window.addEventListener('DOMContentLoaded', () => {
         renderer: 'canvas', // default value
         element: null, // use 'false' for headless rendering
         className: null,
-        container: null,
         leaflet: true,
         tooltipOptions: {
             showAllFields: false,

@@ -5,7 +5,25 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.showSpecInTab = undefined;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
+var _regenerator = require('babel-runtime/regenerator');
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
 var _ramda = require('ramda');
 
@@ -29,15 +47,13 @@ var _leafletVega2 = _interopRequireDefault(_leafletVega);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 var mapIndexed = _ramda2.default.addIndex(_ramda2.default.map);
 var streamId = 0;
 
 var createLeafletVega = function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(data, renderer) {
+    var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(data, renderer) {
         var spec, view, runtime, element, signals, zoom, latitude, longitude, leafletMap;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        return _regenerator2.default.wrap(function _callee$(_context) {
             while (1) {
                 switch (_context.prev = _context.next) {
                     case 0:
@@ -99,7 +115,7 @@ var addDebug = function addDebug(datas) {
     }, datas);
 
     var promises = _ramda2.default.map(function (d) {
-        return new Promise(function (resolve) {
+        return new _promise2.default(function (resolve) {
             var spec = d.spec,
                 view = d.view;
 
@@ -125,29 +141,29 @@ var addDebug = function addDebug(datas) {
         });
     }, datas);
 
-    return Promise.all(promises);
+    return _promise2.default.all(promises);
 };
 
 var loadSpec = function loadSpec(spec) {
     if (typeof spec !== 'string') {
-        return Promise.resolve(spec);
+        return _promise2.default.resolve(spec);
     }
     return (0, _fetchHelpers.fetchJSON)(spec);
 };
 
 var loadSpecs = function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(urls) {
+    var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(urls) {
         var specs;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        return _regenerator2.default.wrap(function _callee3$(_context3) {
             while (1) {
                 switch (_context3.prev = _context3.next) {
                     case 0:
                         specs = [];
                         _context3.next = 3;
-                        return Promise.all(urls.map(function () {
-                            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(url) {
+                        return _promise2.default.all(urls.map(function () {
+                            var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(url) {
                                 var spec;
-                                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                                return _regenerator2.default.wrap(function _callee2$(_context2) {
                                     while (1) {
                                         switch (_context2.prev = _context2.next) {
                                             case 0:
@@ -283,7 +299,7 @@ var addTooltips = function addTooltips(data) {
 var connectSignals = function connectSignals(data) {
     var streams = {};
     _ramda2.default.forEach(function (d) {
-        streams = _extends({}, streams, publishSignal(d));
+        streams = (0, _extends3.default)({}, streams, publishSignal(d));
     }, _ramda2.default.values(data));
 
     _ramda2.default.forEach(function (d) {
@@ -302,13 +318,13 @@ var addElements = function addElements(data, container, className) {
                 element = document.getElementById(d.runtime.element);
                 if (_ramda2.default.isNil(element)) {
                     console.error('element "' + d.runtime.element + '" could not be found');
-                    return _extends({}, d, {
+                    return (0, _extends3.default)({}, d, {
                         element: null
                     });
                 }
             } else if (element instanceof HTMLElement !== true) {
                 console.error('element "' + d.runtime.element + '" is not a valid HTMLElement');
-                return _extends({}, d, {
+                return (0, _extends3.default)({}, d, {
                     element: null
                 });
             }
@@ -329,7 +345,7 @@ var addElements = function addElements(data, container, className) {
             }
         }
 
-        return _extends({}, d, {
+        return (0, _extends3.default)({}, d, {
             element: element
         });
     }, data);
@@ -337,9 +353,9 @@ var addElements = function addElements(data, container, className) {
 
 var createSpecData = function createSpecData(specs, runtimes) {
     var promises = mapIndexed(function () {
-        var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(s, i) {
+        var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(s, i) {
             var spec, id, runtime, specClone, view;
-            return regeneratorRuntime.wrap(function _callee4$(_context4) {
+            return _regenerator2.default.wrap(function _callee4$(_context4) {
                 while (1) {
                     switch (_context4.prev = _context4.next) {
                         case 0:
@@ -350,16 +366,16 @@ var createSpecData = function createSpecData(specs, runtimes) {
                             spec = _context4.sent;
                             id = 'spec_' + i;
                             runtime = {};
-                            specClone = _extends({}, spec);
+                            specClone = (0, _extends3.default)({}, spec);
 
                             if (_ramda2.default.isNil(specClone.runtime) === false) {
-                                runtime = _extends({}, specClone.runtime);
+                                runtime = (0, _extends3.default)({}, specClone.runtime);
                                 delete specClone.runtime;
                             } else if (_ramda2.default.isNil(runtimes[i]) === false) {
                                 runtime = runtimes[i];
                             }
                             view = new _vega.View((0, _vega.parse)(specClone));
-                            return _context4.abrupt('return', new Promise(function (resolve) {
+                            return _context4.abrupt('return', new _promise2.default(function (resolve) {
                                 resolve({
                                     id: id,
                                     spec: specClone,
@@ -380,14 +396,14 @@ var createSpecData = function createSpecData(specs, runtimes) {
             return _ref4.apply(this, arguments);
         };
     }(), specs);
-    return Promise.all(promises);
+    return _promise2.default.all(promises);
 };
 
 var createViews = function () {
-    var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(config) {
+    var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(config) {
         var _config$run, run, specs, element, _config$className, className, _config$runtimes, runtimes, _config$renderer, renderer, _config$debug, debug, specsArray, containerElement, data;
 
-        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        return _regenerator2.default.wrap(function _callee5$(_context5) {
             while (1) {
                 switch (_context5.prev = _context5.next) {
                     case 0:
@@ -418,7 +434,7 @@ var createViews = function () {
                         }
 
                         console.error('element "' + element + '" could not be found');
-                        return _context5.abrupt('return', Promise.reject('element "' + element + '" could not be found'));
+                        return _context5.abrupt('return', _promise2.default.reject('element "' + element + '" could not be found'));
 
                     case 12:
                         _context5.next = 15;
@@ -453,7 +469,7 @@ var createViews = function () {
                         return addDebug(data);
 
                     case 25:
-                        return _context5.abrupt('return', new Promise(function (resolve) {
+                        return _context5.abrupt('return', new _promise2.default(function (resolve) {
                             // wait until the next paint cycle so the created elements
                             // are added to the DOM, add the views, then resolve
                             setTimeout(function () {
@@ -483,7 +499,7 @@ var createViews = function () {
 var showSpecInTab = exports.showSpecInTab = function showSpecInTab(spec) {
     // const json = encodeURIComponent(JSON.stringify(TestSpec4));
     // window.open(`data:application/json, ${json}`, '_blank');
-    var json = JSON.stringify(spec, null, 4);
+    var json = (0, _stringify2.default)(spec, null, 4);
     var w = window.open();
     w.document.open();
     w.document.write('<html><body><pre>' + json + '</pre></body></html>');

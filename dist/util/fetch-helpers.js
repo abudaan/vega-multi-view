@@ -4,9 +4,17 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); // fetch helpers
-// import fetch from 'isomorphic-fetch';
+var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+
+var _entries = require('babel-runtime/core-js/object/entries');
+
+var _entries2 = _interopRequireDefault(_entries);
+
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
 
 exports.status = status;
 exports.json = json;
@@ -30,11 +38,13 @@ var _yamljs2 = _interopRequireDefault(_yamljs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// fetch helpers
+// import fetch from 'isomorphic-fetch';
 function status(response) {
     if (response.status >= 200 && response.status < 300) {
-        return Promise.resolve(response);
+        return _promise2.default.resolve(response);
     }
-    return Promise.reject(new Error(response.statusText));
+    return _promise2.default.reject(new Error(response.statusText));
 }
 
 function json(response) {
@@ -43,13 +53,13 @@ function json(response) {
 
 function cson(response) {
     return response.text().then(function (data) {
-        return Promise.resolve(_csonParser2.default.parse(data));
+        return _promise2.default.resolve(_csonParser2.default.parse(data));
     });
 }
 
 function yaml(response) {
     return response.text().then(function (data) {
-        return Promise.resolve(_yamljs2.default.parse(data));
+        return _promise2.default.resolve(_yamljs2.default.parse(data));
     });
 }
 
@@ -58,7 +68,7 @@ function arrayBuffer(response) {
 }
 
 function fetchJSON(url) {
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
         // fetch(url, {
         //   mode: 'no-cors'
         // })
@@ -71,7 +81,7 @@ function fetchJSON(url) {
 }
 
 function fetchCSON(url) {
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
         // fetch(url, {
         //   mode: 'no-cors'
         // })
@@ -84,7 +94,7 @@ function fetchCSON(url) {
 }
 
 function fetchYAML(url) {
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
         // fetch(url, {
         //   mode: 'no-cors'
         // })
@@ -97,7 +107,7 @@ function fetchYAML(url) {
 }
 
 function fetchJSONFiles(urlArray) {
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
         var promises = [];
         var errors = [];
 
@@ -110,7 +120,7 @@ function fetchJSONFiles(urlArray) {
             }));
         });
 
-        Promise.all(promises).then(function (data) {
+        _promise2.default.all(promises).then(function (data) {
             var jsonFiles = data.filter(function (file) {
                 return file !== null;
             });
@@ -122,13 +132,13 @@ function fetchJSONFiles(urlArray) {
 }
 
 function fetchJSONFiles2(object, baseurl) {
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
         var promises = [];
         var errors = [];
         var keys = [];
 
-        Object.entries(object).forEach(function (_ref) {
-            var _ref2 = _slicedToArray(_ref, 2),
+        (0, _entries2.default)(object).forEach(function (_ref) {
+            var _ref2 = (0, _slicedToArray3.default)(_ref, 2),
                 key = _ref2[0],
                 url = _ref2[1];
 
@@ -141,7 +151,7 @@ function fetchJSONFiles2(object, baseurl) {
             }));
         });
 
-        Promise.all(promises).then(function (data) {
+        _promise2.default.all(promises).then(function (data) {
             var jsonFiles = {};
             data.forEach(function (file, index) {
                 if (file !== null) {
@@ -156,7 +166,7 @@ function fetchJSONFiles2(object, baseurl) {
 }
 
 function fetchArraybuffer(url) {
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
         // fetch(url, {
         //   mode: 'no-cors'
         // })

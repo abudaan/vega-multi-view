@@ -214,6 +214,11 @@ var publishSignal = function publishSignal(data) {
         return streams;
     }
 
+    var publishes = runtime.publish;
+    if (Array.isArray(publishes) === false) {
+        publishes = [publishes];
+    }
+
     _ramda2.default.forEach(function (publish) {
         try {
             var s = _xstream2.default.create({
@@ -234,7 +239,7 @@ var publishSignal = function publishSignal(data) {
         } catch (e) {
             console.error(e.message);
         }
-    }, runtime.publish);
+    }, publishes);
 
     return streams;
 };
@@ -247,6 +252,11 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
 
     if (_ramda2.default.isNil(runtime.subscribe)) {
         return;
+    }
+
+    var subscribes = runtime.publish;
+    if (Array.isArray(subscribes) === false) {
+        subscribes = [subscribes];
     }
 
     _ramda2.default.forEach(function (subscribe) {
@@ -271,7 +281,7 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
                 console.log('Stream ' + s.id + ' is done');
             }
         });
-    }, runtime.subscribe);
+    }, subscribes);
 };
 
 var addViews = function addViews(data, renderer) {

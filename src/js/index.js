@@ -119,6 +119,11 @@ const publishSignal = (data) => {
         return streams;
     }
 
+    let publishes = runtime.publish;
+    if (Array.isArray(publishes) === false) {
+        publishes = [publishes];
+    }
+
     R.forEach((publish) => {
         try {
             const s = xs.create({
@@ -138,7 +143,7 @@ const publishSignal = (data) => {
         } catch (e) {
             console.error(e.message);
         }
-    }, runtime.publish);
+    }, publishes);
 
     return streams;
 };
@@ -153,6 +158,11 @@ const subscribeToSignal = (data, streams) => {
 
     if (R.isNil(runtime.subscribe)) {
         return;
+    }
+
+    let subscribes = runtime.publish;
+    if (Array.isArray(subscribes) === false) {
+        subscribes = [subscribes];
     }
 
     R.forEach((subscribe) => {
@@ -177,7 +187,7 @@ const subscribeToSignal = (data, streams) => {
                 console.log(`Stream ${s.id} is done`);
             },
         });
-    }, runtime.subscribe);
+    }, subscribes);
 };
 
 

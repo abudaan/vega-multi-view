@@ -1,15 +1,14 @@
 import R from 'ramda';
-import L from 'leaflet';
+import xs from 'xstream';
+import { TileLayer, Map } from 'leaflet';
 import { parse, View } from 'vega';
 import { vega as vegaTooltip } from 'vega-tooltip';
 import { fetchJSON } from './util/fetch-helpers';
-import initLeafletVega from './util/leaflet-vega';
+import VegaLayer from './util/leaflet-vega';
 
-const Rx = require('rxjs/Rx');
 
 const mapIndexed = R.addIndex(R.map);
-
-initLeafletVega();
+let streamId = 0;
 
 const createLeafletVega = async (data, renderer) => {
     const {
@@ -28,22 +27,22 @@ const createLeafletVega = async (data, renderer) => {
         return;
     }
 
-    const map = L.map(element, {
+    const leafletMap = new Map(element, {
         zoomAnimation: false,
     }).setView([latitude.value, longitude.value], zoom.value);
 
-    L.tileLayer(
+    new TileLayer(
         'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
             attribution: '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
             maxZoom: 18,
         },
-    ).addTo(map);
+    ).addTo(leafletMap);
 
-    L.vega(view, {
+    new VegaLayer(view, {
         renderer: runtime.renderer || renderer,
         // Make sure the legend stays in place
         delayRepaint: true,
-    }).addTo(map);
+    }).addTo(leafletMap);
 };
 
 
@@ -122,10 +121,19 @@ const publishSignal = (data) => {
 
     R.forEach((publish) => {
         try {
-            const s = new Rx.Subject();
-            view.addSignalListener(publish.signal, (name, value) => {
-                s.next(value);
+            const s = xs.create({
+                start(listener) {
+                    view.addSignalListener(publish.signal, (name, value) => {
+                        listener.next(value);
+                    });
+                },
+                stop() {
+                    view.removeSignalListener(publish.signal);
+                },
+
+                id: streamId,
             });
+            streamId += 1;
             streams[publish.as] = s;
         } catch (e) {
             console.error(e.message);
@@ -157,9 +165,17 @@ const subscribeToSignal = (data, streams) => {
             console.error(`no signal "${subscribe.as}" found in spec`);
             return;
         }
-        s.subscribe((value) => {
-            // console.log(subscribe.as, value);
-            view.signal(subscribe.as, value).run();
+
+        s.addListener({
+            next: (value) => {
+                view.signal(subscribe.as, value).run();
+            },
+            error: (err) => {
+                console.error(`Stream ${s.id} error: ${err}`);
+            },
+            complete: () => {
+                console.log(`Stream ${s.id} is done`);
+            },
         });
     }, runtime.subscribe);
 };
@@ -234,7 +250,11 @@ const addElements = (data, container, className) => R.map((d) => {
         }
         element.style.width = `${d.spec.width}px`;
         element.style.height = `${d.spec.height}px`;
-        container.appendChild(element);
+        if (container !== null) {
+            container.appendChild(element);
+        } else {
+            console.warn('could not add Vega view: HTML container element is null');
+        }
     }
 
     return {
@@ -292,7 +312,10 @@ const createViews = async (config) => {
             console.error(`element "${element}" could not be found`);
             return Promise.reject(`element "${element}" could not be found`);
         }
+    } else if (element instanceof HTMLElement) {
+        containerElement = element;
     }
+
 
     if (R.isArrayLike(specsArray) === false) {
         specsArray = [specsArray];
@@ -311,7 +334,7 @@ const createViews = async (config) => {
         // are added to the DOM, add the views, then resolve
         setTimeout(() => {
             addViews(data, renderer);
-            data.forEach(d => {
+            data.forEach((d) => {
                 if (
                     d.runtime.run === true ||
                     (run === true && d.runtime.run !== false)

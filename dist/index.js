@@ -11,9 +11,11 @@ var _ramda = require('ramda');
 
 var _ramda2 = _interopRequireDefault(_ramda);
 
-var _leaflet = require('leaflet');
+var _xstream = require('xstream');
 
-var _leaflet2 = _interopRequireDefault(_leaflet);
+var _xstream2 = _interopRequireDefault(_xstream);
+
+var _leaflet = require('leaflet');
 
 var _vega = require('vega');
 
@@ -27,43 +29,61 @@ var _leafletVega2 = _interopRequireDefault(_leafletVega);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Rx = require('rxjs/Rx');
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 var mapIndexed = _ramda2.default.addIndex(_ramda2.default.map);
+var streamId = 0;
 
-(0, _leafletVega2.default)();
+var createLeafletVega = function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(data, renderer) {
+        var spec, view, runtime, element, signals, zoom, latitude, longitude, leafletMap;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+                switch (_context.prev = _context.next) {
+                    case 0:
+                        spec = data.spec, view = data.view, runtime = data.runtime, element = data.element;
+                        signals = spec.signals || [];
+                        zoom = _ramda2.default.find(_ramda2.default.propEq('name', 'zoom'))(signals);
+                        latitude = _ramda2.default.find(_ramda2.default.propEq('name', 'latitude'))(signals);
+                        longitude = _ramda2.default.find(_ramda2.default.propEq('name', 'longitude'))(signals);
 
-var createLeafletVega = async function createLeafletVega(data, renderer) {
-    var spec = data.spec,
-        view = data.view,
-        runtime = data.runtime,
-        element = data.element;
+                        if (!(_ramda2.default.isNil(zoom) || _ramda2.default.isNil(latitude) || _ramda2.default.isNil(longitude))) {
+                            _context.next = 8;
+                            break;
+                        }
 
-    var signals = spec.signals || [];
-    var zoom = _ramda2.default.find(_ramda2.default.propEq('name', 'zoom'))(signals);
-    var latitude = _ramda2.default.find(_ramda2.default.propEq('name', 'latitude'))(signals);
-    var longitude = _ramda2.default.find(_ramda2.default.propEq('name', 'longitude'))(signals);
+                        console.error('incomplete map spec');
+                        return _context.abrupt('return');
 
-    if (_ramda2.default.isNil(zoom) || _ramda2.default.isNil(latitude) || _ramda2.default.isNil(longitude)) {
-        console.error('incomplete map spec');
-        return;
-    }
+                    case 8:
+                        leafletMap = new _leaflet.Map(element, {
+                            zoomAnimation: false
+                        }).setView([latitude.value, longitude.value], zoom.value);
 
-    var map = _leaflet2.default.map(element, {
-        zoomAnimation: false
-    }).setView([latitude.value, longitude.value], zoom.value);
 
-    _leaflet2.default.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-        attribution: '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-        maxZoom: 18
-    }).addTo(map);
+                        new _leaflet.TileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+                            attribution: '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+                            maxZoom: 18
+                        }).addTo(leafletMap);
 
-    _leaflet2.default.vega(view, {
-        renderer: runtime.renderer || renderer,
-        // Make sure the legend stays in place
-        delayRepaint: true
-    }).addTo(map);
-};
+                        new _leafletVega2.default(view, {
+                            renderer: runtime.renderer || renderer,
+                            // Make sure the legend stays in place
+                            delayRepaint: true
+                        }).addTo(leafletMap);
+
+                    case 11:
+                    case 'end':
+                        return _context.stop();
+                }
+            }
+        }, _callee, undefined);
+    }));
+
+    return function createLeafletVega(_x, _x2) {
+        return _ref.apply(this, arguments);
+    };
+}();
 
 var addDebug = function addDebug(datas) {
     _ramda2.default.forEach(function (d) {
@@ -115,14 +135,58 @@ var loadSpec = function loadSpec(spec) {
     return (0, _fetchHelpers.fetchJSON)(spec);
 };
 
-var loadSpecs = async function loadSpecs(urls) {
-    var specs = [];
-    await Promise.all(urls.map(async function (url) {
-        var spec = await (0, _fetchHelpers.fetchJSON)(url);
-        specs.push(spec);
+var loadSpecs = function () {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(urls) {
+        var specs;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+            while (1) {
+                switch (_context3.prev = _context3.next) {
+                    case 0:
+                        specs = [];
+                        _context3.next = 3;
+                        return Promise.all(urls.map(function () {
+                            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(url) {
+                                var spec;
+                                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                                    while (1) {
+                                        switch (_context2.prev = _context2.next) {
+                                            case 0:
+                                                _context2.next = 2;
+                                                return (0, _fetchHelpers.fetchJSON)(url);
+
+                                            case 2:
+                                                spec = _context2.sent;
+
+                                                specs.push(spec);
+
+                                            case 4:
+                                            case 'end':
+                                                return _context2.stop();
+                                        }
+                                    }
+                                }, _callee2, undefined);
+                            }));
+
+                            return function (_x4) {
+                                return _ref3.apply(this, arguments);
+                            };
+                        }()));
+
+                    case 3:
+                        return _context3.abrupt('return', specs);
+
+                    case 4:
+                    case 'end':
+                        return _context3.stop();
+                }
+            }
+        }, _callee3, undefined);
     }));
-    return specs;
-};
+
+    return function loadSpecs(_x3) {
+        return _ref2.apply(this, arguments);
+    };
+}();
 
 var publishSignal = function publishSignal(data) {
     var runtime = data.runtime,
@@ -136,10 +200,20 @@ var publishSignal = function publishSignal(data) {
 
     _ramda2.default.forEach(function (publish) {
         try {
-            var s = new Rx.Subject();
-            view.addSignalListener(publish.signal, function (name, value) {
-                s.next(value);
+            var s = _xstream2.default.create({
+                start: function start(listener) {
+                    view.addSignalListener(publish.signal, function (name, value) {
+                        listener.next(value);
+                    });
+                },
+                stop: function stop() {
+                    view.removeSignalListener(publish.signal);
+                },
+
+
+                id: streamId
             });
+            streamId += 1;
             streams[publish.as] = s;
         } catch (e) {
             console.error(e.message);
@@ -169,9 +243,17 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
             console.error('no signal "' + subscribe.as + '" found in spec');
             return;
         }
-        s.subscribe(function (value) {
-            // console.log(subscribe.as, value);
-            view.signal(subscribe.as, value).run();
+
+        s.addListener({
+            next: function next(value) {
+                view.signal(subscribe.as, value).run();
+            },
+            error: function error(err) {
+                console.error('Stream ' + s.id + ' error: ' + err);
+            },
+            complete: function complete() {
+                console.log('Stream ' + s.id + ' is done');
+            }
         });
     }, runtime.subscribe);
 };
@@ -240,7 +322,11 @@ var addElements = function addElements(data, container, className) {
             }
             element.style.width = d.spec.width + 'px';
             element.style.height = d.spec.height + 'px';
-            container.appendChild(element);
+            if (container !== null) {
+                container.appendChild(element);
+            } else {
+                console.warn('could not add Vega view: HTML container element is null');
+            }
         }
 
         return _extends({}, d, {
@@ -250,84 +336,149 @@ var addElements = function addElements(data, container, className) {
 };
 
 var createSpecData = function createSpecData(specs, runtimes) {
-    var promises = mapIndexed(async function (s, i) {
-        var spec = await loadSpec(s);
-        var id = 'spec_' + i;
-        var runtime = {};
-        var specClone = _extends({}, spec);
-        if (_ramda2.default.isNil(specClone.runtime) === false) {
-            runtime = _extends({}, specClone.runtime);
-            delete specClone.runtime;
-        } else if (_ramda2.default.isNil(runtimes[i]) === false) {
-            runtime = runtimes[i];
-        }
-        var view = new _vega.View((0, _vega.parse)(specClone));
-        return new Promise(function (resolve) {
-            resolve({
-                id: id,
-                spec: specClone,
-                view: view,
-                runtime: runtime
-            });
-        });
-    }, specs);
+    var promises = mapIndexed(function () {
+        var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(s, i) {
+            var spec, id, runtime, specClone, view;
+            return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                while (1) {
+                    switch (_context4.prev = _context4.next) {
+                        case 0:
+                            _context4.next = 2;
+                            return loadSpec(s);
+
+                        case 2:
+                            spec = _context4.sent;
+                            id = 'spec_' + i;
+                            runtime = {};
+                            specClone = _extends({}, spec);
+
+                            if (_ramda2.default.isNil(specClone.runtime) === false) {
+                                runtime = _extends({}, specClone.runtime);
+                                delete specClone.runtime;
+                            } else if (_ramda2.default.isNil(runtimes[i]) === false) {
+                                runtime = runtimes[i];
+                            }
+                            view = new _vega.View((0, _vega.parse)(specClone));
+                            return _context4.abrupt('return', new Promise(function (resolve) {
+                                resolve({
+                                    id: id,
+                                    spec: specClone,
+                                    view: view,
+                                    runtime: runtime
+                                });
+                            }));
+
+                        case 9:
+                        case 'end':
+                            return _context4.stop();
+                    }
+                }
+            }, _callee4, undefined);
+        }));
+
+        return function (_x5, _x6) {
+            return _ref4.apply(this, arguments);
+        };
+    }(), specs);
     return Promise.all(promises);
 };
 
-var createViews = async function createViews(config) {
-    var _config$run = config.run,
-        run = _config$run === undefined ? false : _config$run,
-        specs = config.specs,
-        element = config.element,
-        _config$className = config.className,
-        className = _config$className === undefined ? false : _config$className,
-        _config$runtimes = config.runtimes,
-        runtimes = _config$runtimes === undefined ? [] : _config$runtimes,
-        _config$renderer = config.renderer,
-        renderer = _config$renderer === undefined ? 'canvas' : _config$renderer,
-        _config$debug = config.debug,
-        debug = _config$debug === undefined ? false : _config$debug;
+var createViews = function () {
+    var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(config) {
+        var _config$run, run, specs, element, _config$className, className, _config$runtimes, runtimes, _config$renderer, renderer, _config$debug, debug, specsArray, containerElement, data;
 
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+            while (1) {
+                switch (_context5.prev = _context5.next) {
+                    case 0:
+                        _config$run = config.run, run = _config$run === undefined ? false : _config$run, specs = config.specs, element = config.element, _config$className = config.className, className = _config$className === undefined ? false : _config$className, _config$runtimes = config.runtimes, runtimes = _config$runtimes === undefined ? [] : _config$runtimes, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug;
+                        specsArray = specs;
+                        containerElement = null;
 
-    var specsArray = specs;
-    var containerElement = null;
+                        if (!_ramda2.default.isNil(element)) {
+                            _context5.next = 7;
+                            break;
+                        }
 
-    if (_ramda2.default.isNil(element)) {
-        containerElement = document.body;
-    } else if (typeof element === 'string') {
-        containerElement = document.getElementById(element);
-        if (_ramda2.default.isNil(containerElement)) {
-            console.error('element "' + element + '" could not be found');
-            return Promise.reject('element "' + element + '" could not be found');
-        }
-    }
+                        containerElement = document.body;
+                        _context5.next = 15;
+                        break;
 
-    if (_ramda2.default.isArrayLike(specsArray) === false) {
-        specsArray = [specsArray];
-    }
+                    case 7:
+                        if (!(typeof element === 'string')) {
+                            _context5.next = 14;
+                            break;
+                        }
 
-    var data = await createSpecData(specsArray, runtimes);
-    data = addElements(data, containerElement, className);
-    addTooltips(data);
-    connectSignals(data);
-    if (debug) {
-        await addDebug(data);
-    }
+                        containerElement = document.getElementById(element);
 
-    return new Promise(function (resolve) {
-        // wait until the next paint cycle so the created elements
-        // are added to the DOM, add the views, then resolve
-        setTimeout(function () {
-            addViews(data, renderer);
-            data.forEach(function (d) {
-                if (d.runtime.run === true || run === true && d.runtime.run !== false) {
-                    d.view.run();
+                        if (!_ramda2.default.isNil(containerElement)) {
+                            _context5.next = 12;
+                            break;
+                        }
+
+                        console.error('element "' + element + '" could not be found');
+                        return _context5.abrupt('return', Promise.reject('element "' + element + '" could not be found'));
+
+                    case 12:
+                        _context5.next = 15;
+                        break;
+
+                    case 14:
+                        if (element instanceof HTMLElement) {
+                            containerElement = element;
+                        }
+
+                    case 15:
+                        if (_ramda2.default.isArrayLike(specsArray) === false) {
+                            specsArray = [specsArray];
+                        }
+
+                        _context5.next = 18;
+                        return createSpecData(specsArray, runtimes);
+
+                    case 18:
+                        data = _context5.sent;
+
+                        data = addElements(data, containerElement, className);
+                        addTooltips(data);
+                        connectSignals(data);
+
+                        if (!debug) {
+                            _context5.next = 25;
+                            break;
+                        }
+
+                        _context5.next = 25;
+                        return addDebug(data);
+
+                    case 25:
+                        return _context5.abrupt('return', new Promise(function (resolve) {
+                            // wait until the next paint cycle so the created elements
+                            // are added to the DOM, add the views, then resolve
+                            setTimeout(function () {
+                                addViews(data, renderer);
+                                data.forEach(function (d) {
+                                    if (d.runtime.run === true || run === true && d.runtime.run !== false) {
+                                        d.view.run();
+                                    }
+                                });
+                                resolve(data);
+                            }, 0);
+                        }));
+
+                    case 26:
+                    case 'end':
+                        return _context5.stop();
                 }
-            });
-            resolve(data);
-        }, 0);
-    });
-};
+            }
+        }, _callee5, undefined);
+    }));
+
+    return function createViews(_x7) {
+        return _ref5.apply(this, arguments);
+    };
+}();
 
 var showSpecInTab = exports.showSpecInTab = function showSpecInTab(spec) {
     // const json = encodeURIComponent(JSON.stringify(TestSpec4));

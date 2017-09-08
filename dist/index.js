@@ -254,7 +254,7 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
         return;
     }
 
-    var subscribes = runtime.publish;
+    var subscribes = runtime.subscribe;
     if (Array.isArray(subscribes) === false) {
         subscribes = [subscribes];
     }

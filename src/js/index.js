@@ -160,7 +160,7 @@ const subscribeToSignal = (data, streams) => {
         return;
     }
 
-    let subscribes = runtime.publish;
+    let subscribes = runtime.subscribe;
     if (Array.isArray(subscribes) === false) {
         subscribes = [subscribes];
     }

@@ -73,7 +73,7 @@ An array containing information about the rendered Vega view.
 
     // The css class that will be added to every Vega view, can be
     // overridden in the view specific settings, see below
-    cssClass: 'view',
+    cssClass: '<string>',
 
     // All Vega views will be added to this HTML element, defaults
     // to document.body. Will be overridden if you specify an element
@@ -82,15 +82,15 @@ An array containing information about the rendered Vega view.
 
     // Renderer to use for all Vega views, defaults to 'canvas'
     // can be overridden in the view specific settings, see below
-    renderer: 'canvas',
+    renderer: 'canvas | svg',
 
     // Print signal and data updates to the console, defaults to false
     debug: false,
 
     // Call `run` on a Vega view after it has been added the the DOM,
-    // defaults to false and can be overridden in the view specific
+    // defaults to true and can be overridden in the view specific
     // options, see below
-    run: false,
+    run: true,
 }
 ```
 
@@ -119,7 +119,7 @@ An array containing information about the rendered Vega view.
 
     // Renderer to use for this view, defaults to the renderer set
     // in the global options, see above
-    renderer: 'canvas',
+    renderer: 'canvas | svg',
 
     // The Vega view will be rendered inside this HTML element
     // use 'false' for headless rendering. Overrides the value
@@ -133,10 +133,10 @@ An array containing information about the rendered Vega view.
     leaflet: '<boolean>',
 
     // Call `run` on a Vega view after is has been added to the DOM,
-    // overrides the global setting, see above
+    // overrides the global setting, see above.
     run: '<boolean>',
 
-    // Options that will be passed on to Vega tooltip
+    // Options that will be passed on to Vega tooltip, see the [readme](https://github.com/vega/vega-tooltip/blob/master/README.md)
     tooltipOptions: {
         showAllFields: false,
         fields: [

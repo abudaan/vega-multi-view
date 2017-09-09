@@ -68,7 +68,7 @@ var createLeafletVega = function () {
                             break;
                         }
 
-                        console.error('incomplete map spec');
+                        console.error('incomplete map spec; if you want to add Vega as a Leaflet layer you should provide signals for zoom, latitude and longitude');
                         return _context.abrupt('return');
 
                     case 8:
@@ -148,7 +148,13 @@ var loadSpec = function loadSpec(spec) {
     if (typeof spec !== 'string') {
         return _promise2.default.resolve(spec);
     }
-    return (0, _fetchHelpers.fetchJSON)(spec);
+    return (0, _fetchHelpers.fetchJSON)(spec).then(function (data) {
+        return data;
+    }, function () {
+        return null;
+    }).catch(function () {
+        return null;
+    });
 };
 
 var loadSpecs = function () {
@@ -290,17 +296,19 @@ var addViews = function addViews(data, renderer) {
             runtime = d.runtime,
             element = d.element;
 
-        if (runtime.leaflet === true) {
-            createLeafletVega(d, renderer);
-        } else {
-            view.renderer(runtime.renderer || renderer).initialize(element);
+        if (view !== null) {
+            if (runtime.leaflet === true) {
+                createLeafletVega(d, renderer);
+            } else {
+                view.renderer(runtime.renderer || renderer).initialize(element);
+            }
         }
     });
 };
 
 var addTooltips = function addTooltips(data) {
     data.forEach(function (d) {
-        if (typeof d.runtime.tooltipOptions !== 'undefined') {
+        if (d.view !== null && typeof d.runtime.tooltipOptions !== 'undefined') {
             (0, _vegaTooltip.vega)(d.view, d.runtime.tooltipOptions);
         }
     });
@@ -309,16 +317,25 @@ var addTooltips = function addTooltips(data) {
 var connectSignals = function connectSignals(data) {
     var streams = {};
     _ramda2.default.forEach(function (d) {
-        streams = (0, _extends3.default)({}, streams, publishSignal(d));
+        if (d.view !== null) {
+            streams = (0, _extends3.default)({}, streams, publishSignal(d));
+        }
     }, _ramda2.default.values(data));
 
     _ramda2.default.forEach(function (d) {
-        subscribeToSignal(d, streams);
+        if (d.view !== null) {
+            subscribeToSignal(d, streams);
+        }
     }, _ramda2.default.values(data));
 };
 
 var addElements = function addElements(data, container, className) {
     return _ramda2.default.map(function (d) {
+        if (d.view === null) {
+            return (0, _extends3.default)({}, d, {
+                element: null
+            });
+        }
         var element = d.runtime.element;
         if (element === false) {
             // headless rendering
@@ -375,6 +392,20 @@ var createSpecData = function createSpecData(specs, runtimes) {
                         case 2:
                             spec = _context4.sent;
                             id = 'spec_' + i;
+
+                            if (!(spec === null)) {
+                                _context4.next = 6;
+                                break;
+                            }
+
+                            return _context4.abrupt('return', _promise2.default.resolve({
+                                id: id,
+                                spec: 'Vega spec ' + s + ' could not be loaded',
+                                view: null,
+                                runtime: null
+                            }));
+
+                        case 6:
                             runtime = {};
                             specClone = (0, _extends3.default)({}, spec);
 
@@ -394,7 +425,7 @@ var createSpecData = function createSpecData(specs, runtimes) {
                                 });
                             }));
 
-                        case 9:
+                        case 11:
                         case 'end':
                             return _context4.stop();
                     }
@@ -417,7 +448,7 @@ var createViews = function () {
             while (1) {
                 switch (_context5.prev = _context5.next) {
                     case 0:
-                        _config$run = config.run, run = _config$run === undefined ? false : _config$run, specs = config.specs, element = config.element, _config$className = config.className, className = _config$className === undefined ? false : _config$className, _config$runtimes = config.runtimes, runtimes = _config$runtimes === undefined ? [] : _config$runtimes, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug;
+                        _config$run = config.run, run = _config$run === undefined ? true : _config$run, specs = config.specs, element = config.element, _config$className = config.className, className = _config$className === undefined ? false : _config$className, _config$runtimes = config.runtimes, runtimes = _config$runtimes === undefined ? [] : _config$runtimes, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug;
                         specsArray = specs;
                         containerElement = null;
 
@@ -485,7 +516,7 @@ var createViews = function () {
                             setTimeout(function () {
                                 addViews(data, renderer);
                                 data.forEach(function (d) {
-                                    if (d.runtime.run === true || run === true && d.runtime.run !== false) {
+                                    if (d.view !== null && (d.runtime.run === true || run === true && d.runtime.run !== false)) {
                                         d.view.run();
                                     }
                                 });

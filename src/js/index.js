@@ -6,7 +6,6 @@ import { vega as vegaTooltip } from 'vega-tooltip';
 import { fetchJSON } from './util/fetch-helpers';
 import VegaLayer from './util/leaflet-vega';
 
-
 const mapIndexed = R.addIndex(R.map);
 let streamId = 0;
 
@@ -23,7 +22,7 @@ const createLeafletVega = async (data, renderer) => {
     const longitude = R.find(R.propEq('name', 'longitude'))(signals);
 
     if (R.isNil(zoom) || R.isNil(latitude) || R.isNil(longitude)) {
-        console.error('incomplete map spec');
+        console.error('incomplete map spec; if you want to add Vega as a Leaflet layer you should provide signals for zoom, latitude and longitude');
         return;
     }
 
@@ -94,7 +93,9 @@ const loadSpec = (spec) => {
     if (typeof spec !== 'string') {
         return Promise.resolve(spec);
     }
-    return fetchJSON(spec);
+    return fetchJSON(spec)
+        .then(data => data, () => null)
+        .catch(() => null);
 };
 
 
@@ -198,11 +199,13 @@ const addViews = (data, renderer) => {
             runtime,
             element,
         } = d;
-        if (runtime.leaflet === true) {
-            createLeafletVega(d, renderer);
-        } else {
-            view.renderer(runtime.renderer || renderer)
-                .initialize(element);
+        if (view !== null) {
+            if (runtime.leaflet === true) {
+                createLeafletVega(d, renderer);
+            } else {
+                view.renderer(runtime.renderer || renderer)
+                    .initialize(element);
+            }
         }
     });
 };
@@ -210,7 +213,7 @@ const addViews = (data, renderer) => {
 
 const addTooltips = (data) => {
     data.forEach((d) => {
-        if (typeof d.runtime.tooltipOptions !== 'undefined') {
+        if (d.view !== null && typeof d.runtime.tooltipOptions !== 'undefined') {
             vegaTooltip(d.view, d.runtime.tooltipOptions);
         }
     });
@@ -219,16 +222,26 @@ const addTooltips = (data) => {
 const connectSignals = (data) => {
     let streams = {};
     R.forEach((d) => {
-        streams = { ...streams, ...publishSignal(d) };
+        if (d.view !== null) {
+            streams = { ...streams, ...publishSignal(d) };
+        }
     }, R.values(data));
 
     R.forEach((d) => {
-        subscribeToSignal(d, streams);
+        if (d.view !== null) {
+            subscribeToSignal(d, streams);
+        }
     }, R.values(data));
 };
 
 
 const addElements = (data, container, className) => R.map((d) => {
+    if (d.view === null) {
+        return {
+            ...d,
+            element: null,
+        };
+    }
     let element = d.runtime.element;
     if (element === false) {
         // headless rendering
@@ -278,6 +291,14 @@ const createSpecData = (specs, runtimes) => {
     const promises = mapIndexed(async (s, i) => {
         const spec = await loadSpec(s);
         const id = `spec_${i}`;
+        if (spec === null) {
+            return Promise.resolve({
+                id,
+                spec: `Vega spec ${s} could not be loaded`,
+                view: null,
+                runtime: null,
+            });
+        }
         let runtime = {};
         const specClone = { ...spec };
         if (R.isNil(specClone.runtime) === false) {
@@ -302,7 +323,7 @@ const createSpecData = (specs, runtimes) => {
 
 const createViews = async (config) => {
     const {
-        run = false,
+        run = true,
         specs,
         element,
         className = false,
@@ -345,9 +366,9 @@ const createViews = async (config) => {
         setTimeout(() => {
             addViews(data, renderer);
             data.forEach((d) => {
-                if (
-                    d.runtime.run === true ||
-                    (run === true && d.runtime.run !== false)
+                if (d.view !== null &&
+                    (d.runtime.run === true ||
+                        (run === true && d.runtime.run !== false))
                 ) {
                     d.view.run();
                 }

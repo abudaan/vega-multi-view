@@ -20,8 +20,12 @@
         "server": "python -m SimpleHTTPServer 9001",
         "copy-dist": "cp -R ../vega-multi-view/dist ../vega-specs/node_modules/vega-multi-view/",
         "copy-src": "cp -R ../vega-multi-view/src ../vega-specs/node_modules/vega-multi-view/",
+        "copy-dst": "cp -R ../vega-multi-view/dist ../vega-specs/node_modules/vega-multi-view/",
         "copy-pkg": "cp ../vega-multi-view/package.json ../vega-specs/node_modules/vega-multi-view/",
-        "copy": "npm run copy-dist && npm run copy-src && npm run copy-pkg",
+        "copy-src2": "cp -R ../vega-multi-view/src ../vega-multi-view-server/node_modules/vega-multi-view/",
+        "copy-dst2": "cp -R ../vega-multi-view/dist ../vega-multi-view-server/node_modules/vega-multi-view/",
+        "copy-pkg2": "cp ../vega-multi-view/package.json ../vega-multi-view-server/node_modules/vega-multi-view/",
+        "copy": "npm run copy-dist && npm run copy-src && npm run copy-dst && npm run copy-pkg && npm run copy-src2 && npm run copy-dst2 && npm run copy-pkg2",
         "update": "npm run compile && npm run copy"
     },
     "dependencies": {

@@ -148,6 +148,17 @@ var loadSpec = function loadSpec(spec) {
     if (typeof spec !== 'string') {
         return _promise2.default.resolve(spec);
     }
+    var json = void 0;
+    try {
+        json = JSON.parse(spec);
+    } catch (e) {
+        json = false;
+    }
+
+    if (json !== false) {
+        return _promise2.default.resolve(json);
+    }
+
     return (0, _fetchHelpers.fetchJSON)(spec).then(function (data) {
         return data;
     }, function () {
@@ -363,8 +374,10 @@ var addElements = function addElements(data, container, className) {
             } else if (typeof className === 'string') {
                 element.className = className;
             }
-            element.style.width = d.spec.width + 'px';
-            element.style.height = d.spec.height + 'px';
+            if (d.runtime.leaflet === true) {
+                element.style.width = d.spec.width + 'px';
+                element.style.height = d.spec.height + 'px';
+            }
             if (container !== null) {
                 container.appendChild(element);
             } else {
@@ -442,74 +455,55 @@ var createSpecData = function createSpecData(specs, runtimes) {
 
 var createViews = function () {
     var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(config) {
-        var _config$run, run, specs, element, _config$className, className, _config$runtimes, runtimes, _config$renderer, renderer, _config$debug, debug, specsArray, containerElement, data;
+        var _config$run, run, specs, element, _config$cssClass, cssClass, _config$runtimes, runtimes, _config$renderer, renderer, _config$debug, debug, specsArray, containerElement, data;
 
         return _regenerator2.default.wrap(function _callee5$(_context5) {
             while (1) {
                 switch (_context5.prev = _context5.next) {
                     case 0:
-                        _config$run = config.run, run = _config$run === undefined ? true : _config$run, specs = config.specs, element = config.element, _config$className = config.className, className = _config$className === undefined ? false : _config$className, _config$runtimes = config.runtimes, runtimes = _config$runtimes === undefined ? [] : _config$runtimes, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug;
+                        _config$run = config.run, run = _config$run === undefined ? true : _config$run, specs = config.specs, element = config.element, _config$cssClass = config.cssClass, cssClass = _config$cssClass === undefined ? false : _config$cssClass, _config$runtimes = config.runtimes, runtimes = _config$runtimes === undefined ? [] : _config$runtimes, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug;
                         specsArray = specs;
                         containerElement = null;
 
-                        if (!_ramda2.default.isNil(element)) {
-                            _context5.next = 7;
-                            break;
-                        }
 
-                        containerElement = document.body;
-                        _context5.next = 15;
-                        break;
-
-                    case 7:
-                        if (!(typeof element === 'string')) {
-                            _context5.next = 14;
-                            break;
-                        }
-
-                        containerElement = document.getElementById(element);
-
-                        if (!_ramda2.default.isNil(containerElement)) {
-                            _context5.next = 12;
-                            break;
-                        }
-
-                        console.error('element "' + element + '" could not be found');
-                        return _context5.abrupt('return', _promise2.default.reject('element "' + element + '" could not be found'));
-
-                    case 12:
-                        _context5.next = 15;
-                        break;
-
-                    case 14:
-                        if (element instanceof HTMLElement) {
+                        if (_ramda2.default.isNil(element)) {
+                            containerElement = document.body;
+                        } else if (typeof element === 'string') {
+                            containerElement = document.getElementById(element);
+                            if (_ramda2.default.isNil(containerElement)) {
+                                containerElement = document.createElement('div');
+                                containerElement.id = element;
+                                document.body.appendChild(containerElement);
+                                // console.error(`element "${element}" could not be found`);
+                                // return Promise.reject(`element "${element}" could not be found`);
+                            }
+                        } else if (element instanceof HTMLElement) {
                             containerElement = element;
                         }
 
-                    case 15:
                         if (_ramda2.default.isArrayLike(specsArray) === false) {
                             specsArray = [specsArray];
                         }
 
-                        _context5.next = 18;
+                        _context5.next = 7;
                         return createSpecData(specsArray, runtimes);
 
-                    case 18:
+                    case 7:
                         data = _context5.sent;
 
-                        data = addElements(data, containerElement, className);
+                        data = addElements(data, containerElement, cssClass);
                         addTooltips(data);
                         connectSignals(data);
 
                         if (!debug) {
-                            _context5.next = 25;
+                            _context5.next = 14;
                             break;
                         }
 
-                        _context5.next = 25;
+                        _context5.next = 14;
                         return addDebug(data);
 
-                    case 25:
+                    case 14:
                         return _context5.abrupt('return', new _promise2.default(function (resolve) {
                             // wait until the next paint cycle so the created elements
                             // are added to the DOM, add the views, then resolve
@@ -524,7 +518,7 @@ var createViews = function () {
                             }, 0);
                         }));
 
-                    case 26:
+                    case 15:
                     case 'end':
                         return _context5.stop();
                 }
@@ -537,6 +531,9 @@ var createViews = function () {
     };
 }();
 
+/*
+    credits: https://stackoverflow.com/questions/27705640/display-json-in-a-readable-format-in-a-new-tab
+*/
 var showSpecInTab = exports.showSpecInTab = function showSpecInTab(spec) {
     // const json = encodeURIComponent(JSON.stringify(TestSpec4));
     // window.open(`data:application/json, ${json}`, '_blank');

@@ -93,6 +93,17 @@ const loadSpec = (spec) => {
     if (typeof spec !== 'string') {
         return Promise.resolve(spec);
     }
+    let json;
+    try {
+        json = JSON.parse(spec);
+    } catch (e) {
+        json = false;
+    }
+
+    if (json !== false) {
+        return Promise.resolve(json);
+    }
+
     return fetchJSON(spec)
         .then(data => data, () => null)
         .catch(() => null);
@@ -271,8 +282,10 @@ const addElements = (data, container, className) => R.map((d) => {
         } else if (typeof className === 'string') {
             element.className = className;
         }
-        element.style.width = `${d.spec.width}px`;
-        element.style.height = `${d.spec.height}px`;
+        if (d.runtime.leaflet === true) {
+            element.style.width = `${d.spec.width}px`;
+            element.style.height = `${d.spec.height}px`;
+        }
         if (container !== null) {
             container.appendChild(element);
         } else {
@@ -326,7 +339,7 @@ const createViews = async (config) => {
         run = true,
         specs,
         element,
-        className = false,
+        cssClass = false,
         runtimes = [],
         renderer = 'canvas',
         debug = false,
@@ -340,8 +353,11 @@ const createViews = async (config) => {
     } else if (typeof element === 'string') {
         containerElement = document.getElementById(element);
         if (R.isNil(containerElement)) {
-            console.error(`element "${element}" could not be found`);
-            return Promise.reject(`element "${element}" could not be found`);
+            containerElement = document.createElement('div');
+            containerElement.id = element;
+            document.body.appendChild(containerElement);
+            // console.error(`element "${element}" could not be found`);
+            // return Promise.reject(`element "${element}" could not be found`);
         }
     } else if (element instanceof HTMLElement) {
         containerElement = element;
@@ -353,7 +369,7 @@ const createViews = async (config) => {
     }
 
     let data = await createSpecData(specsArray, runtimes);
-    data = addElements(data, containerElement, className);
+    data = addElements(data, containerElement, cssClass);
     addTooltips(data);
     connectSignals(data);
     if (debug) {
@@ -378,6 +394,9 @@ const createViews = async (config) => {
     });
 };
 
+/*
+    credits: https://stackoverflow.com/questions/27705640/display-json-in-a-readable-format-in-a-new-tab
+*/
 export const showSpecInTab = (spec) => {
     // const json = encodeURIComponent(JSON.stringify(TestSpec4));
     // window.open(`data:application/json, ${json}`, '_blank');

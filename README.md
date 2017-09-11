@@ -138,6 +138,9 @@ Each view can use its own specific runtime configuration which overrides setting
 
 ```yaml
 ---
+# The spec this runtime configuration belongs to.
+spec: spec_1
+
 # The renderer to use this view
 renderer: canvas
 
@@ -186,6 +189,7 @@ tooltipOptions:
           title: displayName
 
 ```
+Note that a spec can be rendered to view without runtime configuration file as well, so none of these entries are mandatory.
 
 ### Leaflet
 

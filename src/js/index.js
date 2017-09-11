@@ -3,9 +3,8 @@ import xs from 'xstream';
 import { TileLayer, Map } from 'leaflet';
 import { parse, View } from 'vega';
 import { vega as vegaTooltip } from 'vega-tooltip';
-import { fetchJSON } from './util/fetch-helpers';
+import { fetchJSON, fetchYAML } from './util/fetch-helpers';
 import VegaLayer from './util/leaflet-vega';
-
 
 const mapIndexed = R.addIndex(R.map);
 let streamId = 0;
@@ -23,7 +22,7 @@ const createLeafletVega = async (data, renderer) => {
     const longitude = R.find(R.propEq('name', 'longitude'))(signals);
 
     if (R.isNil(zoom) || R.isNil(latitude) || R.isNil(longitude)) {
-        console.error('incomplete map spec');
+        console.error('incomplete map spec; if you want to add Vega as a Leaflet layer you should provide signals for zoom, latitude and longitude');
         return;
     }
 
@@ -90,11 +89,43 @@ const addDebug = (datas) => {
 };
 
 
-const loadSpec = (spec) => {
-    if (typeof spec !== 'string') {
+const loadSpec = (spec, type) => {
+    let t = type;
+    let json;
+    if (t === null) {
+        if (typeof spec !== 'string') {
+            t = 'object';
+        } else if (spec.search(/.ya?ml/) !== -1) {
+            t = 'yaml';
+        } else if (spec.search(/.json/) !== -1) {
+            t = 'json';
+        } else {
+            try {
+                json = JSON.parse(spec);
+                t = 'json_string';
+            } catch (e) {
+                t = null;
+            }
+        }
+    }
+
+    if (t === 'object') {
         return Promise.resolve(spec);
     }
-    return fetchJSON(spec);
+    if (t === 'json_string') {
+        return Promise.resolve(json);
+    }
+    if (t === 'json') {
+        return fetchJSON(spec)
+            .then(data => data, () => null)
+            .catch(() => null);
+    }
+    if (t === 'yaml') {
+        return fetchYAML(spec)
+            .then(data => data, () => null)
+            .catch(() => null);
+    }
+    return Promise.reject('not a supported type');
 };
 
 
@@ -119,6 +150,11 @@ const publishSignal = (data) => {
         return streams;
     }
 
+    let publishes = runtime.publish;
+    if (Array.isArray(publishes) === false) {
+        publishes = [publishes];
+    }
+
     R.forEach((publish) => {
         try {
             const s = xs.create({
@@ -138,7 +174,7 @@ const publishSignal = (data) => {
         } catch (e) {
             console.error(e.message);
         }
-    }, runtime.publish);
+    }, publishes);
 
     return streams;
 };
@@ -153,6 +189,11 @@ const subscribeToSignal = (data, streams) => {
 
     if (R.isNil(runtime.subscribe)) {
         return;
+    }
+
+    let subscribes = runtime.subscribe;
+    if (Array.isArray(subscribes) === false) {
+        subscribes = [subscribes];
     }
 
     R.forEach((subscribe) => {
@@ -177,7 +218,7 @@ const subscribeToSignal = (data, streams) => {
                 console.log(`Stream ${s.id} is done`);
             },
         });
-    }, runtime.subscribe);
+    }, subscribes);
 };
 
 
@@ -188,11 +229,13 @@ const addViews = (data, renderer) => {
             runtime,
             element,
         } = d;
-        if (runtime.leaflet === true) {
-            createLeafletVega(d, renderer);
-        } else {
-            view.renderer(runtime.renderer || renderer)
-                .initialize(element);
+        if (view !== null) {
+            if (runtime.leaflet === true) {
+                createLeafletVega(d, renderer);
+            } else {
+                view.renderer(runtime.renderer || renderer)
+                    .initialize(element);
+            }
         }
     });
 };
@@ -200,7 +243,7 @@ const addViews = (data, renderer) => {
 
 const addTooltips = (data) => {
     data.forEach((d) => {
-        if (typeof d.runtime.tooltipOptions !== 'undefined') {
+        if (d.view !== null && typeof d.runtime.tooltipOptions !== 'undefined') {
             vegaTooltip(d.view, d.runtime.tooltipOptions);
         }
     });
@@ -209,16 +252,26 @@ const addTooltips = (data) => {
 const connectSignals = (data) => {
     let streams = {};
     R.forEach((d) => {
-        streams = { ...streams, ...publishSignal(d) };
+        if (d.view !== null) {
+            streams = { ...streams, ...publishSignal(d) };
+        }
     }, R.values(data));
 
     R.forEach((d) => {
-        subscribeToSignal(d, streams);
+        if (d.view !== null) {
+            subscribeToSignal(d, streams);
+        }
     }, R.values(data));
 };
 
 
 const addElements = (data, container, className) => R.map((d) => {
+    if (d.view === null) {
+        return {
+            ...d,
+            element: null,
+        };
+    }
     let element = d.runtime.element;
     if (element === false) {
         // headless rendering
@@ -248,8 +301,10 @@ const addElements = (data, container, className) => R.map((d) => {
         } else if (typeof className === 'string') {
             element.className = className;
         }
-        element.style.width = `${d.spec.width}px`;
-        element.style.height = `${d.spec.height}px`;
+        if (d.runtime.leaflet === true) {
+            element.style.width = `${d.spec.width}px`;
+            element.style.height = `${d.spec.height}px`;
+        }
         if (container !== null) {
             container.appendChild(element);
         } else {
@@ -264,10 +319,18 @@ const addElements = (data, container, className) => R.map((d) => {
 }, data);
 
 
-const createSpecData = (specs, runtimes) => {
+const createSpecData = (specs, runtimes, type) => {
     const promises = mapIndexed(async (s, i) => {
-        const spec = await loadSpec(s);
+        const spec = await loadSpec(s, type);
         const id = `spec_${i}`;
+        if (spec === null) {
+            return Promise.resolve({
+                id,
+                spec: `Vega spec ${s} could not be loaded`,
+                view: null,
+                runtime: null,
+            });
+        }
         let runtime = {};
         const specClone = { ...spec };
         if (R.isNil(specClone.runtime) === false) {
@@ -290,12 +353,13 @@ const createSpecData = (specs, runtimes) => {
 };
 
 
-const createViews = async (config) => {
+const createViews = async (config, type = null) => {
     const {
-        run = false,
+        run = true,
+        hover = false,
         specs,
         element,
-        className = false,
+        cssClass = false,
         runtimes = [],
         renderer = 'canvas',
         debug = false,
@@ -309,8 +373,11 @@ const createViews = async (config) => {
     } else if (typeof element === 'string') {
         containerElement = document.getElementById(element);
         if (R.isNil(containerElement)) {
-            console.error(`element "${element}" could not be found`);
-            return Promise.reject(`element "${element}" could not be found`);
+            containerElement = document.createElement('div');
+            containerElement.id = element;
+            document.body.appendChild(containerElement);
+            // console.error(`element "${element}" could not be found`);
+            // return Promise.reject(`element "${element}" could not be found`);
         }
     } else if (element instanceof HTMLElement) {
         containerElement = element;
@@ -321,8 +388,8 @@ const createViews = async (config) => {
         specsArray = [specsArray];
     }
 
-    let data = await createSpecData(specsArray, runtimes);
-    data = addElements(data, containerElement, className);
+    let data = await createSpecData(specsArray, runtimes, type);
+    data = addElements(data, containerElement, cssClass);
     addTooltips(data);
     connectSignals(data);
     if (debug) {
@@ -335,11 +402,15 @@ const createViews = async (config) => {
         setTimeout(() => {
             addViews(data, renderer);
             data.forEach((d) => {
-                if (
-                    d.runtime.run === true ||
-                    (run === true && d.runtime.run !== false)
-                ) {
-                    d.view.run();
+                if (d.view !== null) {
+                    if (d.runtime.run === true ||
+                        (run === true && d.runtime.run !== false)) {
+                        d.view.run();
+                    }
+                    if (d.runtime.hover === true ||
+                        (hover === true && d.runtime.hover !== false)) {
+                        d.view.hover();
+                    }
                 }
             });
             resolve(data);
@@ -347,6 +418,9 @@ const createViews = async (config) => {
     });
 };
 
+/*
+    credits: https://stackoverflow.com/questions/27705640/display-json-in-a-readable-format-in-a-new-tab
+*/
 export const showSpecInTab = (spec) => {
     // const json = encodeURIComponent(JSON.stringify(TestSpec4));
     // window.open(`data:application/json, ${json}`, '_blank');

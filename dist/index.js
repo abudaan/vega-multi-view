@@ -68,7 +68,7 @@ var createLeafletVega = function () {
                             break;
                         }
 
-                        console.error('incomplete map spec');
+                        console.error('incomplete map spec; if you want to add Vega as a Leaflet layer you should provide signals for zoom, latitude and longitude');
                         return _context.abrupt('return');
 
                     case 8:
@@ -144,11 +144,51 @@ var addDebug = function addDebug(datas) {
     return _promise2.default.all(promises);
 };
 
-var loadSpec = function loadSpec(spec) {
-    if (typeof spec !== 'string') {
+var loadSpec = function loadSpec(spec, type) {
+    var t = type;
+    var json = void 0;
+    if (t === null) {
+        if (typeof spec !== 'string') {
+            t = 'object';
+        } else if (spec.search(/.ya?ml/) !== -1) {
+            t = 'yaml';
+        } else if (spec.search(/.json/) !== -1) {
+            t = 'json';
+        } else {
+            try {
+                json = JSON.parse(spec);
+                t = 'json_string';
+            } catch (e) {
+                t = null;
+            }
+        }
+    }
+
+    if (t === 'object') {
         return _promise2.default.resolve(spec);
     }
-    return (0, _fetchHelpers.fetchJSON)(spec);
+    if (t === 'json_string') {
+        return _promise2.default.resolve(json);
+    }
+    if (t === 'json') {
+        return (0, _fetchHelpers.fetchJSON)(spec).then(function (data) {
+            return data;
+        }, function () {
+            return null;
+        }).catch(function () {
+            return null;
+        });
+    }
+    if (t === 'yaml') {
+        return (0, _fetchHelpers.fetchYAML)(spec).then(function (data) {
+            return data;
+        }, function () {
+            return null;
+        }).catch(function () {
+            return null;
+        });
+    }
+    return _promise2.default.reject('not a supported type');
 };
 
 var loadSpecs = function () {
@@ -214,6 +254,11 @@ var publishSignal = function publishSignal(data) {
         return streams;
     }
 
+    var publishes = runtime.publish;
+    if (Array.isArray(publishes) === false) {
+        publishes = [publishes];
+    }
+
     _ramda2.default.forEach(function (publish) {
         try {
             var s = _xstream2.default.create({
@@ -234,7 +279,7 @@ var publishSignal = function publishSignal(data) {
         } catch (e) {
             console.error(e.message);
         }
-    }, runtime.publish);
+    }, publishes);
 
     return streams;
 };
@@ -247,6 +292,11 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
 
     if (_ramda2.default.isNil(runtime.subscribe)) {
         return;
+    }
+
+    var subscribes = runtime.subscribe;
+    if (Array.isArray(subscribes) === false) {
+        subscribes = [subscribes];
     }
 
     _ramda2.default.forEach(function (subscribe) {
@@ -271,7 +321,7 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
                 console.log('Stream ' + s.id + ' is done');
             }
         });
-    }, runtime.subscribe);
+    }, subscribes);
 };
 
 var addViews = function addViews(data, renderer) {
@@ -280,17 +330,19 @@ var addViews = function addViews(data, renderer) {
             runtime = d.runtime,
             element = d.element;
 
-        if (runtime.leaflet === true) {
-            createLeafletVega(d, renderer);
-        } else {
-            view.renderer(runtime.renderer || renderer).initialize(element);
+        if (view !== null) {
+            if (runtime.leaflet === true) {
+                createLeafletVega(d, renderer);
+            } else {
+                view.renderer(runtime.renderer || renderer).initialize(element);
+            }
         }
     });
 };
 
 var addTooltips = function addTooltips(data) {
     data.forEach(function (d) {
-        if (typeof d.runtime.tooltipOptions !== 'undefined') {
+        if (d.view !== null && typeof d.runtime.tooltipOptions !== 'undefined') {
             (0, _vegaTooltip.vega)(d.view, d.runtime.tooltipOptions);
         }
     });
@@ -299,16 +351,25 @@ var addTooltips = function addTooltips(data) {
 var connectSignals = function connectSignals(data) {
     var streams = {};
     _ramda2.default.forEach(function (d) {
-        streams = (0, _extends3.default)({}, streams, publishSignal(d));
+        if (d.view !== null) {
+            streams = (0, _extends3.default)({}, streams, publishSignal(d));
+        }
     }, _ramda2.default.values(data));
 
     _ramda2.default.forEach(function (d) {
-        subscribeToSignal(d, streams);
+        if (d.view !== null) {
+            subscribeToSignal(d, streams);
+        }
     }, _ramda2.default.values(data));
 };
 
 var addElements = function addElements(data, container, className) {
     return _ramda2.default.map(function (d) {
+        if (d.view === null) {
+            return (0, _extends3.default)({}, d, {
+                element: null
+            });
+        }
         var element = d.runtime.element;
         if (element === false) {
             // headless rendering
@@ -336,8 +397,10 @@ var addElements = function addElements(data, container, className) {
             } else if (typeof className === 'string') {
                 element.className = className;
             }
-            element.style.width = d.spec.width + 'px';
-            element.style.height = d.spec.height + 'px';
+            if (d.runtime.leaflet === true) {
+                element.style.width = d.spec.width + 'px';
+                element.style.height = d.spec.height + 'px';
+            }
             if (container !== null) {
                 container.appendChild(element);
             } else {
@@ -351,7 +414,7 @@ var addElements = function addElements(data, container, className) {
     }, data);
 };
 
-var createSpecData = function createSpecData(specs, runtimes) {
+var createSpecData = function createSpecData(specs, runtimes, type) {
     var promises = mapIndexed(function () {
         var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(s, i) {
             var spec, id, runtime, specClone, view;
@@ -360,11 +423,25 @@ var createSpecData = function createSpecData(specs, runtimes) {
                     switch (_context4.prev = _context4.next) {
                         case 0:
                             _context4.next = 2;
-                            return loadSpec(s);
+                            return loadSpec(s, type);
 
                         case 2:
                             spec = _context4.sent;
                             id = 'spec_' + i;
+
+                            if (!(spec === null)) {
+                                _context4.next = 6;
+                                break;
+                            }
+
+                            return _context4.abrupt('return', _promise2.default.resolve({
+                                id: id,
+                                spec: 'Vega spec ' + s + ' could not be loaded',
+                                view: null,
+                                runtime: null
+                            }));
+
+                        case 6:
                             runtime = {};
                             specClone = (0, _extends3.default)({}, spec);
 
@@ -384,7 +461,7 @@ var createSpecData = function createSpecData(specs, runtimes) {
                                 });
                             }));
 
-                        case 9:
+                        case 11:
                         case 'end':
                             return _context4.stop();
                     }
@@ -401,89 +478,77 @@ var createSpecData = function createSpecData(specs, runtimes) {
 
 var createViews = function () {
     var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(config) {
-        var _config$run, run, specs, element, _config$className, className, _config$runtimes, runtimes, _config$renderer, renderer, _config$debug, debug, specsArray, containerElement, data;
+        var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+        var _config$run, run, _config$hover, hover, specs, element, _config$cssClass, cssClass, _config$runtimes, runtimes, _config$renderer, renderer, _config$debug, debug, specsArray, containerElement, data;
 
         return _regenerator2.default.wrap(function _callee5$(_context5) {
             while (1) {
                 switch (_context5.prev = _context5.next) {
                     case 0:
-                        _config$run = config.run, run = _config$run === undefined ? false : _config$run, specs = config.specs, element = config.element, _config$className = config.className, className = _config$className === undefined ? false : _config$className, _config$runtimes = config.runtimes, runtimes = _config$runtimes === undefined ? [] : _config$runtimes, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug;
+                        _config$run = config.run, run = _config$run === undefined ? true : _config$run, _config$hover = config.hover, hover = _config$hover === undefined ? false : _config$hover, specs = config.specs, element = config.element, _config$cssClass = config.cssClass, cssClass = _config$cssClass === undefined ? false : _config$cssClass, _config$runtimes = config.runtimes, runtimes = _config$runtimes === undefined ? [] : _config$runtimes, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug;
                         specsArray = specs;
                         containerElement = null;
 
-                        if (!_ramda2.default.isNil(element)) {
-                            _context5.next = 7;
-                            break;
-                        }
 
-                        containerElement = document.body;
-                        _context5.next = 15;
-                        break;
-
-                    case 7:
-                        if (!(typeof element === 'string')) {
-                            _context5.next = 14;
-                            break;
-                        }
-
-                        containerElement = document.getElementById(element);
-
-                        if (!_ramda2.default.isNil(containerElement)) {
-                            _context5.next = 12;
-                            break;
-                        }
-
-                        console.error('element "' + element + '" could not be found');
-                        return _context5.abrupt('return', _promise2.default.reject('element "' + element + '" could not be found'));
-
-                    case 12:
-                        _context5.next = 15;
-                        break;
-
-                    case 14:
-                        if (element instanceof HTMLElement) {
+                        if (_ramda2.default.isNil(element)) {
+                            containerElement = document.body;
+                        } else if (typeof element === 'string') {
+                            containerElement = document.getElementById(element);
+                            if (_ramda2.default.isNil(containerElement)) {
+                                containerElement = document.createElement('div');
+                                containerElement.id = element;
+                                document.body.appendChild(containerElement);
+                                // console.error(`element "${element}" could not be found`);
+                                // return Promise.reject(`element "${element}" could not be found`);
+                            }
+                        } else if (element instanceof HTMLElement) {
                             containerElement = element;
                         }
 
-                    case 15:
                         if (_ramda2.default.isArrayLike(specsArray) === false) {
                             specsArray = [specsArray];
                         }
 
-                        _context5.next = 18;
-                        return createSpecData(specsArray, runtimes);
+                        _context5.next = 7;
+                        return createSpecData(specsArray, runtimes, type);
 
-                    case 18:
+                    case 7:
                         data = _context5.sent;
 
-                        data = addElements(data, containerElement, className);
+                        data = addElements(data, containerElement, cssClass);
                         addTooltips(data);
                         connectSignals(data);
 
                         if (!debug) {
-                            _context5.next = 25;
+                            _context5.next = 14;
                             break;
                         }
 
-                        _context5.next = 25;
+                        _context5.next = 14;
                         return addDebug(data);
 
-                    case 25:
+                    case 14:
                         return _context5.abrupt('return', new _promise2.default(function (resolve) {
                             // wait until the next paint cycle so the created elements
                             // are added to the DOM, add the views, then resolve
                             setTimeout(function () {
                                 addViews(data, renderer);
                                 data.forEach(function (d) {
-                                    if (d.runtime.run === true || run === true && d.runtime.run !== false) {
-                                        d.view.run();
+                                    if (d.view !== null) {
+                                        if (d.runtime.run === true || run === true && d.runtime.run !== false) {
+                                            d.view.run();
+                                        }
+                                        if (d.runtime.hover === true || hover === true && d.runtime.hover !== false) {
+                                            d.view.hover();
+                                        }
                                     }
                                 });
                                 resolve(data);
                             }, 0);
                         }));
 
-                    case 26:
+                    case 15:
                     case 'end':
                         return _context5.stop();
                 }
@@ -491,11 +556,14 @@ var createViews = function () {
         }, _callee5, undefined);
     }));
 
-    return function createViews(_x7) {
+    return function createViews(_x8) {
         return _ref5.apply(this, arguments);
     };
 }();
 
+/*
+    credits: https://stackoverflow.com/questions/27705640/display-json-in-a-readable-format-in-a-new-tab
+*/
 var showSpecInTab = exports.showSpecInTab = function showSpecInTab(spec) {
     // const json = encodeURIComponent(JSON.stringify(TestSpec4));
     // window.open(`data:application/json, ${json}`, '_blank');

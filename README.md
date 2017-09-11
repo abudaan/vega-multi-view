@@ -20,6 +20,9 @@ It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-
       * [More advanced examples](#more-advanced-examples)
          * [Advanced example #1](#advanced-example-1)
          * [Advanced example #2](#advanced-example-2)
+      * [Add it to your own project](#add-it-to-your-own-project)
+         * [Javascript](#javascript)
+         * [CSS](#css)
       * [See it in action](#see-it-in-action)
 
 <small>toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)</small>
@@ -202,7 +205,7 @@ Note that you define publish and subscribe aliases in the runtime configuration 
 
 ### Tooltips
 
-The `vega-multi-view` uses Vega-tooltip, for more informations see the [documentation](https://github.com/vega/vega-tooltip)
+The `vega-multi-view` uses Vega-tooltip, for more information see the [documentation](https://github.com/vega/vega-tooltip)
 
 ## More advanced examples
 

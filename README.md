@@ -62,7 +62,7 @@ After all views have been rendered tot the page an array containing information 
     spec: '<Object>'
 
     // The runtime configuration
-    spec: '<Object>'
+    runtime: '<Object>'
 
     // Reference to the HTML element that contains the rendered Vega
     // view

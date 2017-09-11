@@ -18,7 +18,7 @@ It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-
          * [Publish and subscribe signals](#publish-and-subscribe-signals)
          * [Tooltips](#tooltips)
 
-Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+<small>toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)</small>
 
 ## How to use
 

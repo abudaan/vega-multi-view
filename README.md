@@ -5,6 +5,8 @@ This library is a wrapper of the Vega runtime API and allows you to add multiple
 It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-vega) and [vega-tooltip](https://github.com/vega/vega-tooltip).
 
 
+@TODO: add type!
+
 ## How to use
 
 Basic example.

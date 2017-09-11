@@ -3,7 +3,7 @@ import xs from 'xstream';
 import { TileLayer, Map } from 'leaflet';
 import { parse, View } from 'vega';
 import { vega as vegaTooltip } from 'vega-tooltip';
-import { fetchJSON } from './util/fetch-helpers';
+import { fetchJSON, fetchYAML } from './util/fetch-helpers';
 import VegaLayer from './util/leaflet-vega';
 
 const mapIndexed = R.addIndex(R.map);
@@ -89,24 +89,43 @@ const addDebug = (datas) => {
 };
 
 
-const loadSpec = (spec) => {
-    if (typeof spec !== 'string') {
+const loadSpec = (spec, type) => {
+    let t = type;
+    let json;
+    if (t === null) {
+        if (typeof spec !== 'string') {
+            t = 'object';
+        } else if (spec.search(/.ya?ml/) !== -1) {
+            t = 'yaml';
+        } else if (spec.search(/.json/) !== -1) {
+            t = 'json';
+        } else {
+            try {
+                json = JSON.parse(spec);
+                t = 'json_string';
+            } catch (e) {
+                t = null;
+            }
+        }
+    }
+
+    if (t === 'object') {
         return Promise.resolve(spec);
     }
-    let json;
-    try {
-        json = JSON.parse(spec);
-    } catch (e) {
-        json = false;
-    }
-
-    if (json !== false) {
+    if (t === 'json_string') {
         return Promise.resolve(json);
     }
-
-    return fetchJSON(spec)
-        .then(data => data, () => null)
-        .catch(() => null);
+    if (t === 'json') {
+        return fetchJSON(spec)
+            .then(data => data, () => null)
+            .catch(() => null);
+    }
+    if (t === 'yaml') {
+        return fetchYAML(spec)
+            .then(data => data, () => null)
+            .catch(() => null);
+    }
+    return Promise.reject('not a supported type');
 };
 
 
@@ -300,9 +319,9 @@ const addElements = (data, container, className) => R.map((d) => {
 }, data);
 
 
-const createSpecData = (specs, runtimes) => {
+const createSpecData = (specs, runtimes, type) => {
     const promises = mapIndexed(async (s, i) => {
-        const spec = await loadSpec(s);
+        const spec = await loadSpec(s, type);
         const id = `spec_${i}`;
         if (spec === null) {
             return Promise.resolve({
@@ -334,7 +353,7 @@ const createSpecData = (specs, runtimes) => {
 };
 
 
-const createViews = async (config) => {
+const createViews = async (config, type = null) => {
     const {
         run = true,
         specs,
@@ -368,7 +387,7 @@ const createViews = async (config) => {
         specsArray = [specsArray];
     }
 
-    let data = await createSpecData(specsArray, runtimes);
+    let data = await createSpecData(specsArray, runtimes, type);
     data = addElements(data, containerElement, cssClass);
     addTooltips(data);
     connectSignals(data);

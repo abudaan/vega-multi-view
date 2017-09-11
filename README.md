@@ -8,7 +8,6 @@ It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-
 ## Table of Contents
 
    * [Vega multi view](#vega-multi-view)
-      * [Table of Contents](#table-of-contents)
       * [How to use](#how-to-use)
       * [Return value](#return-value)
       * [Terminology: 'specs' and 'runtimes'](#terminology-specs-and-runtimes)

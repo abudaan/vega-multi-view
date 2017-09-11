@@ -356,6 +356,7 @@ const createSpecData = (specs, runtimes, type) => {
 const createViews = async (config, type = null) => {
     const {
         run = true,
+        hover = false,
         specs,
         element,
         cssClass = false,
@@ -401,11 +402,15 @@ const createViews = async (config, type = null) => {
         setTimeout(() => {
             addViews(data, renderer);
             data.forEach((d) => {
-                if (d.view !== null &&
-                    (d.runtime.run === true ||
-                        (run === true && d.runtime.run !== false))
-                ) {
-                    d.view.run();
+                if (d.view !== null) {
+                    if (d.runtime.run === true ||
+                        (run === true && d.runtime.run !== false)) {
+                        d.view.run();
+                    }
+                    if (d.runtime.hover === true ||
+                        (hover === true && d.runtime.hover !== false)) {
+                        d.view.hover();
+                    }
                 }
             });
             resolve(data);

@@ -144,28 +144,51 @@ var addDebug = function addDebug(datas) {
     return _promise2.default.all(promises);
 };
 
-var loadSpec = function loadSpec(spec) {
-    if (typeof spec !== 'string') {
+var loadSpec = function loadSpec(spec, type) {
+    var t = type;
+    var json = void 0;
+    if (t === null) {
+        if (typeof spec !== 'string') {
+            t = 'object';
+        } else if (spec.search(/.ya?ml/) !== -1) {
+            t = 'yaml';
+        } else if (spec.search(/.json/) !== -1) {
+            t = 'json';
+        } else {
+            try {
+                json = JSON.parse(spec);
+                t = 'json_string';
+            } catch (e) {
+                t = null;
+            }
+        }
+    }
+
+    if (t === 'object') {
         return _promise2.default.resolve(spec);
     }
-    var json = void 0;
-    try {
-        json = JSON.parse(spec);
-    } catch (e) {
-        json = false;
-    }
-
-    if (json !== false) {
+    if (t === 'json_string') {
         return _promise2.default.resolve(json);
     }
-
-    return (0, _fetchHelpers.fetchJSON)(spec).then(function (data) {
-        return data;
-    }, function () {
-        return null;
-    }).catch(function () {
-        return null;
-    });
+    if (t === 'json') {
+        return (0, _fetchHelpers.fetchJSON)(spec).then(function (data) {
+            return data;
+        }, function () {
+            return null;
+        }).catch(function () {
+            return null;
+        });
+    }
+    if (t === 'yaml') {
+        return (0, _fetchHelpers.fetchYAML)(spec).then(function (data) {
+            return data;
+        }, function () {
+            return null;
+        }).catch(function () {
+            return null;
+        });
+    }
+    return _promise2.default.reject('not a supported type');
 };
 
 var loadSpecs = function () {
@@ -391,7 +414,7 @@ var addElements = function addElements(data, container, className) {
     }, data);
 };
 
-var createSpecData = function createSpecData(specs, runtimes) {
+var createSpecData = function createSpecData(specs, runtimes, type) {
     var promises = mapIndexed(function () {
         var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(s, i) {
             var spec, id, runtime, specClone, view;
@@ -400,7 +423,7 @@ var createSpecData = function createSpecData(specs, runtimes) {
                     switch (_context4.prev = _context4.next) {
                         case 0:
                             _context4.next = 2;
-                            return loadSpec(s);
+                            return loadSpec(s, type);
 
                         case 2:
                             spec = _context4.sent;
@@ -455,13 +478,15 @@ var createSpecData = function createSpecData(specs, runtimes) {
 
 var createViews = function () {
     var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(config) {
-        var _config$run, run, specs, element, _config$cssClass, cssClass, _config$runtimes, runtimes, _config$renderer, renderer, _config$debug, debug, specsArray, containerElement, data;
+        var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+        var _config$run, run, _config$hover, hover, specs, element, _config$cssClass, cssClass, _config$runtimes, runtimes, _config$renderer, renderer, _config$debug, debug, specsArray, containerElement, data;
 
         return _regenerator2.default.wrap(function _callee5$(_context5) {
             while (1) {
                 switch (_context5.prev = _context5.next) {
                     case 0:
-                        _config$run = config.run, run = _config$run === undefined ? true : _config$run, specs = config.specs, element = config.element, _config$cssClass = config.cssClass, cssClass = _config$cssClass === undefined ? false : _config$cssClass, _config$runtimes = config.runtimes, runtimes = _config$runtimes === undefined ? [] : _config$runtimes, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug;
+                        _config$run = config.run, run = _config$run === undefined ? true : _config$run, _config$hover = config.hover, hover = _config$hover === undefined ? false : _config$hover, specs = config.specs, element = config.element, _config$cssClass = config.cssClass, cssClass = _config$cssClass === undefined ? false : _config$cssClass, _config$runtimes = config.runtimes, runtimes = _config$runtimes === undefined ? [] : _config$runtimes, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug;
                         specsArray = specs;
                         containerElement = null;
 
@@ -486,7 +511,7 @@ var createViews = function () {
                         }
 
                         _context5.next = 7;
-                        return createSpecData(specsArray, runtimes);
+                        return createSpecData(specsArray, runtimes, type);
 
                     case 7:
                         data = _context5.sent;
@@ -510,8 +535,13 @@ var createViews = function () {
                             setTimeout(function () {
                                 addViews(data, renderer);
                                 data.forEach(function (d) {
-                                    if (d.view !== null && (d.runtime.run === true || run === true && d.runtime.run !== false)) {
-                                        d.view.run();
+                                    if (d.view !== null) {
+                                        if (d.runtime.run === true || run === true && d.runtime.run !== false) {
+                                            d.view.run();
+                                        }
+                                        if (d.runtime.hover === true || hover === true && d.runtime.hover !== false) {
+                                            d.view.hover();
+                                        }
                                     }
                                 });
                                 resolve(data);
@@ -526,7 +556,7 @@ var createViews = function () {
         }, _callee5, undefined);
     }));
 
-    return function createViews(_x7) {
+    return function createViews(_x8) {
         return _ref5.apply(this, arguments);
     };
 }();

@@ -261,6 +261,8 @@ The second spec we load is a YAML file. Personally I find a Vega spec in YAML fo
 
 In the resolve function of the `createViews` promise we have to enable hover event processing for spec1 because `hover` defaults to false and it hasn't been overridden in the runtime. The runtime of spec2 has already overridden the global `hover` setting.
 
+The [`vega-specs` project](https://github.com/abudaan/vega-specs) shows how you can create Vega specs in javascript and export them in several formats (json, yaml, bson or as a template).
+
 ### Advanced example #2
 
 ```javascript

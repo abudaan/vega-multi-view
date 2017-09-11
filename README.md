@@ -25,7 +25,7 @@ It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-
          * [CSS](#css)
       * [See it in action](#see-it-in-action)
 
-<small>toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)</small>
+<small>(toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc))</small>
 
 ## How to use
 

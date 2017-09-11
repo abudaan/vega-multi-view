@@ -20,9 +20,12 @@ It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-
       * [More advanced examples](#more-advanced-examples)
          * [Advanced example #1](#advanced-example-1)
          * [Advanced example #2](#advanced-example-2)
+      * [Add it to your own project](#add-it-to-your-own-project)
+         * [Javascript](#javascript)
+         * [CSS](#css)
       * [See it in action](#see-it-in-action)
 
-<sub>toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)</sub>
+<small>toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)</small>
 
 ## How to use
 
@@ -135,6 +138,9 @@ Each view can use its own specific runtime configuration which overrides setting
 
 ```yaml
 ---
+# The spec this runtime configuration belongs to.
+spec: spec_1
+
 # The renderer to use this view
 renderer: canvas
 
@@ -183,6 +189,7 @@ tooltipOptions:
           title: displayName
 
 ```
+Note that a spec can be rendered to view without runtime configuration file as well, so none of these entries are mandatory.
 
 ### Leaflet
 
@@ -202,7 +209,7 @@ Note that you define publish and subscribe aliases in the runtime configuration 
 
 ### Tooltips
 
-The `vega-multi-view` uses Vega-tooltip, for more informations see the [documentation](https://github.com/vega/vega-tooltip)
+The `vega-multi-view` uses Vega-tooltip, for more information see the [documentation](https://github.com/vega/vega-tooltip)
 
 ## More advanced examples
 
@@ -279,6 +286,52 @@ fetchYAML('../my-global-config.yaml')
 Here we see an example where the global runtime configuration is loaded as a YAML file. Although the `vega-multi-view` is able to detect the type of files but you can make it a bit easier it you provide the type.
 
 Note that you can not provide a type for view specific runtime configuration or for the vega specs; in those cases `vega-multi-view` will detect it for you and log a warning to the browser console if the type can not be inferred.
+
+
+## Add it to your own project
+
+### Javascript
+
+You can install `vega-multi-view` with npm or yarn:
+```sh
+# yarn
+yarn add vega-multi-view
+
+# npm
+npm install --save vega-multi-view
+```
+Then in your javascript assuming you code in es2015 and up:
+```javascript
+import createViews from 'vega-multi-view';
+```
+Instead of `createViews` you can use any other name because it is the default export.
+
+You can also import a util function that prints the spec in JSON format to a new tab:
+```javascript
+import createViews, { showSpecInTab } from 'vega-multi-view';
+import spec from '../specs/my-spec';
+
+button.addEventListener('click', () => {
+    showSpecInTab(spec);
+});
+```
+
+### CSS
+
+Both Leaflet and Vega-tooltip provide their own stylesheet and unless your project already uses Leaflet and/or Vega-tooltip you have to add them to your project. Best is to bundle them with the other stylesheets of your project.
+
+In the `dist` folder of the npm package you will find the file `vega-multi-view.css` that contains both the Leaflet and the Vega-tooltip css. You can import this file in the main stylesheet of your project:
+
+```sass
+/* sass */
+@import ./node_modules/vega-multi-view/dist/vega-multi-view
+```
+```css
+/* less */
+@import './node_modules/vega-multi-view/dist/vega-multi-view'
+```
+
+Note that you don't add the .css extension otherwise the css compiler will just add a css @import statement.
 
 
 ## See it in action

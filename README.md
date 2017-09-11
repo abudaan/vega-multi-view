@@ -17,8 +17,12 @@ It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-
          * [Leaflet](#leaflet)
          * [Publish and subscribe signals](#publish-and-subscribe-signals)
          * [Tooltips](#tooltips)
+      * [More advanced examples](#more-advanced-examples)
+         * [Advanced example #1](#advanced-example-1)
+         * [Advanced example #2](#advanced-example-2)
+      * [See it in action](#see-it-in-action)
 
-<small>toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)</small>
+<sub>toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)</sub>
 
 ## How to use
 
@@ -100,12 +104,17 @@ cssClass: class | [class1, class2]
 renderer: canvas
 
 # Whether or not to call the run() method of a view after is has been
-# added to the DOM. Defaults to true and can be overridden by the view
-# specific runtime configuration
+# added to the DOM. Defaults to true and will be overridden by the
+# view specific runtime configuration.
 run: true
 
+# Whether or not to call the hover() method of the view after it has
+# been added to the page. Defaults to false and will be overridden by
+# the view specific runtime configuration.
+hover: false
+
 # Array or a single spec, can be a uri of JSON or YAML file, a
-# javascript object or a JSON string
+# javascript object or a JSON string.
 specs: [{...}, ../specs/spec1.yaml, ../specs/spec2.vg.json]
 
 # Array or a single runtime configuration, can be a uri of JSON or
@@ -141,6 +150,10 @@ cssClass: view | [class1, class2]
 # Whether or not to call the run() method of the view after it has
 # been added to the page. Defaults to true.
 run: true
+
+# Whether or not to call the hover() method of the view after it has
+# been added to the page. Defaults to false.
+hover: false
 
 # Whether or not the Vega view should be added as a layer to a Leaflet
 # map. Defaults to false.
@@ -195,6 +208,8 @@ The `vega-multi-view` uses Vega-tooltip, for more informations see the [document
 
 Let's look at some more advanced usage examples:
 
+### Advanced example #1
+
 ```javascript
 import createViews from 'vega-multi-view';
 import spec from '../specs/vega-spec1';
@@ -216,7 +231,16 @@ const config = {
     runtimes: [
         null,
         {
-            element: 'divSpec2'
+            element: 'divSpec2',
+            hover: true,
+            publish: [{
+                signal: 'hover',
+                as: 'spec2_hover',
+            }],
+            subscribe: [{
+                signal: 'spec1_hover',
+                as: 'hover',
+            }],
         }
     ]
 };
@@ -224,13 +248,20 @@ const config = {
 createViews(data)
     .then(result => {
         const view1 = result[0].view;
-        const view2 = result[1].view;
         view1.hover();
-        view2.hover();
     });
 
 ```
 
+What we see here is two specs that respond to each other's hover signal.
+
+The spec is imported as javascript object, then a runtime configuration is added to the spec. You can safely add a runtime entry to a spec because it will be stripped off the spec before the spec is passed to the Vega parser. If you have to load a spec from the server it saves you a HTTP request if you inline the runtime in the spec.
+
+The second spec we load is a YAML file. Personally I find a Vega spec in YAML format much more readable than JSON. Also a YAML file is a bit smaller in file size compared to JSON.
+
+In the resolve function of the `createViews` promise we have to enable hover event processing for spec1 because `hover` defaults to false and it hasn't been overridden in the runtime. The runtime of spec2 has already overridden the global `hover` setting.
+
+### Advanced example #2
 
 ```javascript
 import createViews from 'vega-multi-view';
@@ -243,8 +274,12 @@ fetchYAML('../my-global-config.yaml')
     });
 
 ```
+Here we see an example where the global runtime configuration is loaded as a YAML file. Although the `vega-multi-view` is able to detect the type of files but you can make it a bit easier it you provide the type.
 
-@TODO:
-- add type
-- runtime will be stripped off the spec before the spec is passed to the Vega parser
+Note that you can not provide a type for view specific runtime configuration or for the vega specs; in those cases `vega-multi-view` will detect it for you and log a warning to the browser console if the type can not be inferred.
+
+
+## See it in action
+
+You can see a live example [overhere](http://app4.bigdator.nl/6a/6b/4b/8a/8b). This is a related project called [vega-multi-view-server](https://github.com/abudaan/vega-multi-view-server) that adds Vega views to the page based in on the ids you add to the url. If you change the order of the ids in the url, the order of the views on the page will change accordingly.
 

@@ -25,7 +25,7 @@ It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-
          * [CSS](#css)
       * [See it in action](#see-it-in-action)
 
-<small>(toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc))</small>
+<small>toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)</small>
 
 ## How to use
 
@@ -62,7 +62,7 @@ After all views have been rendered tot the page an array containing information 
     spec: '<Object>'
 
     // The runtime configuration
-    spec: '<Object>'
+    runtime: '<Object>'
 
     // Reference to the HTML element that contains the rendered Vega
     // view

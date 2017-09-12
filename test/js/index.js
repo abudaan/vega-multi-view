@@ -61,10 +61,22 @@ window.addEventListener('DOMContentLoaded', () => {
     //     .then(result => console.log(result));
     createViews({
         specs: [
-            './specs/spec4.json',
-            './specs/spec4a.json',
+            './specs/spec6a.json',
+            './specs/spec6b.json',
         ],
-    })
-        .then(result => console.log(result));
+    }).then((result) => {
+        const view = result[0].view;
+        view.addEventListener('mousedown', () => {
+            createViews({ specs: './specs/spec4a.json' });
+        });
+    });
+
+    // setTimeout(() => {
+    //     createViews({
+    //         specs: [
+    //             './specs/spec4a.json',
+    //         ],
+    //     }).then(result => console.log(result));
+    // }, 3000);
 });
 

@@ -217,7 +217,7 @@
             "type": "mercator"
         }
     ],
-    "runtime": {
+    "vmvConfig": {
         "cssClass": null,
         "divId": null,
         "leaflet": true,

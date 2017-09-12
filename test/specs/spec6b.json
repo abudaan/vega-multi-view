@@ -240,7 +240,7 @@
                     "events": {
                         "signal": "brush"
                     },
-                    "update": "span(brush) ? invert(xOverview, brush) : null"
+                    "update": "span(brush) ? invert('xOverview', brush) : null"
                 }
             ]
         }

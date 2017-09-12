@@ -5,15 +5,17 @@ import { parse, View } from 'vega';
 import { vega as vegaTooltip } from 'vega-tooltip';
 import { fetchJSON, fetchYAML, fetchBSON, fetchCSON } from './util/fetch-helpers';
 import VegaLayer from './util/leaflet-vega';
+import { version } from '../../package.json';
 
 const mapIndexed = R.addIndex(R.map);
 let streamId = 0;
+let firstRun = true;
 
 const createLeafletVega = async (data, renderer) => {
     const {
         spec,
         view,
-        config,
+        vmvConfig,
         element,
     } = data;
     const signals = spec.signals || [];
@@ -38,7 +40,7 @@ const createLeafletVega = async (data, renderer) => {
     ).addTo(leafletMap);
 
     new VegaLayer(view, {
-        renderer: config.renderer || renderer,
+        renderer: vmvConfig.renderer || renderer,
         // Make sure the legend stays in place
         delayRepaint: true,
     }).addTo(leafletMap);
@@ -64,11 +66,11 @@ const addDebug = (datas) => {
             spec,
             view,
         } = d;
-        const numDataSources = spec.data.length;
-        let numLoaded = 0;
         if (R.isNil(spec.data) || spec.data.length === 0) {
             resolve();
         }
+        const numDataSources = spec.data.length;
+        let numLoaded = 0;
         const dataPoller = setInterval(() => {
             R.forEach((data) => {
                 const loaded = view.data(data.name);
@@ -155,16 +157,16 @@ const loadSpecs = async (urls) => {
 
 const publishSignal = (data) => {
     const {
-        config,
+        vmvConfig,
         view,
     } = data;
     const streams = {};
 
-    if (R.isNil(config.publish)) {
+    if (R.isNil(vmvConfig.publish)) {
         return streams;
     }
 
-    let publishes = config.publish;
+    let publishes = vmvConfig.publish;
     if (Array.isArray(publishes) === false) {
         publishes = [publishes];
     }
@@ -198,14 +200,14 @@ const subscribeToSignal = (data, streams) => {
     const {
         view,
         spec,
-        config,
+        vmvConfig,
     } = data;
 
-    if (R.isNil(config.subscribe)) {
+    if (R.isNil(vmvConfig.subscribe)) {
         return;
     }
 
-    let subscribes = config.subscribe;
+    let subscribes = vmvConfig.subscribe;
     if (Array.isArray(subscribes) === false) {
         subscribes = [subscribes];
     }
@@ -237,17 +239,17 @@ const subscribeToSignal = (data, streams) => {
 
 
 const addViews = (data, renderer) => {
-    data.forEach((d, i) => {
+    data.forEach((d) => {
         const {
             view,
-            config,
+            vmvConfig,
             element,
         } = d;
         if (view !== null) {
-            if (config.leaflet === true) {
+            if (vmvConfig.leaflet === true) {
                 createLeafletVega(d, renderer);
             } else {
-                view.renderer(config.renderer || renderer)
+                view.renderer(vmvConfig.renderer || renderer)
                     .initialize(element);
             }
         }
@@ -257,8 +259,8 @@ const addViews = (data, renderer) => {
 
 const addTooltips = (data) => {
     data.forEach((d) => {
-        if (d.view !== null && typeof d.config.tooltipOptions !== 'undefined') {
-            vegaTooltip(d.view, d.config.tooltipOptions);
+        if (d.view !== null && typeof d.vmvConfig.tooltipOptions !== 'undefined') {
+            vegaTooltip(d.view, d.vmvConfig.tooltipOptions);
         }
     });
 };
@@ -286,22 +288,25 @@ const addElements = (data, container, className) => R.map((d) => {
             element: null,
         };
     }
-    let element = d.config.element;
+    let element = d.vmvConfig.element;
     if (element === false) {
         // headless rendering
         element = null;
     } else if (R.isNil(element) === false) {
         if (typeof element === 'string') {
-            element = document.getElementById(d.config.element);
+            element = document.getElementById(d.vmvConfig.element);
             if (R.isNil(element)) {
-                console.error(`element "${d.config.element}" could not be found`);
+                // console.error(`element "${d.vmvConfig.element}" could not be found`);
+                element = document.createElement('div');
+                element.id = d.vmvConfig.element;
+                container.appendChild(element);
                 return {
                     ...d,
                     element: null,
                 };
             }
         } else if (element instanceof HTMLElement !== true) {
-            console.error(`element "${d.config.element}" is not a valid HTMLElement`);
+            console.error(`element "${d.vmvConfig.element}" is not a valid HTMLElement`);
             return {
                 ...d,
                 element: null,
@@ -315,7 +320,7 @@ const addElements = (data, container, className) => R.map((d) => {
         } else if (typeof className === 'string') {
             element.className = className;
         }
-        if (d.config.leaflet === true) {
+        if (d.vmvConfig.leaflet === true) {
             element.style.width = `${d.spec.width}px`;
             element.style.height = `${d.spec.height}px`;
         }
@@ -336,10 +341,12 @@ const addElements = (data, container, className) => R.map((d) => {
 const createSpecData = (specs, type) => {
     const promises = mapIndexed(async (s, i) => {
         let spec;
-        let config = {};
+        let vmvConfig = {};
         if (Array.isArray(s)) {
             spec = s[0];
-            config = s[1];
+            vmvConfig = s[1];
+        } else {
+            spec = s;
         }
         spec = await loadSpec(spec, type);
         const id = `spec_${i}`;
@@ -348,13 +355,13 @@ const createSpecData = (specs, type) => {
                 id,
                 spec: `Vega spec ${s} could not be loaded`,
                 view: null,
-                config: null,
+                vmvConfig: null,
             });
         }
         const specClone = { ...spec };
-        if (R.isNil(specClone.config) === false) {
-            config = { ...specClone.config };
-            delete specClone.config;
+        if (R.isNil(specClone.vmvConfig) === false) {
+            vmvConfig = { ...specClone.vmvConfig };
+            delete specClone.vmvConfig;
         }
         const view = new View(parse(specClone));
         return new Promise((resolve) => {
@@ -362,7 +369,7 @@ const createSpecData = (specs, type) => {
                 id,
                 spec: specClone,
                 view,
-                config,
+                vmvConfig,
             });
         });
     }, specs);
@@ -419,16 +426,20 @@ const createViews = async (config, type = null) => {
             addViews(data, renderer);
             data.forEach((d) => {
                 if (d.view !== null) {
-                    if (d.config.run === true ||
-                        (run === true && d.config.run !== false)) {
+                    if (d.vmvConfig.run === true ||
+                        (run === true && d.vmvConfig.run !== false)) {
                         d.view.run();
                     }
-                    if (d.config.hover === true ||
-                        (hover === true && d.config.hover !== false)) {
+                    if (d.vmvConfig.hover === true ||
+                        (hover === true && d.vmvConfig.hover !== false)) {
                         d.view.hover();
                     }
                 }
             });
+            if (firstRun === true) {
+                console.log('vega-multi-view', version);
+                firstRun = false;
+            }
             resolve(data);
         }, 0);
     });

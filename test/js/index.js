@@ -57,7 +57,14 @@ window.addEventListener('DOMContentLoaded', () => {
         // to document.body
         element: document.getElementById('container'),
     };
-    createViews(data)
+    // createViews(data)
+    //     .then(result => console.log(result));
+    createViews({
+        specs: [
+            './specs/spec4.json',
+            './specs/spec4a.json',
+        ],
+    })
         .then(result => console.log(result));
 });
 

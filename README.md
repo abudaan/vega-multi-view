@@ -1,29 +1,29 @@
 # Vega multi view
 
-This library is a wrapper of the Vega runtime API that allows you to add multiple separate Vega views to a HTML that can listen to each others signals. Separate means that every Vega view
+This library is a wrapper of the Vega runtime API that allows you to add multiple separate Vega views to a HTML page that can listen to each others signals. Separate means that every Vega view is rendered in a separate HTML element.
 
 It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-vega) and [vega-tooltip](https://github.com/vega/vega-tooltip).
 
 
 ## Table of Contents
 
-   * [Vega multi view](#vega-multi-view)
-      * [Table of Contents](#table-of-contents)
-      * [How to use](#how-to-use)
-      * [Return value](#return-value)
-      * [Terminology: 'specs' and 'runtimes'](#terminology-specs-and-runtimes)
-      * [Global runtime configuration](#global-runtime-configuration)
-      * [View specific runtime configuration](#view-specific-runtime-configuration)
-         * [Leaflet](#leaflet)
-         * [Publish and subscribe signals](#publish-and-subscribe-signals)
-         * [Tooltips](#tooltips)
-      * [More advanced examples](#more-advanced-examples)
-         * [Advanced example #1](#advanced-example-1)
-         * [Advanced example #2](#advanced-example-2)
-      * [Add it to your own project](#add-it-to-your-own-project)
-         * [Javascript](#javascript)
-         * [CSS](#css)
-      * [See it in action](#see-it-in-action)
+* [Vega multi view](#vega-multi-view)
+    * [Table of Contents](#table-of-contents)
+    * [How to use](#how-to-use)
+    * [Return value](#return-value)
+    * [Terminology](#terminology)
+    * [Global runtime configuration](#global-runtime-configuration)
+    * [View specific runtime configuration](#view-specific-runtime-configuration)
+        * [Leaflet](#leaflet)
+        * [Publish and subscribe signals](#publish-and-subscribe-signals)
+        * [Tooltips](#tooltips)
+    * [More advanced examples](#more-advanced-examples)
+        * [Advanced example #1](#advanced-example-1)
+        * [Advanced example #2](#advanced-example-2)
+    * [Add it to your own project](#add-it-to-your-own-project)
+        * [Javascript](#javascript)
+        * [CSS](#css)
+    * [See it in action](#see-it-in-action)
 
 <small>(toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc))</small>
 
@@ -62,7 +62,7 @@ After all views have been rendered tot the page an array containing information 
     spec: '<Object>'
 
     // The runtime configuration
-    runtime: '<Object>'
+    config: '<Object>'
 
     // Reference to the HTML element that contains the rendered Vega
     // view
@@ -70,15 +70,26 @@ After all views have been rendered tot the page an array containing information 
 }
 ```
 
-## Terminology: 'specs' and 'runtimes'
+## Terminology
 
-A `spec` is a Vega specification, it tells the [Vega runtime](https://github.com/vega/vega/wiki/Runtime) what to render on the page. A `runtime` is a small configuration object that tells the `vega-multi-view` wrapper how the rendered Vega view must be connected to other views.
+A `spec` is a Vega specification, it tells the [Vega runtime](https://github.com/vega/vega/wiki/Runtime) what to render on the page.
 
-A runtime can be added to a spec or you can provide a runtime separately. You can also use no runtime configuration at all: then the view will be rendered with the global settings of `vega-multi-view`. A runtime configuration can be a javascript object, a JSON string, or a uri of a JSON or YAML file.
+A `view` is the rendered instance of that spec on a HTML page.
+
+The `vega-multi-view` wrapper applies settings to the Vega runtime *before* rendering, such as setting the renderer type (canvas or svg), and performs some extra steps *after* rendering, notably connecting the signals of the views.
+
+The global configuration of vega-multi-view defines which specs will be added as views to you page, and you can set parameters that apply to the pre- and post-processing of these views.
+
+With the view specific configuration you can override some of the global settings and add extra parameters that for instance tell vega-multi-view which signals to publish or subscribe to.
+
+This view specific configuration can be added to a spec (inlined) or you can provide a configuration separately. You can also use no view specific configuration at all: then the view will be rendered with the global settings.
+
+Both the global and the view specific configuration can be a javascript object, a JSON string, or a uri of a JSON, CSON or YAML file.
+
+Let's see what these configurations looks like. Below I have chosen to use YAML because it provides a clear syntax but of course you can define your configuration in any supported format.
 
 ## Global runtime configuration
 
-The global runtime configuration defines which specs and runtimes add to the page and sets parameters that apply to all views. Let's see what it looks like:
 
 ```yaml
 ---
@@ -117,24 +128,22 @@ run: true
 hover: false
 
 # Array or a single spec, can be a uri of JSON or YAML file, a
-# javascript object or a JSON string.
-specs: [{...}, ../specs/spec1.yaml, ../specs/spec2.vg.json]
+# javascript object or a JSON string. You can add a view specific
+# configuration to a spec by using a tuple.
+specs: [
+    {...},
+    ../specs/spec1.yaml,
+    [../specs/spec2.vg.json, ../conf/spec2.yaml]
+]
 
-# Array or a single runtime configuration, can be a uri of JSON or
-# YAML file, a javascript object or a JSON string
-runtimes: [null, ../specs/runtime.yaml, ../specs/runtime.json]
 ```
 
 Note that only the `specs` entry is mandatory. That is, you can leave it out but then nothing will be rendered.
-
-The `specs` array and the `runtimes` array share their indexes; the runtime at slot 2 in the runtimes array will be applied to the spec at slot 2 in the specs array. In the example above the first spec does not have an accompanying runtime configuration but the 2nd and 3rd do so we add `null` to the first slot of the array.
 
 The entries `dataPath` and `imagePath` are only useful if you generate or customize your Vega specs before rendering. For an example of how you can use `dataPath` and `imagePath` see the [vega-multi-view-server](https://github.com/abudaan/vega-multi-view-server).
 
 
 ## View specific runtime configuration
-
-Each view can use its own specific runtime configuration which overrides settings with the same name in the global runtime configuration. It looks like this:
 
 ```yaml
 ---
@@ -189,23 +198,23 @@ tooltipOptions:
           title: displayName
 
 ```
-Note that a spec can be rendered to view without runtime configuration file as well, so none of these entries are mandatory.
+Note that because a spec can be rendered without a view specific configuration file as well, none of these entries are mandatory.
 
 ### Leaflet
 
 Vega does not support tile maps but by using a custom version of [leaflet-vega](https://github.com/nyurik/leaflet-vega) we can render a Vega view to a layer in Leaflet. If you want to render your spec to a Leaflet layer your spec must define the signals `zoom` and `latitude` and `longitude`. You can read more about zoom, latitude and longitude in the Leaflet [documentation](http://leafletjs.com/examples/zoom-levels/)
 
-The `vega-multi-view` adds a Leaflet map to the HTML element as specified in the runtime configuration and adds a Vega view layer to the map. If your spec does not specify one or all of the mandatory signals an error will be logged to the browser console and nothing will be rendered.
+vega-multi-view adds a Leaflet map to the HTML element as specified in the configuration and adds a Vega view layer to the map. If your spec does not specify one or all of the mandatory signals an error will be logged to the browser console and nothing will be rendered.
 
 ### Publish and subscribe signals
 
-This is the core functionality of `vega-multi-view` that makes signals of views available for each other despite the fact that they all live in a separate HTML element. Both publish and subscribe use aliases so as to avoid name clashes.
+This is the core functionality of vega-multi-view that makes internal signals of views available for each other despite the fact that they all live in a separate HTML element. Both publish and subscribe use aliases so as to avoid name clashes.
 
-For instance if 2 specs both have a signal named `hover` you can publish them with an alias to keep them apart, you could use the aliases `hover_spec1` and `hover_spec2`. Now other views can subscribe to the signal they are interested in.
+For instance if 2 specs both have a signal named `hover` you can publish them with an alias to keep them apart, you could use the aliases `hover_spec1` and `hover_spec2`. Now other views can pick the signal they are interested in.
 
-A common scenario is when a mouse over event in one view should trigger the hover of another view as well or when one spec sets a range in the data that is rendered by another spec.
+A common scenario is when a mouse over event in one view should triggers the hover of another view as well or when one spec sets a range in the data that is rendered by another spec.
 
-Note that you define publish and subscribe aliases in the runtime configuration of a view. This means that it is possible that when you add the view to a page it might be possible that another spec has defined aliases with the same name. Therefor I recommend to use the name or filename of the spec as a prefix or suffix of your aliases.
+Note that you define publish and subscribe aliases in the configuration of a view. This means that when the view is added to a page it might be possible that another spec has defined aliases with the same name. Therefor I recommend to prefix or suffix the names of your aliases with the filename or the name of the spec.
 
 ### Tooltips
 
@@ -219,9 +228,9 @@ Let's look at some more advanced usage examples:
 
 ```javascript
 import createViews from 'vega-multi-view';
-import spec from '../specs/vega-spec1';
+import spec1 from '../specs/vega-spec1';
 
-spec.runtime = {
+spec1.config = {
     leaflet: true,
     publish: [{
         signal: 'hover',
@@ -234,10 +243,9 @@ spec.runtime = {
 };
 
 const config = {
-    specs: [spec, '../specs/spec2.yaml'],
-    runtimes: [
-        null,
-        {
+    specs: [
+        spec1,
+        ['../specs/spec2.yaml', {
             element: 'divSpec2',
             hover: true,
             publish: [{
@@ -248,7 +256,7 @@ const config = {
                 signal: 'spec1_hover',
                 as: 'hover',
             }],
-        }
+        }]
     ]
 };
 
@@ -262,13 +270,19 @@ createViews(data)
 
 What we see here is two specs that respond to each other's hover signal.
 
-The spec is imported as javascript object, then a runtime configuration is added to the spec. You can safely add a runtime entry to a spec because it will be stripped off the spec before the spec is passed to the Vega parser. If you have to load a spec from the server it saves you a HTTP request if you inline the runtime in the spec.
+The spec is imported as javascript object, then a configuration is added to the spec. You can safely add a `config` entry to a spec because it will be stripped off before the spec is passed to the Vega parser. If you have to load a spec from the server it saves you a HTTP request if you inline the view specific configuration in the spec.
 
-The second spec we load is a YAML file. Personally I find a Vega spec in YAML format much more readable than JSON. Also a YAML file is a bit smaller in file size compared to JSON.
+The second spec is added as a tuple; the first element is always the spec, the second the configuration. Remember that both spec and configuration can be:
 
-In the resolve function of the `createViews` promise we have to enable hover event processing for spec1 because `hover` defaults to false and it hasn't been overridden in the runtime. The runtime of spec2 has already overridden the global `hover` setting.
+* a javascript object
+* a JSON string
+* a uri of a JSON, CSON, BSON or YAML file
 
-The [`vega-specs` project](https://github.com/abudaan/vega-specs) shows how you can create Vega specs in javascript and export them in several formats (json, yaml, bson or as a template).
+Personally I find a Vega specs in YAML format the best readable. Also a YAML file is a bit smaller in file size compared to JSON.
+
+In the resolve function of the `createViews` promise we have to enable hover event processing for spec1 because `hover` defaults to false and it hasn't been overridden in the view specific configuration. The configuration of spec2 has already overridden the global `hover` setting.
+
+The [`vega-specs` project](https://github.com/abudaan/vega-specs) shows how you can create Vega specs in javascript and export them in several formats (JSON, BSON, CSON, YAML or as a template).
 
 ### Advanced example #2
 
@@ -283,16 +297,16 @@ fetchYAML('../my-global-config.yaml')
     });
 
 ```
-Here we see an example where the global runtime configuration is loaded as a YAML file. Although the `vega-multi-view` is able to detect the type of files but you can make it a bit easier it you provide the type.
+Here we see an example where the global configuration is loaded as a YAML file. Although the vega-multi-view is able to detect the type of files, you can make it a bit easier it you provide the type.
 
-Note that you can not provide a type for view specific runtime configuration or for the vega specs; in those cases `vega-multi-view` will detect it for you and log a warning to the browser console if the type can not be inferred.
+Note that you can not provide a type for view specific configurations or for the vega specs; in those cases vega-multi-view will detect it for you and log a warning to the browser console if the type can not be inferred.
 
 
 ## Add it to your own project
 
 ### Javascript
 
-You can install `vega-multi-view` with npm or yarn:
+You can install vega-multi-view with npm or yarn:
 ```sh
 # yarn
 yarn add vega-multi-view

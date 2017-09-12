@@ -20,6 +20,7 @@ It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-
       * [More examples](#more-examples)
          * [Example #1](#example-1)
          * [Example #2](#example-2)
+         * [Example #3](#example-3)
       * [Add it to your own project](#add-it-to-your-own-project)
          * [Javascript](#javascript)
          * [CSS](#css)
@@ -305,6 +306,21 @@ Here we see an example where the global configuration is loaded as a YAML file. 
 
 Note that you can not provide a type for view specific configurations or for the vega specs; in those cases `vega-multi-view` will detect it for you and log a warning to the browser console if the type can not be inferred.
 
+### Example #3
+
+```javascript
+import createViews from 'vega-multi-view';
+
+createViews({ specs: '../specs/spec1.yaml'})
+.then(result => {
+    const view = result[0].view;
+    view.addEventListener('mousedown', () => {
+        createViews({ specs: '../specs/spec2.yaml'})
+    });
+});
+```
+
+This example shows that you can call `createViews` repeatedly.
 
 ## Add it to your own project
 

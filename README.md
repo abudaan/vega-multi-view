@@ -1,6 +1,6 @@
 # Vega multi view
 
-This library is a wrapper of the Vega runtime API that allows you to add multiple Vega views to a HTML page that can listen to each others signals. Every Vega view is rendered in a separate HTML element.
+This library is a wrapper of the Vega runtime API that allows you to add multiple Vega views to a HTML page that can listen to each others signals, despite the fact that they all live in a separate HTML element.
 
 It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-vega) and [vega-tooltip](https://github.com/vega/vega-tooltip).
 
@@ -12,8 +12,8 @@ It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-
       * [How to use](#how-to-use)
       * [Return value](#return-value)
       * [Terminology](#terminology)
-      * [Global runtime configuration](#global-runtime-configuration)
-      * [View specific runtime configuration](#view-specific-runtime-configuration)
+      * [Global configuration](#global-configuration)
+      * [View specific configuration](#view-specific-configuration)
          * [Leaflet](#leaflet)
          * [Publish and subscribe signals](#publish-and-subscribe-signals)
          * [Tooltips](#tooltips)
@@ -91,7 +91,7 @@ Both the global and the view specific configuration, as well as the Vega spec ca
 
 Let's see what the configurations look like. Below I have chosen to use YAML because it provides a clear syntax but of course you can define your configuration in any supported format.
 
-## Global runtime configuration
+## Global configuration
 
 
 ```yaml

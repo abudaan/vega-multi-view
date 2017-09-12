@@ -50,7 +50,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var mapIndexed = _ramda2.default.addIndex(_ramda2.default.map);
 var streamId = 0;
 var firstRun = true;
-var VERSION = '1.0.8';
+var VERSION = '1.0.9';
 
 var createLeafletVega = function () {
     var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(data, renderer) {

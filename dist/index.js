@@ -45,19 +45,22 @@ var _leafletVega = require('./util/leaflet-vega');
 
 var _leafletVega2 = _interopRequireDefault(_leafletVega);
 
+var _package = require('../../package.json');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mapIndexed = _ramda2.default.addIndex(_ramda2.default.map);
 var streamId = 0;
+var firstRun = true;
 
 var createLeafletVega = function () {
     var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(data, renderer) {
-        var spec, view, config, element, signals, zoom, latitude, longitude, leafletMap;
+        var spec, view, vmvConfig, element, signals, zoom, latitude, longitude, leafletMap;
         return _regenerator2.default.wrap(function _callee$(_context) {
             while (1) {
                 switch (_context.prev = _context.next) {
                     case 0:
-                        spec = data.spec, view = data.view, config = data.config, element = data.element;
+                        spec = data.spec, view = data.view, vmvConfig = data.vmvConfig, element = data.element;
                         signals = spec.signals || [];
                         zoom = _ramda2.default.find(_ramda2.default.propEq('name', 'zoom'))(signals);
                         latitude = _ramda2.default.find(_ramda2.default.propEq('name', 'latitude'))(signals);
@@ -83,7 +86,7 @@ var createLeafletVega = function () {
                         }).addTo(leafletMap);
 
                         new _leafletVega2.default(view, {
-                            renderer: config.renderer || renderer,
+                            renderer: vmvConfig.renderer || renderer,
                             // Make sure the legend stays in place
                             delayRepaint: true
                         }).addTo(leafletMap);
@@ -119,11 +122,11 @@ var addDebug = function addDebug(datas) {
             var spec = d.spec,
                 view = d.view;
 
-            var numDataSources = spec.data.length;
-            var numLoaded = 0;
             if (_ramda2.default.isNil(spec.data) || spec.data.length === 0) {
                 resolve();
             }
+            var numDataSources = spec.data.length;
+            var numLoaded = 0;
             var dataPoller = setInterval(function () {
                 _ramda2.default.forEach(function (data) {
                     var loaded = view.data(data.name);
@@ -267,16 +270,16 @@ var loadSpecs = function () {
 }();
 
 var publishSignal = function publishSignal(data) {
-    var config = data.config,
+    var vmvConfig = data.vmvConfig,
         view = data.view;
 
     var streams = {};
 
-    if (_ramda2.default.isNil(config.publish)) {
+    if (_ramda2.default.isNil(vmvConfig.publish)) {
         return streams;
     }
 
-    var publishes = config.publish;
+    var publishes = vmvConfig.publish;
     if (Array.isArray(publishes) === false) {
         publishes = [publishes];
     }
@@ -309,14 +312,14 @@ var publishSignal = function publishSignal(data) {
 var subscribeToSignal = function subscribeToSignal(data, streams) {
     var view = data.view,
         spec = data.spec,
-        config = data.config;
+        vmvConfig = data.vmvConfig;
 
 
-    if (_ramda2.default.isNil(config.subscribe)) {
+    if (_ramda2.default.isNil(vmvConfig.subscribe)) {
         return;
     }
 
-    var subscribes = config.subscribe;
+    var subscribes = vmvConfig.subscribe;
     if (Array.isArray(subscribes) === false) {
         subscribes = [subscribes];
     }
@@ -347,16 +350,16 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
 };
 
 var addViews = function addViews(data, renderer) {
-    data.forEach(function (d, i) {
+    data.forEach(function (d) {
         var view = d.view,
-            config = d.config,
+            vmvConfig = d.vmvConfig,
             element = d.element;
 
         if (view !== null) {
-            if (config.leaflet === true) {
+            if (vmvConfig.leaflet === true) {
                 createLeafletVega(d, renderer);
             } else {
-                view.renderer(config.renderer || renderer).initialize(element);
+                view.renderer(vmvConfig.renderer || renderer).initialize(element);
             }
         }
     });
@@ -364,8 +367,8 @@ var addViews = function addViews(data, renderer) {
 
 var addTooltips = function addTooltips(data) {
     data.forEach(function (d) {
-        if (d.view !== null && typeof d.config.tooltipOptions !== 'undefined') {
-            (0, _vegaTooltip.vega)(d.view, d.config.tooltipOptions);
+        if (d.view !== null && typeof d.vmvConfig.tooltipOptions !== 'undefined') {
+            (0, _vegaTooltip.vega)(d.view, d.vmvConfig.tooltipOptions);
         }
     });
 };
@@ -392,21 +395,24 @@ var addElements = function addElements(data, container, className) {
                 element: null
             });
         }
-        var element = d.config.element;
+        var element = d.vmvConfig.element;
         if (element === false) {
             // headless rendering
             element = null;
         } else if (_ramda2.default.isNil(element) === false) {
             if (typeof element === 'string') {
-                element = document.getElementById(d.config.element);
+                element = document.getElementById(d.vmvConfig.element);
                 if (_ramda2.default.isNil(element)) {
-                    console.error('element "' + d.config.element + '" could not be found');
+                    // console.error(`element "${d.vmvConfig.element}" could not be found`);
+                    element = document.createElement('div');
+                    element.id = d.vmvConfig.element;
+                    container.appendChild(element);
                     return (0, _extends3.default)({}, d, {
                         element: null
                     });
                 }
             } else if (element instanceof HTMLElement !== true) {
-                console.error('element "' + d.config.element + '" is not a valid HTMLElement');
+                console.error('element "' + d.vmvConfig.element + '" is not a valid HTMLElement');
                 return (0, _extends3.default)({}, d, {
                     element: null
                 });
@@ -419,7 +425,7 @@ var addElements = function addElements(data, container, className) {
             } else if (typeof className === 'string') {
                 element.className = className;
             }
-            if (d.config.leaflet === true) {
+            if (d.vmvConfig.leaflet === true) {
                 element.style.width = d.spec.width + 'px';
                 element.style.height = d.spec.height + 'px';
             }
@@ -439,17 +445,19 @@ var addElements = function addElements(data, container, className) {
 var createSpecData = function createSpecData(specs, type) {
     var promises = mapIndexed(function () {
         var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(s, i) {
-            var spec, config, id, specClone, view;
+            var spec, vmvConfig, id, specClone, view;
             return _regenerator2.default.wrap(function _callee4$(_context4) {
                 while (1) {
                     switch (_context4.prev = _context4.next) {
                         case 0:
                             spec = void 0;
-                            config = {};
+                            vmvConfig = {};
 
                             if (Array.isArray(s)) {
                                 spec = s[0];
-                                config = s[1];
+                                vmvConfig = s[1];
+                            } else {
+                                spec = s;
                             }
                             _context4.next = 5;
                             return loadSpec(spec, type);
@@ -467,15 +475,15 @@ var createSpecData = function createSpecData(specs, type) {
                                 id: id,
                                 spec: 'Vega spec ' + s + ' could not be loaded',
                                 view: null,
-                                config: null
+                                vmvConfig: null
                             }));
 
                         case 9:
                             specClone = (0, _extends3.default)({}, spec);
 
-                            if (_ramda2.default.isNil(specClone.config) === false) {
-                                config = (0, _extends3.default)({}, specClone.config);
-                                delete specClone.config;
+                            if (_ramda2.default.isNil(specClone.vmvConfig) === false) {
+                                vmvConfig = (0, _extends3.default)({}, specClone.vmvConfig);
+                                delete specClone.vmvConfig;
                             }
                             view = new _vega.View((0, _vega.parse)(specClone));
                             return _context4.abrupt('return', new _promise2.default(function (resolve) {
@@ -483,7 +491,7 @@ var createSpecData = function createSpecData(specs, type) {
                                     id: id,
                                     spec: specClone,
                                     view: view,
-                                    config: config
+                                    vmvConfig: vmvConfig
                                 });
                             }));
 
@@ -562,14 +570,18 @@ var createViews = function () {
                                 addViews(data, renderer);
                                 data.forEach(function (d) {
                                     if (d.view !== null) {
-                                        if (d.config.run === true || run === true && d.config.run !== false) {
+                                        if (d.vmvConfig.run === true || run === true && d.vmvConfig.run !== false) {
                                             d.view.run();
                                         }
-                                        if (d.config.hover === true || hover === true && d.config.hover !== false) {
+                                        if (d.vmvConfig.hover === true || hover === true && d.vmvConfig.hover !== false) {
                                             d.view.hover();
                                         }
                                     }
                                 });
+                                if (firstRun === true) {
+                                    console.log('vega-multi-view', _package.version);
+                                    firstRun = false;
+                                }
                                 resolve(data);
                             }, 0);
                         }));

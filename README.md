@@ -62,7 +62,7 @@ After all views have been rendered tot the page an array containing information 
     spec: '<Object>'
 
     // The view specific configuration
-    config: '<Object>'
+    vmvConfig: '<Object>'
 
     // Reference to the HTML element that contains the rendered Vega
     // view
@@ -82,11 +82,14 @@ The global configuration of vega-multi-view defines which specs will be added as
 
 With the view specific configuration you can override some of the global settings and add extra parameters that for instance tell vega-multi-view which signals to publish or subscribe to.
 
-This view specific configuration can be added to a spec (inlined) or you can provide a configuration separately. You can also use no view specific configuration at all: then the view will be rendered with the global settings.
+This view specific configuration can be added to a spec (inlined), for this you can use the key `vmvConfig` (see example #1 below). You can also provide a configuration separately. It is also possible to use no view specific configuration at all: then the view will be rendered with the global settings.
 
-Both the global and the view specific configuration can be a javascript object, a JSON string, or a uri of a JSON, CSON or YAML file.
+Both the global and the view specific configuration, as well as the Vega spec can be
+* a javascript object (POJO)
+* a JSON string
+* a uri of a JSON, BSON, CSON or YAML file.
 
-Let's see what these configurations looks like. Below I have chosen to use YAML because it provides a clear syntax but of course you can define your configuration in any supported format.
+Let's see what the configurations look like. Below I have chosen to use YAML because it provides a clear syntax but of course you can define your configuration in any supported format.
 
 ## Global runtime configuration
 
@@ -230,7 +233,7 @@ Let's look at some more examples:
 import createViews from 'vega-multi-view';
 import spec1 from '../specs/vega-spec1';
 
-spec1.config = {
+spec1.vmvConfig = {
     leaflet: true,
     publish: [{
         signal: 'hover',
@@ -270,13 +273,13 @@ createViews(data)
 
 What we see here is two specs that respond to each other's hover signal.
 
-The spec is imported as javascript object, then a configuration is added to the spec. You can safely add a `config` entry to a spec because it will be stripped off before the spec is passed to the Vega parser. If you have to load a spec from the server it saves you a HTTP request if you inline the view specific configuration in the spec.
+The spec is imported as javascript object, then a configuration is added to the spec. You can safely add a `vmvConfig` entry to a spec because it will be stripped off before the spec is passed to the Vega parser. If you have to load a spec from the server it saves you a HTTP request if you inline the view specific configuration in the spec.
 
 The second spec is added as a tuple; the first element is always the spec, the second the configuration. Remember that both spec and configuration can be:
 
-* a javascript object
+* a javascript object (POJO)
 * a JSON string
-* a uri of a JSON, CSON, BSON or YAML file
+* a uri of a JSON, BSON, CSON or YAML file.
 
 Personally I find a Vega specs in YAML format the best readable. Also a YAML file is a bit smaller in file size compared to JSON.
 

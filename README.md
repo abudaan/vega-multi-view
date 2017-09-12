@@ -1,6 +1,6 @@
 # Vega multi view
 
-This library is a wrapper of the Vega runtime API that allows you to add multiple separate Vega views to a HTML page that can listen to each others signals. Separate means that every Vega view is rendered in a separate HTML element.
+This library is a wrapper of the Vega runtime API that allows you to add multiple Vega views to a HTML page that can listen to each others signals. Every Vega view is rendered in a separate HTML element.
 
 It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-vega) and [vega-tooltip](https://github.com/vega/vega-tooltip).
 
@@ -49,7 +49,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 ## Return value
 
-After all views have been rendered tot the page an array containing information about the rendered Vega views is returned:
+After all views have been added to the page, an array containing information about each view is returned. Information per view:
 ```javascript
 {
     // Generated unique id
@@ -78,13 +78,13 @@ A `view` is the rendered instance of that spec on a HTML page.
 
 The `vega-multi-view` wrapper applies settings to the Vega runtime *before* rendering, such as setting the renderer type (canvas or svg), and performs some extra steps *after* rendering, notably connecting the signals of the views.
 
-The global configuration of vega-multi-view defines which specs will be added as views to you page, and you can set parameters that apply to the pre- and post-processing of these views.
+The global configuration of `vega-multi-view` defines which specs will be added as views to your page, and you can set parameters that are applied to the pre- and post-processing of these views.
 
-With the view specific configuration you can override some of the global settings and add extra parameters that for instance tell vega-multi-view which signals to publish or subscribe to.
+With the view specific configuration you can override some of the global settings and add extra parameters that for instance tell `vega-multi-view` which signals to publish or to subscribe to.
 
 This view specific configuration can be added to a spec (inlined), for this you can use the key `vmvConfig` (see example #1 below). You can also provide a configuration separately. It is also possible to use no view specific configuration at all: then the view will be rendered with the global settings.
 
-Both the global and the view specific configuration, as well as the Vega spec can be
+Both the global and the view specific configuration, as well as the Vega spec can be:
 * a javascript object (POJO)
 * a JSON string
 * a uri of a JSON, BSON, CSON or YAML file.
@@ -113,26 +113,26 @@ imagePath: ./assets/img
 
 # The css class or array of css classes that will be added to the
 # view's containing HTML element, unless overridden by a view specific
-# runtime configuration.
+# configuration.
 cssClass: class | [class1, class2]
 
 # The renderer that will used for all views, unless overridden by a
-# view specific runtime configuration.
+# view specific configuration.
 renderer: canvas
 
-# Whether or not to call the run() method of a view after is has been
-# added to the DOM. Defaults to true and will be overridden by the
-# view specific runtime configuration.
+# Whether or not to call the run() method of a view after it has been
+# added to the DOM. Defaults to true and will be overridden by a
+# view specific configuration.
 run: true
 
 # Whether or not to call the hover() method of the view after it has
 # been added to the page. Defaults to false and will be overridden by
-# the view specific runtime configuration.
+# a view specific configuration.
 hover: false
 
-# Array or a single spec, can be a uri of JSON or YAML file, a
-# javascript object or a JSON string. You can add a view specific
-# configuration to a spec by using a tuple.
+# Array or a single spec or tuple, can be any of the types listed
+# above. You can add a view specific configuration to a spec by
+# using a tuple.
 specs: [
     {...},
     ../specs/spec1.yaml,
@@ -146,19 +146,20 @@ Note that only the `specs` entry is mandatory. That is, you can leave it out but
 The entries `dataPath` and `imagePath` are only useful if you generate or customize your Vega specs before rendering. For an example of how you can use `dataPath` and `imagePath` see the [vega-multi-view-server](https://github.com/abudaan/vega-multi-view-server).
 
 
-## View specific runtime configuration
+## View specific configuration
 
 ```yaml
 ---
-# The spec this runtime configuration belongs to.
+# The spec this configuration belongs to.
 spec: spec_1
 
 # The renderer to use this view
 renderer: canvas
 
 # The element where the view will be rendered to. If the element does
-# not exist a div will be created and added to the body of the
-# document. Use false (boolean) for headless # rendering
+# not exist a div will be created and added to the HTML element that
+# is set in the global settings. Use false (boolean) for headless
+# rendering.
 element: id | HTMLElement
 
 # The css class or array of css classes that will be added to the
@@ -207,17 +208,17 @@ Note that because a spec can be rendered without a view specific configuration f
 
 Vega does not support tile maps but by using a custom version of [leaflet-vega](https://github.com/nyurik/leaflet-vega) we can render a Vega view to a layer in Leaflet. If you want to render your spec to a Leaflet layer your spec must define the signals `zoom` and `latitude` and `longitude`. You can read more about zoom, latitude and longitude in the Leaflet [documentation](http://leafletjs.com/examples/zoom-levels/)
 
-vega-multi-view adds a Leaflet map to the HTML element as specified in the configuration and adds a Vega view layer to the map. If your spec does not specify one or all of the mandatory signals an error will be logged to the browser console and nothing will be rendered.
+`vega-multi-view` adds a Leaflet map to the HTML element as specified in the configuration and adds a Vega view layer to that map. If your spec does not specify one or all of the mandatory signals an error will be logged to the browser console and nothing will be rendered.
 
 ### Publish and subscribe signals
 
-This is the core functionality of vega-multi-view that makes internal signals of views available for each other despite the fact that they all live in a separate HTML element. Both publish and subscribe use aliases so as to avoid name clashes.
+This is the core functionality of `vega-multi-view` that makes internal signals of views available for each other despite the fact that they all live in a separate HTML element. Both publish and subscribe use aliases so as to avoid name clashes.
 
 For instance if 2 specs both have a signal named `hover` you can publish them with an alias to keep them apart, you could use the aliases `hover_spec1` and `hover_spec2`. Now other views can pick the signal they are interested in.
 
-A common scenario is when a mouse over event in one view should triggers the hover of another view as well or when one spec sets a range in the data that is rendered by another spec.
+A common scenario is when a mouse over event in one view should trigger the hover of another view as well or when one spec sets a range in the data that is rendered by another spec.
 
-Note that you define publish and subscribe aliases in the configuration of a view. This means that when the view is added to a page it might be possible that another spec has defined aliases with the same name. Therefor I recommend to prefix or suffix the names of your aliases with the filename or the name of the spec.
+Note that you define publish and subscribe aliases in the configuration of a view. This means that when the view is added to a page it might be possible that the configuration of another spec has already defined aliases with the same name. Therefor I recommend to prefix or suffix the names of your aliases with the filename or the name of the spec.
 
 ### Tooltips
 
@@ -300,16 +301,16 @@ fetchYAML('../my-global-config.yaml')
     });
 
 ```
-Here we see an example where the global configuration is loaded as a YAML file. Although the vega-multi-view is able to detect the type of files, you can make it a bit easier it you provide the type.
+Here we see an example where the global configuration is loaded as a YAML file. Although the `vega-multi-view` is able to detect the type of files, you can make it a bit easier it you provide the type.
 
-Note that you can not provide a type for view specific configurations or for the vega specs; in those cases vega-multi-view will detect it for you and log a warning to the browser console if the type can not be inferred.
+Note that you can not provide a type for view specific configurations or for the vega specs; in those cases `vega-multi-view` will detect it for you and log a warning to the browser console if the type can not be inferred.
 
 
 ## Add it to your own project
 
 ### Javascript
 
-You can install vega-multi-view with npm or yarn:
+You can install `vega-multi-view` with npm or yarn:
 ```sh
 # yarn
 yarn add vega-multi-view
@@ -335,7 +336,7 @@ button.addEventListener('click', () => {
 
 ### CSS
 
-Both Leaflet and Vega-tooltip provide their own stylesheet and unless your project already uses Leaflet and/or Vega-tooltip you have to add them to your project. Best is to bundle them with the other stylesheets of your project.
+Both Leaflet and Vega-tooltip provide their own stylesheet and unless your project already includes Leaflet and/or Vega-tooltip you have to add them to your project. Best is to bundle them with the other stylesheets of your project.
 
 In the `dist` folder of the npm package you will find the file `vega-multi-view.css` that contains both the Leaflet and the Vega-tooltip css. You can import this file in the main stylesheet of your project:
 
@@ -343,12 +344,12 @@ In the `dist` folder of the npm package you will find the file `vega-multi-view.
 /* sass */
 @import ./node_modules/vega-multi-view/dist/vega-multi-view
 ```
-```css
+```less
 /* less */
 @import './node_modules/vega-multi-view/dist/vega-multi-view'
 ```
 
-Note that you don't add the .css extension otherwise the css compiler will just add a css @import statement.
+Note that you do not accidently add the .css extension otherwise the css compiler will just add a css @import statement which triggers an extra HTTP request.
 
 
 ## See it in action

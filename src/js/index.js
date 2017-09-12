@@ -9,7 +9,7 @@ import VegaLayer from './util/leaflet-vega';
 const mapIndexed = R.addIndex(R.map);
 let streamId = 0;
 let firstRun = true;
-const VERSION = '1.0.8';
+const VERSION = '1.0.9';
 
 const createLeafletVega = async (data, renderer) => {
     const {

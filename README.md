@@ -1,6 +1,6 @@
 # Vega multi view
 
-This library is a wrapper of the Vega runtime API that allows you to add multiple Vega views to a HTML page that can listen to each others signals, despite the fact that they all live in a separate HTML element.
+This library is a wrapper of the Vega runtime API that allows you to add multiple Vega views to a HTML page that can listen to each others signals, despite the fact that each view lives in a separate HTML element.
 
 It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-vega) and [vega-tooltip](https://github.com/vega/vega-tooltip).
 

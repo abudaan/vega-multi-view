@@ -18,12 +18,14 @@ var _promise2 = _interopRequireDefault(_promise);
 
 exports.status = status;
 exports.json = json;
+exports.bson = bson;
 exports.cson = cson;
 exports.yaml = yaml;
 exports.arrayBuffer = arrayBuffer;
 exports.fetchJSON = fetchJSON;
 exports.fetchCSON = fetchCSON;
 exports.fetchYAML = fetchYAML;
+exports.fetchBSON = fetchBSON;
 exports.fetchJSONFiles = fetchJSONFiles;
 exports.fetchJSONFiles2 = fetchJSONFiles2;
 exports.fetchArraybuffer = fetchArraybuffer;
@@ -36,9 +38,13 @@ var _yamljs = require('yamljs');
 
 var _yamljs2 = _interopRequireDefault(_yamljs);
 
+var _bson = require('bson');
+
+var _bson2 = _interopRequireDefault(_bson);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// fetch helpers
+var bsonInstance = new _bson2.default(); // fetch helpers
 // import fetch from 'isomorphic-fetch';
 function status(response) {
     if (response.status >= 200 && response.status < 300) {
@@ -49,6 +55,12 @@ function status(response) {
 
 function json(response) {
     return response.json();
+}
+
+function bson(response) {
+    return response.blob().then(function (data) {
+        return _promise2.default.resolve(bsonInstance.deserialize(data));
+    });
 }
 
 function cson(response) {
@@ -99,6 +111,19 @@ function fetchYAML(url) {
         //   mode: 'no-cors'
         // })
         fetch(url).then(status).then(yaml).then(function (data) {
+            resolve(data);
+        }).catch(function (e) {
+            reject(e);
+        });
+    });
+}
+
+function fetchBSON(url) {
+    return new _promise2.default(function (resolve, reject) {
+        // fetch(url, {
+        //   mode: 'no-cors'
+        // })
+        fetch(url).then(status).then(bson).then(function (data) {
             resolve(data);
         }).catch(function (e) {
             reject(e);

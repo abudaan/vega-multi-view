@@ -15,6 +15,7 @@
         "compile": "babel src/js --out-dir ./dist"
     },
     "dependencies": {
+        "bson": "^1.0.4",
         "cson-parser": "^2.0.0",
         "leaflet": "^1.2.0",
         "ramda": "0.23.0",

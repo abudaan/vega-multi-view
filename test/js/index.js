@@ -1,4 +1,4 @@
-import createViews from '../../src/js/index';
+import { addViews, removeViews } from '../../src/js/index';
 import generateSpec from '../specs/spec2';
 import config from './util/config';
 
@@ -57,22 +57,60 @@ window.addEventListener('DOMContentLoaded', () => {
         // to document.body
         element: document.getElementById('container'),
     };
-    // createViews(data)
+    // addViews(data)
     //     .then(result => console.log(result));
-    createViews({
-        specs: [
-            './specs/spec6a.json',
-            './specs/spec6b.json',
-        ],
-    }).then((result) => {
-        const view = result[0].view;
-        view.addEventListener('mousedown', () => {
-            createViews({ specs: './specs/spec4a.json' });
-        });
+
+
+    // addViews({
+    //     specs: [
+    //         './specs/spec6a.json',
+    //         './specs/spec6b.json',
+    //     ],
+    // }).then(({ ids, views }) => {
+    //     console.log(ids, views);
+    //     const view = views[ids[0]].view;
+    //     view.addEventListener('mousedown', () => {
+    //         addViews({ specs: './specs/spec4a.json' })
+    //             .then(({ ids: ids2, views: views2 }) => {
+    //                 console.log(ids2, views2);
+    //                 setTimeout(() => {
+    //                     removeViews(ids[0], [...ids, 'aap'], 'beer', [['en', 'nog', 'meer']]);
+    //                 }, 500);
+    //             });
+    //     });
+    // });
+
+    const store = {};
+
+
+    const data2 = {
+        // you can add urls to Vega specifications or specification objects
+        specs: {
+            spec1: './specs/world.vg.json',
+            spec2: './specs/spec4a.json',
+            spec3: [spec, runtimeConfig],
+        },
+    };
+
+    addViews(data2).then((result) => {
+        console.log(result);
+        // store = {
+        //     ...store,
+        //     ...views,
+        // };
     });
 
+    setTimeout(() => {
+        addViews({
+            specs: {
+                spec1: 'aap',
+                spec4: './specs/spec4a.jsonppp',
+            },
+        });
+    }, 1000);
+
     // setTimeout(() => {
-    //     createViews({
+    //     addViews({
     //         specs: [
     //             './specs/spec4a.json',
     //         ],

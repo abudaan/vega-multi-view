@@ -9,7 +9,8 @@ import VegaLayer from './util/leaflet-vega';
 const mapIndexed = R.addIndex(R.map);
 let streamId = 0;
 let firstRun = true;
-const VERSION = '1.0.9';
+const store = {};
+const VERSION = '1.1.0';
 
 const createLeafletVega = async (data, renderer) => {
     const {
@@ -238,7 +239,7 @@ const subscribeToSignal = (data, streams) => {
 };
 
 
-const addViews = (data, renderer) => {
+const renderViews = (data, renderer) => {
     data.forEach((d) => {
         const {
             view,
@@ -300,10 +301,6 @@ const addElements = (data, container, className) => R.map((d) => {
                 element = document.createElement('div');
                 element.id = d.vmvConfig.element;
                 container.appendChild(element);
-                return {
-                    ...d,
-                    element: null,
-                };
             }
         } else if (element instanceof HTMLElement !== true) {
             console.error(`element "${d.vmvConfig.element}" is not a valid HTMLElement`);
@@ -324,41 +321,30 @@ const addElements = (data, container, className) => R.map((d) => {
             element.style.width = `${d.spec.width}px`;
             element.style.height = `${d.spec.height}px`;
         }
-        if (container !== null) {
-            container.appendChild(element);
-        } else {
-            console.warn('could not add Vega view: HTML container element is null');
-        }
+        container.appendChild(element);
     }
 
     return {
         ...d,
         element,
+        parent: container,
     };
 }, data);
 
 
 const createSpecData = (specs, type) => {
-    const promises = mapIndexed(async (s, i) => {
-        let spec;
-        let vmvConfig = {};
-        if (Array.isArray(s)) {
-            spec = s[0];
-            vmvConfig = s[1];
-        } else {
-            spec = s;
-        }
-        spec = await loadSpec(spec, type);
-        const id = `spec_${i}`;
+    const promises = mapIndexed(async (data) => {
+        const spec = await loadSpec(data.spec, type);
         if (spec === null) {
             return Promise.resolve({
-                id,
-                spec: `Vega spec ${s} could not be loaded`,
+                id: data.id,
+                spec: `Vega spec ${data.spec} could not be loaded`,
                 view: null,
                 vmvConfig: null,
             });
         }
         const specClone = { ...spec };
+        let vmvConfig = data.vmvConfig || {};
         if (R.isNil(specClone.vmvConfig) === false) {
             vmvConfig = { ...specClone.vmvConfig };
             delete specClone.vmvConfig;
@@ -366,7 +352,7 @@ const createSpecData = (specs, type) => {
         const view = new View(parse(specClone));
         return new Promise((resolve) => {
             resolve({
-                id,
+                id: data.id,
                 spec: specClone,
                 view,
                 vmvConfig,
@@ -377,7 +363,7 @@ const createSpecData = (specs, type) => {
 };
 
 
-const createViews = async (config, type = null) => {
+export const addViews = async (config, type = null) => {
     if (firstRun === true) {
         console.log(`vega-multi-view ${VERSION}`);
         firstRun = false;
@@ -393,7 +379,25 @@ const createViews = async (config, type = null) => {
         debug = false,
     } = config;
 
-    let specsArray = specs;
+    const specsArray2 = R.splitWhen(key => R.isNil(store[key]), R.keys(specs));
+    console.log('specIds', R.keys(specs));
+    console.log('store', store);
+    console.log('split', specsArray2[0], specsArray2[1]);
+
+    const specsArray = R.map((key) => {
+        const s = specs[key];
+        const data = {
+            spec: s,
+            id: key,
+        };
+        if (Array.isArray(s) && s.length === 2) {
+            data.spec = s[0];
+            data.vmcConfig = s[1];
+        }
+        return data;
+    }, R.keys(specs));
+
+
     let containerElement = null;
 
     if (R.isNil(element)) {
@@ -411,11 +415,6 @@ const createViews = async (config, type = null) => {
         containerElement = element;
     }
 
-
-    if (R.isArrayLike(specsArray) === false) {
-        specsArray = [specsArray];
-    }
-
     let data = await createSpecData(specsArray, type);
     data = addElements(data, containerElement, cssClass);
     addTooltips(data);
@@ -428,7 +427,7 @@ const createViews = async (config, type = null) => {
         // wait until the next paint cycle so the created elements
         // are added to the DOM, add the views, then resolve
         setTimeout(() => {
-            addViews(data, renderer);
+            renderViews(data, renderer);
             data.forEach((d) => {
                 if (d.view !== null) {
                     if (d.vmvConfig.run === true ||
@@ -440,6 +439,7 @@ const createViews = async (config, type = null) => {
                         d.view.hover();
                     }
                 }
+                store[d.id] = d;
             });
             resolve(data);
         }, 0);
@@ -459,5 +459,18 @@ export const showSpecInTab = (spec) => {
     w.document.close();
 };
 
-export default createViews;
+export const removeViews = (...args) => {
+    const ids = R.flatten(args);
+    // console.log(ids);
+    ids.forEach((id) => {
+        const data = store[id];
+        if (R.isNil(data) === false) {
+            const elem = data.element;
+            if (elem !== null) {
+                data.parent.removeChild(elem);
+            }
+            delete store[id];
+        }
+    });
+};
 

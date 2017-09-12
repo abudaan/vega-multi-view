@@ -319,8 +319,7 @@ createViews({ specs: '../specs/spec1.yaml'})
     });
 });
 ```
-
-This example shows that you can call `createViews` repeatedly.
+This example shows that you can call `createViews` repeatedly; every time you call it new views will be added, even if a view has already been added.
 
 ## Add it to your own project
 

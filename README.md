@@ -61,7 +61,7 @@ After all views have been rendered tot the page an array containing information 
     // The Vega specification as javascript object (POJO)
     spec: '<Object>'
 
-    // The runtime configuration
+    // The view specific configuration
     config: '<Object>'
 
     // Reference to the HTML element that contains the rendered Vega

@@ -7,23 +7,23 @@ It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-
 
 ## Table of Contents
 
-* [Vega multi view](#vega-multi-view)
-    * [Table of Contents](#table-of-contents)
-    * [How to use](#how-to-use)
-    * [Return value](#return-value)
-    * [Terminology](#terminology)
-    * [Global runtime configuration](#global-runtime-configuration)
-    * [View specific runtime configuration](#view-specific-runtime-configuration)
-        * [Leaflet](#leaflet)
-        * [Publish and subscribe signals](#publish-and-subscribe-signals)
-        * [Tooltips](#tooltips)
-    * [More advanced examples](#more-advanced-examples)
-        * [Advanced example #1](#advanced-example-1)
-        * [Advanced example #2](#advanced-example-2)
-    * [Add it to your own project](#add-it-to-your-own-project)
-        * [Javascript](#javascript)
-        * [CSS](#css)
-    * [See it in action](#see-it-in-action)
+   * [Vega multi view](#vega-multi-view)
+      * [Table of Contents](#table-of-contents)
+      * [How to use](#how-to-use)
+      * [Return value](#return-value)
+      * [Terminology](#terminology)
+      * [Global runtime configuration](#global-runtime-configuration)
+      * [View specific runtime configuration](#view-specific-runtime-configuration)
+         * [Leaflet](#leaflet)
+         * [Publish and subscribe signals](#publish-and-subscribe-signals)
+         * [Tooltips](#tooltips)
+      * [More examples](#more-examples)
+         * [Example #1](#example-1)
+         * [Example #2](#example-2)
+      * [Add it to your own project](#add-it-to-your-own-project)
+         * [Javascript](#javascript)
+         * [CSS](#css)
+      * [See it in action](#see-it-in-action)
 
 <small>(toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc))</small>
 
@@ -220,11 +220,11 @@ Note that you define publish and subscribe aliases in the configuration of a vie
 
 The `vega-multi-view` uses Vega-tooltip, for more information see the [documentation](https://github.com/vega/vega-tooltip)
 
-## More advanced examples
+## More examples
 
-Let's look at some more advanced usage examples:
+Let's look at some more examples:
 
-### Advanced example #1
+### Example #1
 
 ```javascript
 import createViews from 'vega-multi-view';
@@ -284,7 +284,7 @@ In the resolve function of the `createViews` promise we have to enable hover eve
 
 The [`vega-specs` project](https://github.com/abudaan/vega-specs) shows how you can create Vega specs in javascript and export them in several formats (JSON, BSON, CSON, YAML or as a template).
 
-### Advanced example #2
+### Example #2
 
 ```javascript
 import createViews from 'vega-multi-view';

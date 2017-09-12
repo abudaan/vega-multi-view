@@ -5,11 +5,11 @@ import { parse, View } from 'vega';
 import { vega as vegaTooltip } from 'vega-tooltip';
 import { fetchJSON, fetchYAML, fetchBSON, fetchCSON } from './util/fetch-helpers';
 import VegaLayer from './util/leaflet-vega';
-import { version } from '../../package.json';
 
 const mapIndexed = R.addIndex(R.map);
 let streamId = 0;
 let firstRun = true;
+const VERSION = '1.0.8';
 
 const createLeafletVega = async (data, renderer) => {
     const {
@@ -378,6 +378,11 @@ const createSpecData = (specs, type) => {
 
 
 const createViews = async (config, type = null) => {
+    if (firstRun === true) {
+        console.log(`vega-multi-view ${VERSION}`);
+        firstRun = false;
+    }
+
     const {
         run = true,
         hover = false,
@@ -436,10 +441,6 @@ const createViews = async (config, type = null) => {
                     }
                 }
             });
-            if (firstRun === true) {
-                console.log('vega-multi-view', version);
-                firstRun = false;
-            }
             resolve(data);
         }, 0);
     });

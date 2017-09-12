@@ -45,13 +45,12 @@ var _leafletVega = require('./util/leaflet-vega');
 
 var _leafletVega2 = _interopRequireDefault(_leafletVega);
 
-var _package = require('../../package.json');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mapIndexed = _ramda2.default.addIndex(_ramda2.default.map);
 var streamId = 0;
 var firstRun = true;
+var VERSION = '1.0.8';
 
 var createLeafletVega = function () {
     var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(data, renderer) {
@@ -520,6 +519,11 @@ var createViews = function () {
             while (1) {
                 switch (_context5.prev = _context5.next) {
                     case 0:
+                        if (firstRun === true) {
+                            console.log('vega-multi-view ' + VERSION);
+                            firstRun = false;
+                        }
+
                         _config$run = config.run, run = _config$run === undefined ? true : _config$run, _config$hover = config.hover, hover = _config$hover === undefined ? false : _config$hover, specs = config.specs, element = config.element, _config$cssClass = config.cssClass, cssClass = _config$cssClass === undefined ? false : _config$cssClass, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug;
                         specsArray = specs;
                         containerElement = null;
@@ -544,10 +548,10 @@ var createViews = function () {
                             specsArray = [specsArray];
                         }
 
-                        _context5.next = 7;
+                        _context5.next = 8;
                         return createSpecData(specsArray, type);
 
-                    case 7:
+                    case 8:
                         data = _context5.sent;
 
                         data = addElements(data, containerElement, cssClass);
@@ -555,14 +559,14 @@ var createViews = function () {
                         connectSignals(data);
 
                         if (!debug) {
-                            _context5.next = 14;
+                            _context5.next = 15;
                             break;
                         }
 
-                        _context5.next = 14;
+                        _context5.next = 15;
                         return addDebug(data);
 
-                    case 14:
+                    case 15:
                         return _context5.abrupt('return', new _promise2.default(function (resolve) {
                             // wait until the next paint cycle so the created elements
                             // are added to the DOM, add the views, then resolve
@@ -578,15 +582,11 @@ var createViews = function () {
                                         }
                                     }
                                 });
-                                if (firstRun === true) {
-                                    console.log('vega-multi-view', _package.version);
-                                    firstRun = false;
-                                }
                                 resolve(data);
                             }, 0);
                         }));
 
-                    case 15:
+                    case 16:
                     case 'end':
                         return _context5.stop();
                 }

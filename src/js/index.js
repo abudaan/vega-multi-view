@@ -3,7 +3,7 @@ import xs from 'xstream';
 import { TileLayer, Map } from 'leaflet';
 import { parse, View } from 'vega';
 import { vega as vegaTooltip } from 'vega-tooltip';
-import { fetchJSON, fetchYAML } from './util/fetch-helpers';
+import { fetchJSON, fetchYAML, fetchBSON, fetchCSON } from './util/fetch-helpers';
 import VegaLayer from './util/leaflet-vega';
 
 const mapIndexed = R.addIndex(R.map);
@@ -13,7 +13,7 @@ const createLeafletVega = async (data, renderer) => {
     const {
         spec,
         view,
-        runtime,
+        config,
         element,
     } = data;
     const signals = spec.signals || [];
@@ -38,7 +38,7 @@ const createLeafletVega = async (data, renderer) => {
     ).addTo(leafletMap);
 
     new VegaLayer(view, {
-        renderer: runtime.renderer || renderer,
+        renderer: config.renderer || renderer,
         // Make sure the legend stays in place
         delayRepaint: true,
     }).addTo(leafletMap);
@@ -99,6 +99,10 @@ const loadSpec = (spec, type) => {
             t = 'yaml';
         } else if (spec.search(/.json/) !== -1) {
             t = 'json';
+        } else if (spec.search(/.bson/) !== -1) {
+            t = 'bson';
+        } else if (spec.search(/.cson/) !== -1) {
+            t = 'cson';
         } else {
             try {
                 json = JSON.parse(spec);
@@ -125,6 +129,16 @@ const loadSpec = (spec, type) => {
             .then(data => data, () => null)
             .catch(() => null);
     }
+    if (t === 'bson') {
+        return fetchBSON(spec)
+            .then(data => data, () => null)
+            .catch(() => null);
+    }
+    if (t === 'cson') {
+        return fetchCSON(spec)
+            .then(data => data, () => null)
+            .catch(() => null);
+    }
     return Promise.reject('not a supported type');
 };
 
@@ -141,16 +155,16 @@ const loadSpecs = async (urls) => {
 
 const publishSignal = (data) => {
     const {
-        runtime,
+        config,
         view,
     } = data;
     const streams = {};
 
-    if (R.isNil(runtime.publish)) {
+    if (R.isNil(config.publish)) {
         return streams;
     }
 
-    let publishes = runtime.publish;
+    let publishes = config.publish;
     if (Array.isArray(publishes) === false) {
         publishes = [publishes];
     }
@@ -184,14 +198,14 @@ const subscribeToSignal = (data, streams) => {
     const {
         view,
         spec,
-        runtime,
+        config,
     } = data;
 
-    if (R.isNil(runtime.subscribe)) {
+    if (R.isNil(config.subscribe)) {
         return;
     }
 
-    let subscribes = runtime.subscribe;
+    let subscribes = config.subscribe;
     if (Array.isArray(subscribes) === false) {
         subscribes = [subscribes];
     }
@@ -226,14 +240,14 @@ const addViews = (data, renderer) => {
     data.forEach((d, i) => {
         const {
             view,
-            runtime,
+            config,
             element,
         } = d;
         if (view !== null) {
-            if (runtime.leaflet === true) {
+            if (config.leaflet === true) {
                 createLeafletVega(d, renderer);
             } else {
-                view.renderer(runtime.renderer || renderer)
+                view.renderer(config.renderer || renderer)
                     .initialize(element);
             }
         }
@@ -243,8 +257,8 @@ const addViews = (data, renderer) => {
 
 const addTooltips = (data) => {
     data.forEach((d) => {
-        if (d.view !== null && typeof d.runtime.tooltipOptions !== 'undefined') {
-            vegaTooltip(d.view, d.runtime.tooltipOptions);
+        if (d.view !== null && typeof d.config.tooltipOptions !== 'undefined') {
+            vegaTooltip(d.view, d.config.tooltipOptions);
         }
     });
 };
@@ -272,22 +286,22 @@ const addElements = (data, container, className) => R.map((d) => {
             element: null,
         };
     }
-    let element = d.runtime.element;
+    let element = d.config.element;
     if (element === false) {
         // headless rendering
         element = null;
     } else if (R.isNil(element) === false) {
         if (typeof element === 'string') {
-            element = document.getElementById(d.runtime.element);
+            element = document.getElementById(d.config.element);
             if (R.isNil(element)) {
-                console.error(`element "${d.runtime.element}" could not be found`);
+                console.error(`element "${d.config.element}" could not be found`);
                 return {
                     ...d,
                     element: null,
                 };
             }
         } else if (element instanceof HTMLElement !== true) {
-            console.error(`element "${d.runtime.element}" is not a valid HTMLElement`);
+            console.error(`element "${d.config.element}" is not a valid HTMLElement`);
             return {
                 ...d,
                 element: null,
@@ -301,7 +315,7 @@ const addElements = (data, container, className) => R.map((d) => {
         } else if (typeof className === 'string') {
             element.className = className;
         }
-        if (d.runtime.leaflet === true) {
+        if (d.config.leaflet === true) {
             element.style.width = `${d.spec.width}px`;
             element.style.height = `${d.spec.height}px`;
         }
@@ -319,25 +333,28 @@ const addElements = (data, container, className) => R.map((d) => {
 }, data);
 
 
-const createSpecData = (specs, runtimes, type) => {
+const createSpecData = (specs, type) => {
     const promises = mapIndexed(async (s, i) => {
-        const spec = await loadSpec(s, type);
+        let spec;
+        let config = {};
+        if (Array.isArray(s)) {
+            spec = s[0];
+            config = s[1];
+        }
+        spec = await loadSpec(spec, type);
         const id = `spec_${i}`;
         if (spec === null) {
             return Promise.resolve({
                 id,
                 spec: `Vega spec ${s} could not be loaded`,
                 view: null,
-                runtime: null,
+                config: null,
             });
         }
-        let runtime = {};
         const specClone = { ...spec };
-        if (R.isNil(specClone.runtime) === false) {
-            runtime = { ...specClone.runtime };
-            delete specClone.runtime;
-        } else if (R.isNil(runtimes[i]) === false) {
-            runtime = runtimes[i];
+        if (R.isNil(specClone.config) === false) {
+            config = { ...specClone.config };
+            delete specClone.config;
         }
         const view = new View(parse(specClone));
         return new Promise((resolve) => {
@@ -345,7 +362,7 @@ const createSpecData = (specs, runtimes, type) => {
                 id,
                 spec: specClone,
                 view,
-                runtime,
+                config,
             });
         });
     }, specs);
@@ -360,7 +377,6 @@ const createViews = async (config, type = null) => {
         specs,
         element,
         cssClass = false,
-        runtimes = [],
         renderer = 'canvas',
         debug = false,
     } = config;
@@ -388,7 +404,7 @@ const createViews = async (config, type = null) => {
         specsArray = [specsArray];
     }
 
-    let data = await createSpecData(specsArray, runtimes, type);
+    let data = await createSpecData(specsArray, type);
     data = addElements(data, containerElement, cssClass);
     addTooltips(data);
     connectSignals(data);
@@ -403,12 +419,12 @@ const createViews = async (config, type = null) => {
             addViews(data, renderer);
             data.forEach((d) => {
                 if (d.view !== null) {
-                    if (d.runtime.run === true ||
-                        (run === true && d.runtime.run !== false)) {
+                    if (d.config.run === true ||
+                        (run === true && d.config.run !== false)) {
                         d.view.run();
                     }
-                    if (d.runtime.hover === true ||
-                        (hover === true && d.runtime.hover !== false)) {
+                    if (d.config.hover === true ||
+                        (hover === true && d.config.hover !== false)) {
                         d.view.hover();
                     }
                 }

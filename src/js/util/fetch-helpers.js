@@ -2,6 +2,9 @@
 // import fetch from 'isomorphic-fetch';
 import CSON from 'cson-parser';
 import YAML from 'yamljs';
+import BSON from 'bson';
+
+const bsonInstance = new BSON();
 
 export function status(response) {
     if (response.status >= 200 && response.status < 300) {
@@ -12,6 +15,11 @@ export function status(response) {
 
 export function json(response) {
     return response.json();
+}
+
+export function bson(response) {
+    return response.blob()
+        .then(data => Promise.resolve(bsonInstance.deserialize(data)));
 }
 
 export function cson(response) {
@@ -71,6 +79,23 @@ export function fetchYAML(url) {
         fetch(url)
             .then(status)
             .then(yaml)
+            .then((data) => {
+                resolve(data);
+            })
+            .catch((e) => {
+                reject(e);
+            });
+    });
+}
+
+export function fetchBSON(url) {
+    return new Promise((resolve, reject) => {
+        // fetch(url, {
+        //   mode: 'no-cors'
+        // })
+        fetch(url)
+            .then(status)
+            .then(bson)
             .then((data) => {
                 resolve(data);
             })

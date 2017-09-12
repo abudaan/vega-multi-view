@@ -3,7 +3,7 @@ import generateSpec from '../specs/spec2';
 import config from './util/config';
 
 window.addEventListener('DOMContentLoaded', () => {
-    const runtime = {
+    const runtimeConfig = {
         publish: [
             {
                 signal: 'buurt_hover_naam',
@@ -47,14 +47,7 @@ window.addEventListener('DOMContentLoaded', () => {
         specs: [
             './specs/world.vg.json',
             './specs/spec4a.json',
-            spec,
-        ],
-        runtimes: [
-            null,
-            null,
-            {
-                element: false,
-            },
+            [spec, runtimeConfig],
         ],
         // css class that will be applied to every rendered vega spec
         // unless you overrule the cssClass property in the runtime

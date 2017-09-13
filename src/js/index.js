@@ -21,7 +21,11 @@ const renderViews = (data, renderer) => {
         } = d;
         if (view !== null) {
             if (vmvConfig.leaflet === true) {
-                vegaAsLeafletLayer(d, renderer);
+                const config = {
+                    ...d,
+                    renderer: d.renderer || renderer,
+                };
+                vegaAsLeafletLayer(config);
             } else {
                 view.renderer(vmvConfig.renderer || renderer)
                     .initialize(element);

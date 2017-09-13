@@ -9,8 +9,7 @@
                         "> 2%"
                     ]
                 },
-                "useBuiltIns": true,
-                "debug": true
+                "useBuiltIns": true
             }
         ]
     ],

@@ -26,11 +26,6 @@
             "type": "mercator"
         }
     ],
-    "scales": [
-        {
-            "name": "show_hood"
-        }
-    ],
     "signals": [
         {
             "name": "show_hood",

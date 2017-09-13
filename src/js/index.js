@@ -129,8 +129,7 @@ export const addViews = async (config, type = null) => {
             id: key,
         };
         if (Array.isArray(s) && s.length === 2) {
-            data.spec = s[0];
-            data.vmcConfig = s[1];
+            [data.spec, data.vmcConfig] = s;
         }
         return data;
     }, R.keys(specs));

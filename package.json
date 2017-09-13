@@ -21,14 +21,12 @@
         "compile": "babel src/js --out-dir ./dist"
     },
     "dependencies": {
-        "bson": "^1.0.4",
-        "cson-parser": "^2.0.0",
+        "fetch-helpers": "https://github.com/abudaan/fetch-helpers",
         "ramda": "0.23.0",
         "vega": "^3.0.2",
         "vega-as-leaflet-layer": "https://github.com/abudaan/vega-as-leaflet-layer",
         "vega-tooltip": "^0.4.3",
-        "xstream": "^10.9.0",
-        "yamljs": "^0.3.0"
+        "xstream": "^10.9.0"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",

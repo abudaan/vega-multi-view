@@ -1,0 +1,102 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+    "autosize": "none",
+    "data": [],
+    "height": 720,
+    "marks": [
+        {
+            "encode": {
+                "enter": {
+                    "align": {
+                        "value": "left"
+                    },
+                    "fill": {
+                        "value": "white"
+                    },
+                    "fontSize": {
+                        "value": 13
+                    },
+                    "text": {
+                        "value": "[click here to update font]"
+                    },
+                    "x": {
+                        "signal": "(width/2) - 100"
+                    },
+                    "y": {
+                        "signal": "height/2"
+                    }
+                }
+            },
+            "name": "update_css_text",
+            "type": "text"
+        },
+        {
+            "encode": {
+                "enter": {
+                    "align": {
+                        "value": "left"
+                    },
+                    "fill": {
+                        "value": "white"
+                    },
+                    "font": {
+                        "value": "sans-serif"
+                    },
+                    "fontSize": {
+                        "value": 18
+                    }
+                },
+                "update": {
+                    "fill": {
+                        "signal": "update_css == 0 ? \"red\" : \"white\""
+                    },
+                    "font": {
+                        "signal": "update_css == 0 ? \"Butcherman Caps\" : \"sans-serif\""
+                    },
+                    "fontSize": {
+                        "signal": "update_css == 0 ? 40 : 18"
+                    },
+                    "text": {
+                        "value": "Vega using webfont"
+                    },
+                    "x": {
+                        "signal": "mouse_xy[0] + 10"
+                    },
+                    "y": {
+                        "signal": "mouse_xy[1] + 10"
+                    }
+                }
+            },
+            "name": "text-webfont",
+            "type": "text"
+        }
+    ],
+    "projections": [],
+    "scales": [],
+    "signals": [
+        {
+            "name": "mouse_xy",
+            "on": [
+                {
+                    "events": {
+                        "target": "window",
+                        "throttle": 10,
+                        "type": "mousemove"
+                    },
+                    "update": "xy()"
+                }
+            ]
+        },
+        {
+            "name": "update_css",
+            "on": [
+                {
+                    "events": "@update_css_text:click",
+                    "update": "update_css == 1 ? 0 : 1"
+                }
+            ],
+            "value": 1
+        }
+    ],
+    "width": 720
+}

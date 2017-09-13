@@ -1,0 +1,247 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+    "autosize": "none",
+    "data": [
+        {
+            "format": {
+                "feature": "Gebieden",
+                "type": "topojson"
+            },
+            "name": "buurten",
+            "transform": [
+                {
+                    "projection": "projection",
+                    "type": "geopath"
+                }
+            ],
+            "url": "./data/buurten.topo.json"
+        },
+        {
+            "format": {
+                "feature": "containers.geo",
+                "type": "topojson"
+            },
+            "name": "containers",
+            "transform": [
+                {
+                    "as": [
+                        "x",
+                        "y"
+                    ],
+                    "fields": [
+                        "geometry.coordinates[0]",
+                        "geometry.coordinates[1]"
+                    ],
+                    "projection": "projection",
+                    "type": "geopoint"
+                }
+            ],
+            "url": "./data/containers.topo.json"
+        },
+        {
+            "format": {
+                "feature": "scholen.geo",
+                "type": "topojson"
+            },
+            "name": "scholen",
+            "transform": [
+                {
+                    "as": [
+                        "x",
+                        "y"
+                    ],
+                    "fields": [
+                        "geometry.coordinates[0]",
+                        "geometry.coordinates[1]"
+                    ],
+                    "projection": "projection",
+                    "type": "geopoint"
+                }
+            ],
+            "url": "./data/scholen.topo.json"
+        }
+    ],
+    "height": 720,
+    "marks": [
+        {
+            "encode": {
+                "enter": {
+                    "fill": {
+                        "value": "#00ee00"
+                    },
+                    "fillOpacity": {
+                        "value": 0.3
+                    },
+                    "strokeWidth": {
+                        "value": 1
+                    }
+                },
+                "hover": {
+                    "stroke": {
+                        "value": "#ee0000"
+                    }
+                },
+                "update": {
+                    "path": {
+                        "field": "path"
+                    },
+                    "stroke": {
+                        "value": "#fff"
+                    }
+                }
+            },
+            "from": {
+                "data": "buurten"
+            },
+            "name": "buurt",
+            "type": "path"
+        },
+        {
+            "encode": {
+                "enter": {
+                    "url": {
+                        "value": "./img/afval.png"
+                    },
+                    "x": {
+                        "field": "x"
+                    },
+                    "y": {
+                        "field": "y"
+                    }
+                },
+                "update": {
+                    "x": {
+                        "field": "x"
+                    },
+                    "y": {
+                        "field": "y"
+                    }
+                }
+            },
+            "from": {
+                "data": "containers"
+            },
+            "name": "container_image",
+            "type": "image"
+        },
+        {
+            "encode": {
+                "enter": {
+                    "url": {
+                        "value": "./img/school.png"
+                    },
+                    "x": {
+                        "field": "x"
+                    },
+                    "y": {
+                        "field": "y"
+                    }
+                },
+                "update": {
+                    "x": {
+                        "field": "x"
+                    },
+                    "y": {
+                        "field": "y"
+                    }
+                }
+            },
+            "from": {
+                "data": "scholen"
+            },
+            "name": "scholen_image",
+            "type": "image"
+        },
+        {
+            "encode": {
+                "enter": {
+                    "align": {
+                        "value": "left"
+                    },
+                    "fill": {
+                        "value": "white"
+                    },
+                    "fontSize": {
+                        "value": 15
+                    },
+                    "x": {
+                        "value": 60
+                    },
+                    "y": {
+                        "value": 30
+                    }
+                },
+                "update": {
+                    "text": {
+                        "signal": "buurt_hover_naam"
+                    }
+                }
+            },
+            "type": "text"
+        }
+    ],
+    "projections": [
+        {
+            "center": [
+                0,
+                {
+                    "signal": "latitude"
+                }
+            ],
+            "name": "projection",
+            "rotate": [
+                {
+                    "signal": "-longitude"
+                },
+                0,
+                0
+            ],
+            "scale": {
+                "signal": "256*pow(2,zoom)/2/PI"
+            },
+            "translate": [
+                {
+                    "signal": "width/2"
+                },
+                {
+                    "signal": "height/2"
+                }
+            ],
+            "type": "mercator"
+        }
+    ],
+    "scales": [],
+    "signals": [
+        {
+            "name": "buurt_hover",
+            "on": [
+                {
+                    "events": "@buurt:mouseover",
+                    "update": "datum"
+                },
+                {
+                    "events": "@buurt:mouseout",
+                    "update": "null"
+                }
+            ],
+            "value": null
+        },
+        {
+            "name": "buurt_hover_naam",
+            "update": "buurt_hover ? buurt_hover.properties.NAAM : null"
+        },
+        {
+            "name": "zoom",
+            "value": 13
+        },
+        {
+            "name": "latitude",
+            "value": 51.927754415373855
+        },
+        {
+            "name": "longitude",
+            "value": 4.38680648803711
+        }
+    ],
+    "width": 720
+}

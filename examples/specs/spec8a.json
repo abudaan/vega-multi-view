@@ -1,0 +1,204 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+    "autosize": "none",
+    "axes": [
+        {
+            "domain": true,
+            "grid": false,
+            "orient": "bottom",
+            "scale": "x",
+            "tickCount": 5,
+            "title": "reports"
+        },
+        {
+            "domain": true,
+            "grid": false,
+            "orient": "left",
+            "scale": "y",
+            "title": "fillperc",
+            "titlePadding": 5
+        }
+    ],
+    "config": {
+        "axis": {
+            "domainColor": "white",
+            "gridColor": "white",
+            "labelColor": "white",
+            "tickColor": "white"
+        }
+    },
+    "data": [
+        {
+            "format": {
+                "delimiter": ";",
+                "parse": {
+                    "dumps": "number",
+                    "fillperc": "number",
+                    "reports": "number"
+                },
+                "type": "dsv"
+            },
+            "name": "reports",
+            "transform": [
+                {
+                    "as": "date2",
+                    "expr": "toDate(datum.date)",
+                    "type": "formula"
+                },
+                {
+                    "expr": "datum.date2 >= start_date && datum.date2 <= end_date",
+                    "type": "filter"
+                },
+                {
+                    "as": [
+                        "reports",
+                        "dumps",
+                        "fillperc"
+                    ],
+                    "fields": [
+                        "reports",
+                        "dumps",
+                        "fillperc"
+                    ],
+                    "groupby": [
+                        "name",
+                        "bu_code"
+                    ],
+                    "ops": [
+                        "sum",
+                        "sum",
+                        "average"
+                    ],
+                    "type": "aggregate"
+                },
+                {
+                    "field": "fillperc",
+                    "key": "name",
+                    "method": "value",
+                    "type": "impute",
+                    "value": 0
+                }
+            ],
+            "url": "./data/combined.csv"
+        }
+    ],
+    "description": "scatterplot",
+    "height": 600,
+    "marks": [
+        {
+            "encode": {
+                "enter": {
+                    "tooltip": {
+                        "field": "name"
+                    }
+                },
+                "hover": {
+                    "tooltip": {
+                        "field": "name"
+                    }
+                },
+                "update": {
+                    "fill": {
+                        "field": "name",
+                        "scale": "color"
+                    },
+                    "shape": {
+                        "value": "circle"
+                    },
+                    "size": {
+                        "field": "reports",
+                        "scale": "size"
+                    },
+                    "stroke": {
+                        "field": "name",
+                        "scale": "color"
+                    },
+                    "strokeWidth": {
+                        "value": 2
+                    },
+                    "x": {
+                        "field": "fillperc",
+                        "scale": "x"
+                    },
+                    "y": {
+                        "field": "dumps",
+                        "scale": "y"
+                    }
+                }
+            },
+            "from": {
+                "data": "reports"
+            },
+            "name": "marks",
+            "type": "symbol"
+        }
+    ],
+    "padding": {
+        "bottom": 20,
+        "left": 40,
+        "right": 20,
+        "top": 20
+    },
+    "projections": [],
+    "scales": [
+        {
+            "domain": [
+                0,
+                100
+            ],
+            "name": "x",
+            "range": "width",
+            "type": "linear"
+        },
+        {
+            "domain": {
+                "data": "reports",
+                "field": "dumps"
+            },
+            "name": "y",
+            "range": "height",
+            "type": "linear"
+        },
+        {
+            "domain": {
+                "data": "reports",
+                "field": "reports"
+            },
+            "name": "size",
+            "range": [
+                1,
+                1000
+            ],
+            "type": "linear"
+        },
+        {
+            "domain": {
+                "data": "reports",
+                "field": "name"
+            },
+            "name": "color",
+            "range": {
+                "scheme": "tableau20"
+            },
+            "type": "ordinal"
+        }
+    ],
+    "signals": [
+        {
+            "name": "detailDomain",
+            "value": [
+                "2014-01-01T00:00:00.000Z",
+                "2015-06-29T23:00:00.000Z"
+            ]
+        },
+        {
+            "name": "start_date",
+            "update": "toDate(detailDomain[0])"
+        },
+        {
+            "name": "end_date",
+            "update": "toDate(detailDomain[1])"
+        }
+    ],
+    "width": 900
+}

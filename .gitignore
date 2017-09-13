@@ -1,4 +1,5 @@
 node_modules
 build
 toc.md
-test/node_modules
+examples/node_modules
+examples/build

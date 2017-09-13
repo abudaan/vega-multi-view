@@ -1,0 +1,153 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+    "autosize": "none",
+    "axes": [
+        {
+            "encode": {
+                "domain": {
+                    "enter": {
+                        "stroke": {
+                            "value": "white"
+                        }
+                    }
+                },
+                "labels": {
+                    "enter": {
+                        "fill": {
+                            "value": "white"
+                        }
+                    }
+                },
+                "ticks": {
+                    "enter": {
+                        "stroke": {
+                            "value": "white"
+                        }
+                    }
+                }
+            },
+            "orient": "bottom",
+            "scale": "xDetail"
+        },
+        {
+            "encode": {
+                "domain": {
+                    "enter": {
+                        "stroke": {
+                            "value": "white"
+                        }
+                    }
+                },
+                "labels": {
+                    "enter": {
+                        "fill": {
+                            "value": "white"
+                        }
+                    }
+                },
+                "ticks": {
+                    "enter": {
+                        "stroke": {
+                            "value": "white"
+                        }
+                    }
+                }
+            },
+            "orient": "left",
+            "scale": "yDetail"
+        }
+    ],
+    "data": [
+        {
+            "format": {
+                "parse": {
+                    "date": "date",
+                    "price": "number"
+                },
+                "type": "csv"
+            },
+            "name": "sp500",
+            "url": "./data//sp500.csv"
+        }
+    ],
+    "height": 500,
+    "marks": [
+        {
+            "clip": {
+                "value": true
+            },
+            "marks": [
+                {
+                    "encode": {
+                        "update": {
+                            "fill": {
+                                "value": "coral"
+                            },
+                            "fillOpacity": {
+                                "value": 1
+                            },
+                            "x": {
+                                "field": "date",
+                                "scale": "xDetail"
+                            },
+                            "y": {
+                                "field": "price",
+                                "scale": "yDetail"
+                            },
+                            "y2": {
+                                "scale": "yDetail",
+                                "value": 0
+                            }
+                        }
+                    },
+                    "from": {
+                        "data": "sp500"
+                    },
+                    "type": "area"
+                }
+            ],
+            "type": "group"
+        }
+    ],
+    "padding": 30,
+    "projections": [],
+    "scales": [
+        {
+            "domain": {
+                "data": "sp500",
+                "field": "date"
+            },
+            "domainRaw": {
+                "signal": "detailDomain"
+            },
+            "name": "xDetail",
+            "range": [
+                0,
+                {
+                    "signal": "width"
+                }
+            ],
+            "type": "time"
+        },
+        {
+            "domain": {
+                "data": "sp500",
+                "field": "price"
+            },
+            "name": "yDetail",
+            "nice": true,
+            "range": [
+                500,
+                0
+            ],
+            "type": "linear",
+            "zero": true
+        }
+    ],
+    "signals": [
+        {
+            "name": "detailDomain"
+        }
+    ],
+    "width": 720
+}

@@ -104,10 +104,31 @@ window.addEventListener('DOMContentLoaded', () => {
         addViews({
             specs: {
                 spec1: 'aap',
-                spec4: './specs/spec4a.jsonppp',
+                spec2: 'aap',
+                spec3: 'aap',
+                spec4: './specs/spec4a.json',
             },
-        });
+        }).then(result => console.log(result));
     }, 1000);
+
+    setTimeout(() => {
+        addViews({
+            specs: {
+                spec2: 'aap',
+                spec3: 'aap',
+                spec1: './specs/spec4a.json',
+            },
+        }).then(result => console.log(result));
+    }, 2000);
+
+    setTimeout(() => {
+        addViews({
+            overwrite: true,
+            specs: {
+                spec2: './specs/spec6a.json',
+            },
+        }).then(result => console.log(result));
+    }, 3000);
 
     // setTimeout(() => {
     //     addViews({

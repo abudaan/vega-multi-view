@@ -1,0 +1,49 @@
+{
+    "name": "vega-multi-view",
+    "version": "1.0.0",
+    "description": "add multiple separate vega views to a page and connect the signals of these views",
+    "license": "MIT",
+    "author": "abudaan",
+    "main": "dist/index.js",
+    "module": "src/js/index.js",
+    "repository": "git://github.com/abudaan/vega-multi-view.git",
+    "bugs": {
+        "url": "https://github.com/abudaan/vega-multi-view/issues"
+    },
+    "scripts": {
+        "test": "watchify ./js/index.js -t [ babelify ] -o ./app.js --debug --verbose",
+        "watch": "watchify ./src/js/index.js -t [ babelify ] -o ./build/vega-multi-view.js --debug --verbose",
+        "build-css": "node-sass ./src/styles/main.sass > ./dist/vega-multi-view.css",
+        "build": "rollup -c",
+        "compile": "babel src/js --out-dir ./dist",
+        "compile:production": "NODE_ENV=production babel src/js --out-dir ./dist",
+        "server": "python -m SimpleHTTPServer 9001",
+        "copy-dist": "cp -R ../../vega-multi-view/dist ../../vega-specs/node_modules/vega-multi-view/",
+        "copy-src": "cp -R ../../vega-multi-view/src ../../vega-specs/node_modules/vega-multi-view/",
+        "copy-dst": "cp -R ../../vega-multi-view/dist ../../vega-specs/node_modules/vega-multi-view/",
+        "copy-pkg": "cp ../../vega-multi-view/package.json ../../vega-specs/node_modules/vega-multi-view/",
+        "copy-src2": "cp -R ../../vega-multi-view/src ../../vega-multi-view-server/node_modules/vega-multi-view/",
+        "copy-dst2": "cp -R ../../vega-multi-view/dist ../../vega-multi-view-server/node_modules/vega-multi-view/",
+        "copy-pkg2": "cp ../../vega-multi-view/package.json ../../vega-multi-view-server/node_modules/vega-multi-view/",
+        "copy": "npm run copy-dist && npm run copy-src && npm run copy-dst && npm run copy-pkg && npm run copy-src2 && npm run copy-dst2 && npm run copy-pkg2",
+        "update": "npm run compile && npm run copy"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "babel-cli": "^6.26.0",
+        "babel-eslint": "^7.2.3",
+        "babel-plugin-transform-runtime": "^6.23.0",
+        "babel-preset-env": "^1.6.0",
+        "babel-preset-flow": "^6.23.0",
+        "babel-preset-stage-0": "^6.24.1",
+        "babelify": "^7.3.0",
+        "eslint": "^4.6.1",
+        "eslint-config-airbnb-base": "12.0.0",
+        "eslint-plugin-babel": "4.1.1",
+        "eslint-plugin-flowtype": "2.35.1",
+        "eslint-plugin-import": "2.7.0",
+        "flow-bin": "0.42.0",
+        "sort-package-json": "^1.7.1",
+        "watchify": "^3.9.0"
+    }
+}

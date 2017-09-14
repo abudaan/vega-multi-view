@@ -7,7 +7,9 @@ const addElements = (data, container, className) => R.map((d) => {
             element: null,
         };
     }
-    let element = d.vmvConfig.element;
+    let {
+        element,
+    } = d.vmvConfig;
     if (element === false) {
         // headless rendering
         element = null;
@@ -34,10 +36,6 @@ const addElements = (data, container, className) => R.map((d) => {
             element.className = d.className;
         } else if (typeof className === 'string') {
             element.className = className;
-        }
-        if (d.vmvConfig.leaflet === true) {
-            element.style.width = `${d.spec.width}px`;
-            element.style.height = `${d.spec.height}px`;
         }
         container.appendChild(element);
     }

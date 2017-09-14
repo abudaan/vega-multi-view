@@ -12,7 +12,7 @@ let firstRun = true;
 const store = {};
 const VERSION = '1.1.0';
 
-const renderViews = (data, renderer) => {
+const renderViews = (data, renderer, container) => {
     data.forEach((d) => {
         const {
             view,
@@ -22,8 +22,10 @@ const renderViews = (data, renderer) => {
         if (view !== null) {
             if (vmvConfig.leaflet === true) {
                 const config = {
-                    ...d,
+                    view: d.view,
                     renderer: d.renderer || renderer,
+                    container,
+                    mapElement: element,
                 };
                 vegaAsLeafletLayer(config);
             } else {
@@ -129,7 +131,7 @@ export const addViews = async (config, type = null) => {
             id: key,
         };
         if (Array.isArray(s) && s.length === 2) {
-            [data.spec, data.vmcConfig] = s;
+            [data.spec, data.vmvConfig] = s;
         }
         return data;
     }, R.keys(specs));
@@ -164,7 +166,7 @@ export const addViews = async (config, type = null) => {
         // wait until the next paint cycle so the created elements
         // are added to the DOM, add the views, then resolve
         setTimeout(() => {
-            renderViews(data, renderer);
+            renderViews(data, renderer, containerElement);
             data.forEach((d) => {
                 if (d.view !== null) {
                     if (d.vmvConfig.run === true ||

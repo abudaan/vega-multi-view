@@ -43,12 +43,13 @@ const vmvConfig2 = {
 
 const data = {
     specs: {
-        spec2: ['./specs/world.vg.json', vmvConfig2],
-        spec1: ['./specs/spec4.json', vmvConfig1],
+        // spec2: ['./specs/world.vg.json', vmvConfig2],
+        // spec1: ['./specs/spec4.json', vmvConfig1],
+        spec1: './specs/spec4a.json',
     },
     debug: true,
     cssClass: 'view',
-    element: document.getElementById('container'),
+    // element: document.getElementById('container'),
 };
 addViews(data)
     .then(result => console.log(result));

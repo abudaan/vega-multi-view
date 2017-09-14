@@ -354,6 +354,7 @@
 
 .leaflet-control-layers-scrollbar {
   overflow-y: scroll;
+  overflow-x: hidden;
   padding-right: 5px; }
 
 .leaflet-control-layers-selector {
@@ -604,8 +605,6 @@
   z-index: 2000;
   font-family: sans-serif;
   font-size: 11px;
-  /* The default look of the tooltip is the same as .light-theme
-  but it can be overwritten by .dark-theme */
   background-color: rgba(255, 255, 255, 0.9);
   border: 1px solid #d9d9d9;
   color: black; }
@@ -615,7 +614,7 @@
   text-overflow: ellipsis; }
 
 .vg-tooltip td.key {
-  color: #808080;
+  color: gray;
   max-width: 150px;
   text-align: right;
   padding-right: 1px; }
@@ -624,10 +623,9 @@
   max-width: 200px;
   text-align: left; }
 
-/* Dark and light color themes */
 .vg-tooltip.dark-theme {
   background-color: rgba(64, 64, 64, 0.9);
-  border: none;
+  border: 0;
   color: white; }
 
 .vg-tooltip.dark-theme td.key {
@@ -639,4 +637,4 @@
   color: black; }
 
 .vg-tooltip.light-theme td.key {
-  color: #808080; }
+  color: gray; }

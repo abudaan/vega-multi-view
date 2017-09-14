@@ -1170,8 +1170,8 @@ d3-geo-projection@0.2:
     brfs "^1.3.0"
 
 d3-geo@1:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/d3-geo/-/d3-geo-1.7.0.tgz#daf648029f9b61b0a0b9382746a0a19b6e05eae4"
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/d3-geo/-/d3-geo-1.7.1.tgz#44bbc7a218b1fd859f3d8fd7c443ca836569ce99"
   dependencies:
     d3-array "1"
 
@@ -1613,7 +1613,7 @@ fast-levenshtein@~2.0.4:
 
 "fetch-helpers@https://github.com/abudaan/fetch-helpers":
   version "1.0.0"
-  resolved "https://github.com/abudaan/fetch-helpers#0347073386f136dd3a536b13a9832acc5faeba00"
+  resolved "https://github.com/abudaan/fetch-helpers#103cbf317c5c0fd22e5ac6d0c673ffec1667e3ef"
   dependencies:
     bson "^1.0.4"
     cson-parser "^2.0.0"
@@ -3417,10 +3417,12 @@ validate-npm-package-license@^3.0.1:
     spdx-expression-parse "~1.0.0"
 
 "vega-as-leaflet-layer@https://github.com/abudaan/vega-as-leaflet-layer":
-  version "1.0.0"
-  resolved "https://github.com/abudaan/vega-as-leaflet-layer#b415cd33e7e71a03dda6db140bee76149165b250"
+  version "1.1.2"
+  resolved "https://github.com/abudaan/vega-as-leaflet-layer#86e0592a815f66ee6e5854f057e482af8ea05fc5"
   dependencies:
+    fetch-helpers "https://github.com/abudaan/fetch-helpers"
     leaflet "^1.2.0"
+    vega "^3.0.2"
 
 vega-crossfilter@2:
   version "2.0.0"
@@ -3437,7 +3439,7 @@ vega-dataflow@3:
     vega-loader "2"
     vega-util "1"
 
-vega-datasets@vega/vega-datasets#gh-pages:
+"vega-datasets@github:vega/vega-datasets#gh-pages":
   version "1.10.0"
   resolved "https://codeload.github.com/vega/vega-datasets/tar.gz/7080ba8297825d27495bdfb8386d10cff83cbacf"
 

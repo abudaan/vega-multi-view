@@ -356,7 +356,7 @@ addViews({
     }, 3000);
 });
 ```
-This example show how you can remove a view. The `removeViews` function takes a single id or an array of ids and returns the updated key-value store object. In this example the store is an empty object after we have removed the only view with id `spec`. Note that unlike `addViews` the `removeViews` function does not return a promise.
+This example show how you can remove a view. The `removeViews` function takes a single id, a list of ids or an array of ids and returns the updated key-value store object. In this example the store is an empty object after we have removed the only view with id `spec`. Note that unlike `addViews` the `removeViews` function does not return a promise.
 
 ## Add it to your own project
 

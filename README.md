@@ -2,7 +2,7 @@
 
 This library is a wrapper of the Vega runtime API that allows you to add multiple Vega views to a HTML page that can listen to each others signals, despite the fact that each view lives in a separate HTML element.
 
-It includes custom versions of [leaflet-vega](https://github.com/nyurik/leaflet-vega) and [vega-tooltip](https://github.com/vega/vega-tooltip).
+It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-leaflet-layer](https://github.com/abudaan/vega-as-leaflet-layer) which is based on [leaflet-vega](https://github.com/nyurik/leaflet-vega).
 
 
 ## Table of Contents
@@ -35,26 +35,24 @@ Most Basic example:
 ```javascript
 import createViews from 'vega-multi-view';
 
-window.addEventListener('DOMContentLoaded', () => {
-    const config = {
-        specs: [
-            './specs/spec1.json',
-            './specs/spec2.json',
-        ],
-    };
+const config = {
+    specs: {
+        spec1: './specs/spec1.json',
+        spec2: './specs/spec2.json',
+    },
+};
 
-    createViews(data)
-        .then(result => console.log(result));
-});
+createViews(data)
+    .then(result => console.log(result));
 ```
 
 ## Return value
 
-After all views have been added to the page, an array containing information about each view is returned. Information per view:
+After all views have been added to the page, a key-value store object containing information about each view is returned. Information per view:
 ```javascript
 {
-    // Generated unique id
-    id: '<string>'
+    // The id as you have set it in the specs object (see below)
+    id: 'string'
 
     // Reference to the HTML Element that contains the Vega view
     element: '<HTMLElement>'
@@ -83,7 +81,7 @@ The global configuration of `vega-multi-view` defines which specs will be added 
 
 With the view specific configuration you can override some of the global settings and add extra parameters that for instance tell `vega-multi-view` which signals to publish or to subscribe to.
 
-This view specific configuration can be added to a spec (inlined), for this you can use the key `vmvConfig` (see example #1 below). You can also provide a configuration separately. It is also possible to use no view specific configuration at all: then the view will be rendered with the global settings.
+This view specific configuration can be added to a spec (inlined), for this you can use the key `vmvConfig` (see [example #1](#example-1) below). You can also provide a configuration separately. It is also possible to use no view specific configuration at all: then the view will be rendered with the global settings.
 
 Both the global and the view specific configuration, as well as the Vega spec can be:
 * a javascript object (POJO)
@@ -101,6 +99,10 @@ Let's see what the configurations look like. Below I have chosen to use YAML bec
 # false.
 debug: false
 
+# Whether or not an existing spec in the store will be overwritten by
+# a spec with the same id that is added afterwards.
+overwrite: false
+
 # The element where all Vega views will be rendered to. Inside this
 # element every view creates its own containing HTML element.
 # If the element does not exist a div will be created and added to
@@ -108,7 +110,7 @@ debug: false
 # or a HTML element. Defaults to document.body.
 element: id | HTMLElement
 
-# Path to data sets and images that the Vega spec need to load.
+# Path to data sets and images that the Vega spec needs to load.
 dataPath: ./assets/data
 imagePath: ./assets/img
 
@@ -131,14 +133,14 @@ run: true
 # a view specific configuration.
 hover: false
 
-# Array or a single spec or tuple, can be any of the types listed
-# above. You can add a view specific configuration to a spec by
-# using a tuple.
-specs: [
-    {...},
-    ../specs/spec1.yaml,
-    [../specs/spec2.vg.json, ../conf/spec2.yaml]
-]
+# A key-value store object where the keys are the unique ids by which
+# the Vega specs can be identified. The value is a single spec or a
+# tuple, in case you set a tuple the second value is the view specific
+# configuration file (see below). Both the spec and the configuration
+# can be any of the types listed above.
+specs:
+    spec1: ../specs/spec1.yaml,
+    spec2: [../specs/spec2.vg.json, ../conf/spec2.yaml]
 
 ```
 
@@ -207,9 +209,14 @@ Note that because a spec can be rendered without a view specific configuration f
 
 ### Leaflet
 
-Vega does not support tile maps but by using a custom version of [leaflet-vega](https://github.com/nyurik/leaflet-vega) we can render a Vega view to a layer in Leaflet. If you want to render your spec to a Leaflet layer your spec must define the signals `zoom` and `latitude` and `longitude`. You can read more about zoom, latitude and longitude in the Leaflet [documentation](http://leafletjs.com/examples/zoom-levels/)
+Vega does not support tile maps but by using [vega-as-leaflet-layer](https://github.com/abudaan/vega-as-leaflet-layer) we can render a Vega view to a layer in Leaflet. The Leaflet map itself will be added to the HTML element as specified in the configuration.
 
-`vega-multi-view` adds a Leaflet map to the HTML element as specified in the configuration and adds a Vega view layer to that map. If your spec does not specify one or all of the mandatory signals an error will be logged to the browser console and nothing will be rendered.
+If you want to render your spec to a Leaflet layer your spec must have defined the signals `zoom` and `latitude` and `longitude`. If your spec does not specify one or all of the mandatory signals an error will be logged to the browser console and nothing will be rendered.
+
+For more information about rendering Vega to a Leaflet layer see the [readme](https://github.com/abudaan/vega-as-leaflet-layer/blob/master/README.md) of `vega-as-leaflet-layer`.
+
+You can read more about zoom, latitude and longitude in the Leaflet [documentation](http://leafletjs.com/examples/zoom-levels/)
+
 
 ### Publish and subscribe signals
 
@@ -248,9 +255,9 @@ spec1.vmvConfig = {
 };
 
 const config = {
-    specs: [
-        spec1,
-        ['../specs/spec2.yaml', {
+    specs: {
+        spec1: spec1,
+        spec2: ['../specs/spec2.yaml', {
             element: 'divSpec2',
             hover: true,
             publish: [{
@@ -262,17 +269,16 @@ const config = {
                 as: 'hover',
             }],
         }]
-    ]
+    }
 };
 
 createViews(data)
     .then(result => {
-        const view1 = result[0].view;
+        const view1 = result.spec1.view;
         view1.hover();
     });
 
 ```
-
 What we see here is two specs that respond to each other's hover signal.
 
 The spec is imported as javascript object, then a configuration is added to the spec. You can safely add a `vmvConfig` entry to a spec because it will be stripped off before the spec is passed to the Vega parser. If you have to load a spec from the server it saves you a HTTP request if you inline the view specific configuration in the spec.
@@ -293,16 +299,18 @@ The [`vega-specs` project](https://github.com/abudaan/vega-specs) shows how you 
 
 ```javascript
 import createViews from 'vega-multi-view';
-import fetchYAML from '../util/fetch-helpers';
+import fetchYAML from 'fetch-helpers';
 
-fetchYAML('../my-global-config.yaml')
+fetchYAML('../my-global-config.yaml', 'yaml')
     .then(data => createViews(data, 'yaml'))
     .then(result => {
         console.log(result)
     });
 
 ```
-Here we see an example where the global configuration is loaded as a YAML file. Although the `vega-multi-view` is able to detect the type of files, you can make it a bit easier it you provide the type.
+Here we see an example where the global configuration is loaded as a YAML file. We use a small library called `fetch-helpers` that can fetch files in JSON, BSON, CSON and YAML format and parses the content of the file to a javascript object.
+
+Although both `fetch-helpers` and `vega-multi-view` detect the file-type automatically, you can optionally pass the type as argument which makes it a tiny bit faster.
 
 Note that you can not provide a type for view specific configurations or for the vega specs; in those cases `vega-multi-view` will detect it for you and log a warning to the browser console if the type can not be inferred.
 
@@ -311,15 +319,23 @@ Note that you can not provide a type for view specific configurations or for the
 ```javascript
 import createViews from 'vega-multi-view';
 
-createViews({ specs: '../specs/spec1.yaml'})
+createViews({
+    specs: {
+        spec1: '../specs/spec1.yaml'
+    }
+})
 .then(result => {
     const view = result[0].view;
     view.addEventListener('mousedown', () => {
-        createViews({ specs: '../specs/spec2.yaml'})
+        createViews({
+            specs: {
+                spec2: '../specs/spec2.yaml'
+            }
+        });
     });
 });
 ```
-This example shows that you can call `createViews` repeatedly; every time you call it new views will be added, even if a view has already been added.
+This example shows that you can call `createViews` repeatedly. Every spec must have a unique id so if you add another spec with id `spec1` in the example above, an error will be thrown. However you can overwrite existing specs if you set `overwrite` to `true` in the global settings.
 
 ## Add it to your own project
 
@@ -335,13 +351,11 @@ npm install --save vega-multi-view
 ```
 Then in your javascript assuming you code in es2015 and up:
 ```javascript
-import createViews from 'vega-multi-view';
+import { addViews, removeView } from 'vega-multi-view';
 ```
-Instead of `createViews` you can use any other name because it is the default export.
-
 You can also import a util function that prints the spec in JSON format to a new tab:
 ```javascript
-import createViews, { showSpecInTab } from 'vega-multi-view';
+import { showSpecInTab } from 'vega-multi-view';
 import spec from '../specs/my-spec';
 
 button.addEventListener('click', () => {
@@ -351,20 +365,20 @@ button.addEventListener('click', () => {
 
 ### CSS
 
-Both Leaflet and Vega-tooltip provide their own stylesheet and unless your project already includes Leaflet and/or Vega-tooltip you have to add them to your project. Best is to bundle them with the other stylesheets of your project.
-
-In the `dist` folder of the npm package you will find the file `vega-multi-view.css` that contains both the Leaflet and the Vega-tooltip css. You can import this file in the main stylesheet of your project:
+Both Leaflet and Vega-tooltip provide their own stylesheet and unless your project already includes Leaflet and/or Vega-tooltip you have to add them to your project. Best is to bundle them with the other stylesheets of your project. You can import the files in the main stylesheet of your project from the `node_modules` folder:
 
 ```sass
 /* sass */
-@import ./node_modules/vega-multi-view/dist/vega-multi-view
+@import ./node_modules/leaflet/dist/leaflet
+@import ./node_modules/vega-tooltip/build/vega-tooltip.min
 ```
 ```less
 /* less */
-@import './node_modules/vega-multi-view/dist/vega-multi-view'
+@import './node_modules/leaflet/dist/leaflet'
+@import './node_modules/vega-tooltip/build/vega-tooltip.min'
 ```
 
-Note that you do not accidently add the .css extension otherwise the css compiler will just add a css @import statement which triggers an extra HTTP request.
+Note that you do not accidentally add the `.css` extension otherwise the css compiler will just add a css @import statement which triggers an extra HTTP request.
 
 
 ## See it in action

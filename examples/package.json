@@ -1,10 +1,11 @@
 {
     "name": "vega-multi-view",
     "version": "1.0.0",
-    "description": "add multiple separate vega views to a page and connect the signals of these views",
+    "description": "Add multiple separate Vega views to a page and connect the signals of these views",
     "license": "MIT",
     "author": "abudaan",
     "scripts": {
+        "build-css": "node-sass ./src/styles/main.sass > ./dist/vega-multi-view.css",
         "example1": "watchify ./src/example1.js -t [ babelify ] -o ./build/example1.js --debug --verbose",
         "example2": "watchify ./src/example2.js -t [ babelify ] -o ./build/example2.js --debug --verbose",
         "compile": "babel src/js --out-dir ./dist",

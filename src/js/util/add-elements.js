@@ -7,43 +7,47 @@ const addElements = (data, container, className) => R.map((d) => {
             element: null,
         };
     }
-    let {
+    const {
         element,
     } = d.vmvConfig;
-    if (element === false) {
-        // headless rendering
-        element = null;
-    } else if (R.isNil(element) === false) {
-        if (typeof element === 'string') {
-            element = document.getElementById(d.vmvConfig.element);
-            if (R.isNil(element)) {
-                // console.error(`element "${d.vmvConfig.element}" could not be found`);
-                element = document.createElement('div');
-                element.id = d.vmvConfig.element;
-                container.appendChild(element);
-            }
-        } else if (element instanceof HTMLElement !== true) {
-            console.error(`element "${d.vmvConfig.element}" is not a valid HTMLElement`);
-            return {
-                ...d,
-                element: null,
-            };
+
+    // default is headless rendering
+    let divElement = null;
+    if (typeof element === 'string') {
+        divElement = document.getElementById(element);
+        if (divElement === null) {
+            // console.error(`element "${element}" could not be found`);
+            divElement = document.createElement('div');
+            divElement.id = element;
+            container.appendChild(divElement);
         }
+    } else if (element instanceof HTMLElement) {
+        if (document.getElementById(element.id) === null) {
+            container.appendChild(element);
+        }
+        divElement = element;
+    } else if (typeof element !== 'undefined') {
+        console.error(`element "${element}" is not an id or a valid HTMLElement`);
+        return {
+            ...d,
+            element: null,
+        };
     } else {
-        element = document.createElement('div');
-        element.id = d.id;
-        if (typeof d.className === 'string') {
-            element.className = d.className;
-        } else if (typeof className === 'string') {
-            element.className = className;
-        }
-        container.appendChild(element);
+        divElement = document.createElement('div');
+        divElement.id = d.id;
+        container.appendChild(divElement);
+    }
+
+    if (typeof d.className === 'string') {
+        divElement.className = d.className;
+    } else if (typeof className === 'string') {
+        divElement.className = className;
     }
 
     return {
         ...d,
-        element,
-        parent: container,
+        element: divElement,
+        // parent: container,
     };
 }, data);
 

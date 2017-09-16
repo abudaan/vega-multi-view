@@ -21,19 +21,20 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
          * [Example #1](#example-1)
          * [Example #2](#example-2)
          * [Example #3](#example-3)
+         * [Example #4](#example-4)
       * [Add it to your own project](#add-it-to-your-own-project)
          * [Javascript](#javascript)
          * [CSS](#css)
       * [See it in action](#see-it-in-action)
 
-<small>(toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc))</small>
+<sub>(toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc))</sub>
 
 ## How to use
 
 Most Basic example:
 
 ```javascript
-import createViews from 'vega-multi-view';
+import { addViews } from 'vega-multi-view';
 
 const config = {
     specs: {
@@ -42,7 +43,7 @@ const config = {
     },
 };
 
-createViews(data)
+addViews(data)
     .then(result => console.log(result));
 ```
 
@@ -239,7 +240,7 @@ Let's look at some more examples:
 ### Example #1
 
 ```javascript
-import createViews from 'vega-multi-view';
+import { addViews } from 'vega-multi-view';
 import spec1 from '../specs/vega-spec1';
 
 spec1.vmvConfig = {
@@ -272,7 +273,7 @@ const config = {
     }
 };
 
-createViews(data)
+addViews(data)
     .then(result => {
         const view1 = result.spec1.view;
         view1.hover();
@@ -291,18 +292,18 @@ The second spec is added as a tuple; the first element is always the spec, the s
 
 Personally I find a Vega specs in YAML format the best readable. Also a YAML file is a bit smaller in file size compared to JSON.
 
-In the resolve function of the `createViews` promise we have to enable hover event processing for spec1 because `hover` defaults to false and it hasn't been overridden in the view specific configuration. The configuration of spec2 has already overridden the global `hover` setting.
+In the resolve function of the `addViews` promise we have to enable hover event processing for spec1 because `hover` defaults to false and it hasn't been overridden in the view specific configuration. The configuration of spec2 has already overridden the global `hover` setting.
 
 The [`vega-specs` project](https://github.com/abudaan/vega-specs) shows how you can create Vega specs in javascript and export them in several formats (JSON, BSON, CSON, YAML or as a template).
 
 ### Example #2
 
 ```javascript
-import createViews from 'vega-multi-view';
+import { addViews } from 'vega-multi-view';
 import fetchYAML from 'fetch-helpers';
 
 fetchYAML('../my-global-config.yaml', 'yaml')
-    .then(data => createViews(data, 'yaml'))
+    .then(data => addViews(data, 'yaml'))
     .then(result => {
         console.log(result)
     });
@@ -317,17 +318,17 @@ Note that you can not provide a type for view specific configurations or for the
 ### Example #3
 
 ```javascript
-import createViews from 'vega-multi-view';
+import { addViews } from 'vega-multi-view';
 
-createViews({
+addViews({
     specs: {
         spec1: '../specs/spec1.yaml'
     }
 })
 .then(result => {
-    const view = result[0].view;
+    const view = result.spec1.view;
     view.addEventListener('mousedown', () => {
-        createViews({
+        addViews({
             specs: {
                 spec2: '../specs/spec2.yaml'
             }
@@ -335,7 +336,27 @@ createViews({
     });
 });
 ```
-This example shows that you can call `createViews` repeatedly. Every spec must have a unique id so if you add another spec with id `spec1` in the example above, an error will be thrown. However you can overwrite existing specs if you set `overwrite` to `true` in the global settings.
+This example shows that you can call `addViews` repeatedly. Every spec must have a unique id so if you add another spec with id `spec1` in the example above, an error will be thrown. However you can overwrite existing specs if you set `overwrite` to `true` in the global settings.
+
+### Example #4
+
+```javascript
+import { addViews, remove } from 'vega-multi-view';
+
+addViews({
+    specs: {
+        spec1: '../specs/spec1.yaml'
+    }
+})
+.then(result => {
+    console.log(result) // { spec1: view...}
+    setTimeout(() => {
+        const result2 = removeViews('spec1');
+        console.log(result2) // {}
+    }, 3000);
+});
+```
+This example show how you can remove a view. The `removeViews` function takes a single id or an array of ids and returns the updated key-value store object. In this example the store is an empty object after we have removed the only view with id `spec`. Note that unlike `addViews` the `removeViews` function does not return a promise.
 
 ## Add it to your own project
 

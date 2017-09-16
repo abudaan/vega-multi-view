@@ -80,7 +80,7 @@ export const removeViews = (...args) => {
         if (R.isNil(data) === false) {
             const elem = data.element;
             if (elem !== null) {
-                data.parent.removeChild(elem);
+                elem.parentNode.removeChild(elem);
             }
             delete store[id];
         }
@@ -114,7 +114,12 @@ export const addViews = async (config, type = null) => {
 
     if (overwrite) {
         removeViews(inStore);
-        specsArray = specs;
+        if (inStore.length === 1) {
+            console.info(`view with id "${inStore[0]}" is overwritten`);
+        } else if (inStore.length > 1) {
+            console.info(`views with ids "${inStore.join('", "')}" is overwritten`);
+        }
+        specsArray = R.keys(specs);
     } else {
         if (inStore.length === 1) {
             console.warn(`view with id "${inStore[0]}" already exist!`);
@@ -134,14 +139,11 @@ export const addViews = async (config, type = null) => {
             [data.spec, data.vmvConfig] = s;
         }
         return data;
-    }, R.keys(specs));
+    }, specsArray);
 
-
-    let containerElement = null;
-
-    if (R.isNil(element)) {
-        containerElement = document.body;
-    } else if (typeof element === 'string') {
+    // default to document.body
+    let containerElement = document.body;
+    if (typeof element === 'string') {
         containerElement = document.getElementById(element);
         if (R.isNil(containerElement)) {
             containerElement = document.createElement('div');
@@ -152,6 +154,11 @@ export const addViews = async (config, type = null) => {
         }
     } else if (element instanceof HTMLElement) {
         containerElement = element;
+        if (document.getElementById(element) === null) {
+            document.body.appendChild(containerElement);
+        }
+    } else if (typeof element !== 'undefined') {
+        console.warn('invalid element, using document.body instead');
     }
 
     let data = await createSpecData(specsArray, type);

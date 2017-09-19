@@ -17,6 +17,9 @@ const globalStylingJson = {
     '.view': {
         padding: '20px',
     },
+    '.view2': {
+        width: '100%',
+    },
 };
 
 const globalStylingCss = `
@@ -31,7 +34,12 @@ const globalStylingCss = `
     .view {
         background-color: red;
         padding: 20px;
-    }`;
+    }
+
+    .view2 {
+        /* width: 100%; */
+    }
+`;
 
 const spec4StylingJson = {
     '.mark-path>path': {
@@ -74,7 +82,7 @@ const data = {
             leaflet: false,
             renderer: 'svg',
             styling: {
-                class: ['view', 'view2'],
+                classes: ['view', 'view2'],
                 css: spec4StylingCss,
                 addToHead: true,
             },
@@ -90,7 +98,7 @@ addViews(data)
             background-color: yellow !important;
         }`;
         const css2 = `.mark-path>path {
-            stroke: #f00 !important;
+            stroke: red !important;
         }`;
         setTimeout(() => {
             const data1 = {
@@ -104,7 +112,7 @@ addViews(data)
                         leaflet: false,
                         renderer: 'svg',
                         styling: {
-                            class: 'view',
+                            classes: 'view',
                             css: css2,
                             addToHead: true,
                         },
@@ -112,6 +120,6 @@ addViews(data)
                 },
             };
             addViews(data1);
-        }, 2000);
+        }, 5000);
     });
 

@@ -141,7 +141,7 @@ specs:
 styling:
     url: ../css/view1.css
     css: 'div {color: red}'
-    cssAppend: false,
+    cssAppend: true,
     addToHead: false,
     class: [view, square],
     classAppend: true
@@ -214,7 +214,7 @@ SVG renderer only. The css as string, allows you to inline the css in the config
 SVG renderer only. Adds the styling to the head of the HTML page before the Vega view(s) get rendered, defaults to false. Default value is false, keep this setting if you want to bundle styles on the server before sending to the client. Note that this setting only has effect when the renderer is set to 'svg'.
 
 ##### `cssAppend: boolean`
-SVG renderer only. Whether or not the new new styling rules will be be added to the existing rules or replace them. Defaults to false which means that existing rules will be replaced.
+SVG renderer only. Whether or not the new new styling rules will be be added to the existing rules or replace them. Defaults to true which means that new rules will be added to the existing.
 
 ##### `classes: string | Array<string>`
 

@@ -54,7 +54,7 @@ const createSpecData = (specs, type) => {
             });
         }
         const specClone = { ...spec };
-        let vmvConfig = data.vmvConfig || {};
+        let vmvConfig = data.vmvConfig || { styling: {} };
         if (R.isNil(specClone.vmvConfig) === false) {
             vmvConfig = { ...specClone.vmvConfig };
             delete specClone.vmvConfig;
@@ -107,11 +107,7 @@ export const addViews = async (config, type = null) => {
         styling,
     } = config;
 
-    addStyling({
-        styling,
-        id: 'global',
-        element: document.body,
-    });
+    addStyling('global', styling, document.body);
 
     let specsArray;
     const [
@@ -191,7 +187,7 @@ export const addViews = async (config, type = null) => {
                         (hover === true && d.vmvConfig.hover !== false)) {
                         d.view.hover();
                     }
-                    addStyling(d);
+                    addStyling(d.id, d.vmvConfig.styling, d.element, styling);
                 }
                 store[d.id] = d;
             });

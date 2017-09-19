@@ -8,6 +8,7 @@
         "build-css": "node-sass ./src/styles/main.sass > ./dist/vega-multi-view.css",
         "example1": "watchify ./src/example1.js -t [ babelify ] -o ./build/example1.js --debug --verbose",
         "example2": "watchify ./src/example2.js -t [ babelify ] -o ./build/example2.js --debug --verbose",
+        "example4": "watchify ./src/example4.js -t [ babelify ] -o ./build/example4.js --debug --verbose",
         "compile": "babel src/js --out-dir ./dist",
         "server": "python -m SimpleHTTPServer 9001",
         "copy-dist": "cp -R ../../vega-multi-view/dist ../../vega-specs/node_modules/vega-multi-view/",

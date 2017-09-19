@@ -143,6 +143,19 @@ specs:
     spec1: ../specs/spec1.yaml,
     spec2: [../specs/spec2.vg.json, ../conf/spec2.yaml]
 
+# Add styling that applies to all views and / or containing elements
+# of the views. You can add the URI of an external css file or inline
+# the styling as text. If you set values for both url and css, the
+# value set for css will prevail.
+# The setting addToHead defaults to false, if you set it to
+# true the styling will be added to the head of the page before the
+# Vega view gets rendered. If you set it to false, you can bundle all
+# styles on the server before sending to the client.
+styling:
+    url: string
+    css: 'div {color: red}'
+    addToHead: false
+    overwrite: true
 ```
 
 Note that only the `specs` entry is mandatory. That is, you can leave it out but then nothing will be rendered.
@@ -205,6 +218,18 @@ tooltipOptions:
           field: fieldName
           title: displayName
 
+# Add view specific styling to the view. You can add the URI of an
+# external css file or inline the styling as text. If you  set values
+# for both url and css, the value set for css will prevail.
+# The setting addToHead defaults to false, if you set it to
+# true the styling will be added to the head of the page before the
+# Vega view gets rendered. If you set it to false, you can bundle all
+# styles on the server before sending to the client.
+styling:
+    url: string
+    json: css as JSON string
+    addToHead: false
+    overwrite: true
 ```
 Note that because a spec can be rendered without a view specific configuration file as well, none of these entries are mandatory.
 
@@ -356,7 +381,69 @@ addViews({
     }, 3000);
 });
 ```
-This example show how you can remove a view. The `removeViews` function takes a single id, a list of ids or an array of ids and returns the updated key-value store object. In this example the store is an empty object after we have removed the only view with id `spec`. Note that unlike `addViews` the `removeViews` function does not return a promise.
+This example shows how you can remove a view. The `removeViews` function takes a single id, a list of ids or an array of ids and returns the updated key-value store object. In this example the store is an empty object after we have removed the only view with id `spec`. Note that unlike `addViews` the `removeViews` function does not return a promise.
+
+### Example #5
+
+```javascript
+import { addViews, removeViews } from '../../src/js/index';
+
+const globalStylingCss = `
+    html,
+    body {
+        color: white;
+        background-color: #333;
+        padding: 0;
+        margin: 0;
+    }
+
+    .view {
+        padding: 20px;
+    }`;
+
+const spec4StylingCss = `
+    .mark-path>path {
+        fill: #C4FFC9 !important;
+        fill-opacity: 0.3 !important;
+        stroke-width: 0.1 !important;
+    }
+
+    .mark-path>path:hover {
+        fill: #EEEA00 !important;
+        fill-opacity: 1 !important;
+        stroke-width: 5 !important;
+        stroke: #00ffff !important;
+    }`;
+
+const data = {
+    styling: {
+        css: globalStylingCss,
+        addToHead: true,
+    },
+    specs: {
+        spec1: ['./specs/spec4.json', {
+            class: 'view',
+            element: 'map',
+            leaflet: false,
+            renderer: 'svg',
+            styling: {
+                css: spec4StylingCss,
+                addToHead: true,
+            },
+        }],
+    },
+    debug: true,
+    cssClass: 'view',
+};
+
+addViews(data)
+    .then((result) => {
+        console.log(result);
+    });
+
+
+```
+This is an example of how you can add styling. Note that we have to add `!important` to overrule the inline styling that the Vega renderer applies to the Canvas element if you use the canvas renderer or to the SVG elements if you use the SVG renderer.
 
 ## Add it to your own project
 

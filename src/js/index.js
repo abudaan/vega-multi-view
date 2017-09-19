@@ -12,6 +12,41 @@ let firstRun = true;
 const store = {};
 const VERSION = '1.1.0';
 
+const head = document.getElementsByTagName('head').item(0);
+const addStyling = (styling, id) => {
+    // @TODO: allow append to style
+    const e = document.getElementById(id);
+    if (e !== null) {
+        head.removeChild(e);
+    }
+    if (R.isNil(styling) === false && styling.addToHead === true) {
+        if (typeof styling.css === 'string') {
+            const style = document.createElement('style');
+            style.id = id;
+            style.type = 'text/css';
+            style.appendChild(document.createTextNode(styling.css));
+            head.appendChild(style);
+        } else if (typeof styling.json === 'string') {
+            const style = document.createElement('style');
+            style.id = id;
+            style.type = 'text/css';
+            // const json = JSON.stringify(styling.json);
+            // const css = JsonCSS.toCSS({ a: { color: 'red' } });
+            // console.log(css);
+            // style.appendChild(document.createTextNode(styling.css));
+            // head.appendChild(style);
+        } else if (typeof styling.url === 'string') {
+            // <link rel="stylesheet" type="text/css" href="./css/vega-multi-view.css" />
+            const link = document.createElement('link');
+            link.id = id;
+            link.type = 'text/css';
+            link.setAttribute('rel', 'stylesheet');
+            link.setAttribute('href', styling.url);
+            head.appendChild(link);
+        }
+    }
+};
+
 const renderViews = (data, renderer, container) => {
     data.forEach((d) => {
         const {
@@ -104,7 +139,10 @@ export const addViews = async (config, type = null) => {
         renderer = 'canvas',
         debug = false,
         overwrite = false,
+        styling,
     } = config;
+
+    addStyling(styling, 'global');
 
     let specsArray;
     const [
@@ -184,6 +222,7 @@ export const addViews = async (config, type = null) => {
                         (hover === true && d.vmvConfig.hover !== false)) {
                         d.view.hover();
                     }
+                    addStyling(d.vmvConfig.styling, d.id);
                 }
                 store[d.id] = d;
             });

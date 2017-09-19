@@ -38,8 +38,9 @@ const addElements = (data, container, className) => R.map((d) => {
         container.appendChild(divElement);
     }
 
-    if (typeof d.className === 'string') {
-        divElement.className = d.className;
+    console.log(d);
+    if (typeof d.cssClass === 'string') {
+        divElement.className = d.cssClass;
     } else if (typeof className === 'string') {
         divElement.className = className;
     }

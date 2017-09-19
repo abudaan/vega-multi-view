@@ -29,7 +29,7 @@ const globalStylingCss = `
     }
 
     .view {
-        /* background-color: #F700FF !important; */
+        background-color: red;
         padding: 20px;
     }`;
 
@@ -69,8 +69,8 @@ const data = {
     },
     specs: {
         spec1: ['./specs/spec4.json', {
-            class: 'view',
-            element: 'map',
+            cssClass: ['view', 'view2'],
+            // element: 'map',
             leaflet: false,
             renderer: 'svg',
             styling: {
@@ -86,25 +86,32 @@ const data = {
 addViews(data)
     .then((result) => {
         console.log(result);
-        const css = `.view {
-            background-color: yellow;
+        const css1 = `.view {
+            background-color: yellow !important;
         }`;
-        // setTimeout(() => {
-        //     const data1 = {
-        //         styling: {
-        //             css,
-        //             addToHead: true,
-        //             overwrite: false,
-        //         },
-        //         specs: {
-        //             spec2: ['./specs/spec4.json', {
-        //                 class: 'view',
-        //                 leaflet: false,
-        //                 renderer: 'svg',
-        //             }],
-        //         },
-        //     };
-        //     addViews(data1);
-        // }, 4000);
+        const css2 = `.mark-path>path {
+            stroke: #f00 !important;
+        }`;
+        setTimeout(() => {
+            const data1 = {
+                styling: {
+                    css: css1,
+                    addToHead: true,
+                    overwrite: false,
+                },
+                specs: {
+                    spec2: ['./specs/spec4.json', {
+                        cssClass: 'view',
+                        leaflet: false,
+                        renderer: 'svg',
+                        styling: {
+                            css: css2,
+                            addToHead: true,
+                        },
+                    }],
+                },
+            };
+            addViews(data1);
+        }, 2000);
     });
 

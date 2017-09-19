@@ -17,10 +17,10 @@ const head = document.getElementsByTagName('head').item(0);
 const addStyling = (styling, id) => {
     if (R.isNil(styling) === false && styling.addToHead === true) {
         if (typeof styling.css === 'string') {
-            let style = document.getElementById(id);
+            let style = document.getElementById(`style-${id}`);
             if (style === null) {
                 style = document.createElement('style');
-                style.id = id;
+                style.id = `style-${id}`;
                 style.type = 'text/css';
                 head.appendChild(style);
             }

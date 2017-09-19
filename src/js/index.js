@@ -14,32 +14,27 @@ const VERSION = '1.1.0';
 
 const head = document.getElementsByTagName('head').item(0);
 const addStyling = (styling, id, overwrite) => {
-    // @TODO: allow append to style
-    const e = document.getElementById(id);
-    if (e !== null) {
-        if (overwrite === true) {
-            head.removeChild(e);
-        }
-    }
     if (R.isNil(styling) === false && styling.addToHead === true) {
         if (typeof styling.css === 'string') {
-            const style = document.createElement('style');
-            style.id = id;
-            style.type = 'text/css';
-            style.appendChild(document.createTextNode(styling.css));
-            head.appendChild(style);
-        } else if (typeof styling.json === 'string') {
-            const style = document.createElement('style');
-            style.id = id;
-            style.type = 'text/css';
-            // const json = JSON.stringify(styling.json);
-            // const css = JsonCSS.toCSS({ a: { color: 'red' } });
-            // console.log(css);
-            // style.appendChild(document.createTextNode(styling.css));
-            // head.appendChild(style);
+            let style = document.getElementById(id);
+            if (style === null) {
+                style = document.createElement('style');
+                style.id = id;
+                style.type = 'text/css';
+                head.appendChild(style);
+            }
+            const text = document.createTextNode(styling.css);
+            if (overwrite === true) {
+                style.innerHTML = '';
+            }
+            style.appendChild(text);
         } else if (typeof styling.url === 'string') {
-            // <link rel="stylesheet" type="text/css" href="./css/vega-multi-view.css" />
-            const link = document.createElement('link');
+            let link = document.getElementById(id);
+            // if (overwrite === true && link !== null) {
+            if (link !== null) {
+                head.removeChild(link);
+            }
+            link = document.createElement('link');
             link.id = id;
             link.type = 'text/css';
             link.setAttribute('rel', 'stylesheet');

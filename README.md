@@ -154,9 +154,10 @@ specs:
 # styles on the server before sending to the client.
 # If you set overwrite to false, the new styling rules will be added
 # to the existing rules. Defaults to false which means that existing
-# rules will be replaced.
+# rules will be replaced. This option only works if you add the
+# styling as css text.
 styling:
-    url: string
+    url: ../css/view1.css
     css: 'div {color: red}'
     addToHead: false
     overwrite: true
@@ -223,7 +224,7 @@ tooltipOptions:
           title: displayName
 
 # Add view specific styling to the view. You can add the URI of an
-# external css file or inline the styling as text. If you  set values
+# external css file or inline the styling as text. If you set values
 # for both url and css, the value set for css will prevail.
 # The setting addToHead defaults to false, if you set it to
 # true the styling will be added to the head of the page before the
@@ -231,10 +232,11 @@ tooltipOptions:
 # styles on the server before sending to the client.
 # If you set overwrite to false, the new styling rules will be added
 # to the existing rules of the view. Defaults to false which means
-# that existing rules will be replaced.
+# that existing rules will be replaced. This option only works if
+# you add the styling as css text.
 styling:
-    url: string
-    json: css as JSON string
+    url: ../css/view1.css
+    css: 'div {color: red}'
     addToHead: false
     overwrite: true
 ```

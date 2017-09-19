@@ -31,7 +31,7 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
             * [dataPath: string](#datapath-string)
             * [imagePath: string](#imagepath-string)
       * [View specific configuration](#view-specific-configuration)
-            * [Explanation of the parameters](#explanation-of-the-parameters)
+         * [Explanation of the parameters](#explanation-of-the-parameters)
             * [spec: string](#spec-string)
             * [renderer: "canvas" | "svg"](#renderer-canvas--svg-1)
             * [element: false | string | HTMLElement](#element-false--string--htmlelement)
@@ -42,11 +42,11 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
             * [subscribe: SignalType | Array&lt;SignalType&gt;](#subscribe-signaltype--arraysignaltype)
             * [tooltipOptions: TooltipType](#tooltipoptions-tooltiptype)
             * [styling: StylingType](#styling-stylingtype-1)
-               * [url: string](#url-string-1)
-               * [css: string](#css-string-1)
-               * [addToHead: boolean](#addtohead-boolean-1)
-               * [classes: string | Array&lt;string&gt;](#classes-string--arraystring-1)
-               * [classesAppend: boolean](#classesappend-boolean-1)
+                * [url: string](#url-string-1)
+                * [css: string](#css-string-1)
+                * [addToHead: boolean](#addtohead-boolean-1)
+                * [classes: string | Array&lt;string&gt;](#classes-string--arraystring-1)
+                * [classesAppend: boolean](#classesappend-boolean-1)
          * [Leaflet](#leaflet)
          * [Publish and subscribe signals](#publish-and-subscribe-signals)
          * [Tooltips](#tooltips)
@@ -126,7 +126,6 @@ Both the global and the view specific configuration, as well as the Vega spec ca
 Let's see what the configurations look like. Below I have chosen to use YAML because it provides a clear syntax but of course you can define your configuration in any supported format.
 
 ## Global configuration
-
 
 ```yaml
 ---
@@ -267,7 +266,7 @@ styling:
     classesAppend: true
 ```
 
-#### Explanation of the parameters
+### Explanation of the parameters
 
 Note that because a spec can be rendered without a view specific configuration file, none of these parameters are mandatory.
 

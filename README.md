@@ -97,146 +97,234 @@ Let's see what the configurations look like. Below I have chosen to use YAML bec
 
 ```yaml
 ---
-# Print signal and data updates to the browser console. Defaults to
-# false.
 debug: false
-
-# Whether or not an existing spec in the store will be overwritten by
-# a spec with the same id that is added afterwards.
-overwrite: false
-
-# The element where all Vega views will be rendered to. Inside this
-# element every view creates its own containing HTML element.
-# If the element does not exist a div will be created and added to
-# the body of the document. You can either specify an id (string)
-# or a HTML element. Defaults to document.body.
-element: id | HTMLElement
-
-# Path to data sets and images that the Vega spec needs to load.
-dataPath: ./assets/data
-imagePath: ./assets/img
-
-# The css class or array of css classes that will be added to the
-# view's containing HTML element, unless overridden by a view specific
-# configuration.
-cssClass: class | [class1, class2]
-
-# The renderer that will used for all views, unless overridden by a
-# view specific configuration.
+overwrite:  false
+element: id
 renderer: canvas
-
-# Whether or not to call the run() method of a view after it has been
-# added to the DOM. Defaults to true and will be overridden by a
-# view specific configuration.
 run: true
-
-# Whether or not to call the hover() method of the view after it has
-# been added to the page. Defaults to false and will be overridden by
-# a view specific configuration.
 hover: false
-
-# A key-value store object where the keys are the unique ids by which
-# the Vega specs can be identified. The value is a single spec or a
-# tuple, in case you set a tuple the second value is the view specific
-# configuration file (see below). Both the spec and the configuration
-# can be any of the types listed above.
 specs:
     spec1: ../specs/spec1.yaml,
     spec2: [../specs/spec2.vg.json, ../conf/spec2.yaml]
-
-# Add styling that applies to all views and / or containing elements
-# of the views. You can add the URI of an external css file or inline
-# the styling as text. If you set values for both url and css, the
-# value set for css will prevail.
-# The setting addToHead defaults to false, if you set it to
-# true the styling will be added to the head of the page before the
-# Vega view gets rendered. If you set it to false, you can bundle all
-# styles on the server before sending to the client.
-# If you set overwrite to false, the new styling rules will be added
-# to the existing rules. Defaults to false which means that existing
-# rules will be replaced. Note that you can only style the elements
-# inside a view when you use the SVG renderer.
 styling:
     url: ../css/view1.css
     css: 'div {color: red}'
-    addToHead: false
-    overwrite: true
+    cssAppend: false,
+    addToHead: false,
+    class: [view, square],
+    classAppend: true
+dataPath: ./assets/data
+imagePath: ./assets/img
 ```
+
+### Parameters explained
 
 Note that only the `specs` entry is mandatory. That is, you can leave it out but then nothing will be rendered.
 
-The entries `dataPath` and `imagePath` are only useful if you generate or customize your Vega specs before rendering. For an example of how you can use `dataPath` and `imagePath` see the [vega-multi-view-server](https://github.com/abudaan/vega-multi-view-server).
+
+#### `debug: boolean`
+Print signal and data updates to the browser console. Defaults to false.
+
+#### `overwrite: boolean`
+Whether or not an existing spec in the store will be overwritten by a spec with the same id that is added afterwards.
+
+#### `element: string | HTMLElement`
+
+The element where all Vega views will be rendered to. Inside this element every view creates its own containing HTML element. If the element does not exist a div will be created and added to the body of the document. You can either specify an id (string) or a HTML element. Defaults to document.body.
+
+#### `renderer: "canvas" | "svg"`
+
+The renderer that will used for all views, unless overridden by a view specific configuration.
+
+#### `run: boolean`
+
+Whether or not to call the `run()` method of a view after it has been added to the DOM. Defaults to true and will be overridden by a view specific configuration.
+
+#### `hover: boolean`
+
+Whether or not to call the `hover()` method of the view after it has been added to the page. Defaults to false and will be overridden by a view specific configuration.
+
+#### `specs: SpecsType`
+
+```javascript
+type SpecsType = {
+    [string]: string | [string, string]
+};
+```
+
+A key-value store object where the keys are the unique ids by which the Vega specs can be identified. The value is a single spec or a tuple, in case you set a tuple the second value is the view specific configuration file (see  below). Both the spec and the configuration can be any of the types listed  above.
+
+#### `styling: StylingType`
+
+Add styling that applies to all views and / or containing elements of the views. Can be overwritten by view specific configuration.
+
+```javascript
+type StylingType = {
+    url?: string
+    css?: string
+    cssAppend?: boolean
+    addToHead?: boolean
+    classes?: string | Array<string>
+    classesAppend?: boolean
+}
+```
+
+##### `url: string`
+
+The url of an external stylesheet. Note that this setting only has effect when the renderer is set to 'svg'.
+
+##### `css: string`
+
+SVG renderer only. The css as string, allows you to inline the css in the configuration file which saves a HTTP request. If you set both `url` and `css`, the value set for `css` will prevail.
+
+##### `addToHead: boolean`
+
+SVG renderer only. Adds the styling to the head of the HTML page before the Vega view(s) get rendered, defaults to false. Default value is false, keep this setting if you want to bundle styles on the server before sending to the client. Note that this setting only has effect when the renderer is set to 'svg'.
+
+##### `cssAppend: boolean`
+SVG renderer only. Whether or not the new new styling rules will be be added to the existing rules or replace them. Defaults to false which means that existing rules will be replaced.
+
+##### `classes: string | Array<string>`
+
+The css class or array of css classes that will be added to the view's containing HTML element, unless overridden by a view specific configuration.
+
+##### `classesAppend: boolean`
+
+Whether the classes should be appended to the existing classes or replace them. Defaults to true. This setting can be very handy if you call `addViews` repeatedly and you want to adjust the size of all views based on the number of views that are added to the page.
+
+
+#### `dataPath: string`
+
+Path to data sets that the Vega spec needs to load. The entries `dataPath` and `imagePath` are only useful if you generate or customize your Vega specs before rendering. For an example of how you can use `dataPath` and `imagePath` see the [vega-multi-view-server](https://github.com/abudaan/vega-multi-view-server).
+
+#### `imagePath: string`
+Path to the images that the Vega spec needs to load, for instance for rendering marks.
 
 
 ## View specific configuration
 
 ```yaml
 ---
-# The spec this configuration belongs to.
 spec: spec_1
-
-# The renderer to use this view
 renderer: canvas
-
-# The element where the view will be rendered to. If the element does
-# not exist a div will be created and added to the HTML element that
-# is set in the global settings. Use false (boolean) for headless
-# rendering.
-element: id | HTMLElement
-
-# The css class or array of css classes that will be added to the
-# containing HTML element.
-cssClass: view | [class1, class2]
-
-# Whether or not to call the run() method of the view after it has
-# been added to the page. Defaults to true.
+element: id
 run: true
-
-# Whether or not to call the hover() method of the view after it has
-# been added to the page. Defaults to false.
 hover: false
-
-# Whether or not the Vega view should be added as a layer to a Leaflet
-# map. Defaults to false.
 leaflet: false
-
-# A signal or array of signals that will be available for the other
-# views to listen to.
 publish:
     - signal: internalSignalName1
       as: externalSignalName1
     - signal: internalSignalName2
       as: externalSignalName2
-
-# A signal or array of signals originating from another view that this
-# view wants to listen to.
 subscribe:
     signal: externalSignalNameOfAnotherView
     as: internalSignalName2
-
-# The options that will be passed on to vega-tooltip for rendering
-# custom tooltips on top of the view.
 tooltipOptions:
     showAllFields: false
     fields:
         - formatType: string
           field: fieldName
           title: displayName
-
-# Add view specific styling to the view. You can add the URI of an
-# external css file or inline the styling as text. If you set values
-# for both url and css, the value set for css will prevail.
-# The setting addToHead defaults to false, if you set it to
-# true the styling will be added to the head of the page before the
-# Vega view gets rendered. If you set it to false, you can bundle all
-# styles on the server before sending to the client. Note that you can
-# only style a view when you use the SVG renderer.
 styling:
     url: ../css/view1.css
     css: 'div {color: red}'
+    cssAppend: false
     addToHead: false
+    classes: [view, small-view]
+    classesAppend: true
 ```
-Note that because a spec can be rendered without a view specific configuration file as well, none of these entries are mandatory.
+
+#### Explanation of the parameters
+
+Note that because a spec can be rendered without a view specific configuration file, none of these parameters are mandatory.
+
+#### `spec: string`
+
+The spec this configuration belongs to.
+
+#### `renderer: "canvas" | "svg"`
+
+The renderer to use this view
+
+#### `element: false | string | HTMLElement`
+
+The element where the view will be rendered to. If the element does not exist a div will be created and added to the HTML element that is set in the global settings. Use false (boolean) for headless rendering.
+
+#### `run: boolean`
+
+Whether or not to call the `run()` method of the view after it has been added to the page. Defaults to true.
+
+#### `hover: boolean`
+
+Whether or not to call the `hover()` method of the view after it has been added to the page. Defaults to false.
+
+#### `leaflet: boolean`
+
+Whether or not the Vega view should be added as a layer to a Leaflet map. Defaults to false.
+
+#### `publish: SignalType | Array<SignalType>`
+
+```javascript
+type SignalType = {
+    [signal: string]: string,
+    [as: string]: string,
+};
+```
+
+A signal or array of signals that will be available for the other views to listen to.
+
+#### `subscribe: SignalType | Array<SignalType>`
+
+A signal or array of signals originating from another view that this view wants to listen to.
+
+#### `tooltipOptions: TooltipType`
+
+The options that will be passed on to vega-tooltip for rendering custom tooltips on top of the view.
+
+```javascript
+type TooltipType = {
+    [showAllFields: string]?: boolean,
+    [fields: string]?: {
+        [formatType: string]: string,
+        [field: string]: string,
+        [title: string]: string,
+    },
+};
+```
+
+#### `styling: StylingType`
+
+Add view specific styling to the view. You can add the URI of an external css file or inline the styling as text. If you set values for both url and css, the value set for css will prevail. The setting addToHead defaults to false, if you set it totrue the styling will be added to the head of the page before the Vega view gets rendered. If you set it to false, you can bundle all styles on the server before sending to the client. Note that you can only style a view when you use the SVG renderer.
+
+```javascript
+type StylingType = {
+    url?: string
+    css?: string
+    addToHead?: boolean
+    classes?: string | Array<string>
+    classesAppend?: boolean
+}
+```
+
+##### `url: string`
+
+The url of an external stylesheet. Note that this setting only has effect when the renderer is set to 'svg'.
+
+##### `css: string`
+
+SVG renderer only. The css as string, allows you to inline the css in the configuration file which saves a HTTP request. If you set both `url` and `css`, the value set for `css` will prevail.
+
+##### `addToHead: boolean`
+
+SVG renderer only. Adds the styling to the head of the HTML page before the Vega view gets rendered, defaults to false. Default value is false, keep this setting if you want to bundle styles on the server before sending to the client. Note that this setting only has effect when the renderer is set to 'svg'.
+
+##### `classes: string | Array<string>`
+
+The css class or array of css classes that will be added to the view's containing HTML element.
+
+##### `classesAppend: boolean`
+
+Whether the classes should be appended to the existing classes or replace them. Defaults to true. This setting can be very handy if want to extend or overwrite some rules in the css class that is defined in the global configuration. For instance you want to use the global styling but overrule the background color.
 
 ### Leaflet
 
@@ -430,19 +518,18 @@ const data = {
     },
     specs: {
         spec1: ['./specs/spec4.json', {
-            class: 'view',
             element: 'map',
             leaflet: false,
             renderer: 'svg',
             styling: {
                 css: spec4StylingCss,
+                cssAppend: true,
                 addToHead: true,
-                overwrite: false,
+                classes: 'view',
             },
         }],
     },
     debug: true,
-    cssClass: 'view',
 };
 
 addViews(data)
@@ -452,7 +539,7 @@ addViews(data)
 
 
 ```
-This is an example of how you can add styling. Note that we have to add `!important` to overrule the inline styling that the Vega renderer applies to the Canvas element if you use the canvas renderer or to the SVG elements if you use the SVG renderer. We set `overwrite` to `false` add the new styling rules to the existing rules.
+This is an example of how you can add styling (only when using the SVG renderer). Note that we have to add `!important` to overrule the inline styling that the Vega renderer applies to the SVG elements. We set `cssAppend` to `true` to add the new styling rules to the existing ones.
 
 ## Add it to your own project
 

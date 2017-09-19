@@ -22,6 +22,7 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
          * [Example #2](#example-2)
          * [Example #3](#example-3)
          * [Example #4](#example-4)
+         * [Example #5](#example-5)
       * [Add it to your own project](#add-it-to-your-own-project)
          * [Javascript](#javascript)
          * [CSS](#css)

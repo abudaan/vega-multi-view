@@ -13,11 +13,13 @@ const store = {};
 const VERSION = '1.1.0';
 
 const head = document.getElementsByTagName('head').item(0);
-const addStyling = (styling, id) => {
+const addStyling = (styling, id, overwrite) => {
     // @TODO: allow append to style
     const e = document.getElementById(id);
     if (e !== null) {
-        head.removeChild(e);
+        if (overwrite === true) {
+            head.removeChild(e);
+        }
     }
     if (R.isNil(styling) === false && styling.addToHead === true) {
         if (typeof styling.css === 'string') {

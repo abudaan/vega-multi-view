@@ -152,6 +152,9 @@ specs:
 # true the styling will be added to the head of the page before the
 # Vega view gets rendered. If you set it to false, you can bundle all
 # styles on the server before sending to the client.
+# If you set overwrite to false, the new styling rules will be added
+# to the existing rules. Defaults to false which means that existing
+# rules will be replaced.
 styling:
     url: string
     css: 'div {color: red}'
@@ -226,6 +229,9 @@ tooltipOptions:
 # true the styling will be added to the head of the page before the
 # Vega view gets rendered. If you set it to false, you can bundle all
 # styles on the server before sending to the client.
+# If you set overwrite to false, the new styling rules will be added
+# to the existing rules of the view. Defaults to false which means
+# that existing rules will be replaced.
 styling:
     url: string
     json: css as JSON string
@@ -400,7 +406,8 @@ const globalStylingCss = `
 
     .view {
         padding: 20px;
-    }`;
+    }`
+;
 
 const spec4StylingCss = `
     .mark-path>path {
@@ -414,12 +421,14 @@ const spec4StylingCss = `
         fill-opacity: 1 !important;
         stroke-width: 5 !important;
         stroke: #00ffff !important;
-    }`;
+    }`
+;
 
 const data = {
     styling: {
         css: globalStylingCss,
         addToHead: true,
+        overwrite: false,
     },
     specs: {
         spec1: ['./specs/spec4.json', {
@@ -430,6 +439,7 @@ const data = {
             styling: {
                 css: spec4StylingCss,
                 addToHead: true,
+                overwrite: false,
             },
         }],
     },
@@ -444,7 +454,7 @@ addViews(data)
 
 
 ```
-This is an example of how you can add styling. Note that we have to add `!important` to overrule the inline styling that the Vega renderer applies to the Canvas element if you use the canvas renderer or to the SVG elements if you use the SVG renderer.
+This is an example of how you can add styling. Note that we have to add `!important` to overrule the inline styling that the Vega renderer applies to the Canvas element if you use the canvas renderer or to the SVG elements if you use the SVG renderer. We set `overwrite` to `false` add the new styling rules to the existing rules.
 
 ## Add it to your own project
 

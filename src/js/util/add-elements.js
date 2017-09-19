@@ -1,6 +1,6 @@
 import R from 'ramda';
 
-const addElements = (data, container, className) => R.map((d) => {
+const addElements = (data, container) => R.map((d) => {
     if (d.view === null) {
         return {
             ...d,
@@ -36,13 +36,6 @@ const addElements = (data, container, className) => R.map((d) => {
         divElement = document.createElement('div');
         divElement.id = d.id;
         container.appendChild(divElement);
-    }
-
-    console.log(d);
-    if (typeof d.cssClass === 'string') {
-        divElement.className = d.cssClass;
-    } else if (typeof className === 'string') {
-        divElement.className = className;
     }
 
     return {

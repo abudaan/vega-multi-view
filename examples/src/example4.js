@@ -64,23 +64,23 @@ const spec4StylingCss = `
 const data = {
     styling: {
         // json: globalStylingJson,
+        class: 'view',
         css: globalStylingCss,
         addToHead: true,
     },
     specs: {
         spec1: ['./specs/spec4.json', {
-            cssClass: ['view', 'view2'],
             // element: 'map',
             leaflet: false,
             renderer: 'svg',
             styling: {
+                class: ['view', 'view2'],
                 css: spec4StylingCss,
                 addToHead: true,
             },
         }],
     },
     debug: true,
-    cssClass: 'view',
 };
 
 addViews(data)
@@ -101,10 +101,10 @@ addViews(data)
                 },
                 specs: {
                     spec2: ['./specs/spec4.json', {
-                        cssClass: 'view',
                         leaflet: false,
                         renderer: 'svg',
                         styling: {
+                            class: 'view',
                             css: css2,
                             addToHead: true,
                         },

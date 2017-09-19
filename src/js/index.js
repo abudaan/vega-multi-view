@@ -5,47 +5,13 @@ import addDebug from './util/debug';
 import addTooltips from './util/add-tooltips';
 import connectSignals from './util/signals';
 import addElements from './util/add-elements';
+import addStyling from './util/add-styling';
 import { loadSpec } from './util/load-specs';
 
 const mapIndexed = R.addIndex(R.map);
 let firstRun = true;
 const store = {};
 const VERSION = '1.1.0';
-let index = 0;
-
-const head = document.getElementsByTagName('head').item(0);
-const addStyling = (styling, id) => {
-    if (R.isNil(styling) === false && styling.addToHead === true) {
-        if (typeof styling.css === 'string') {
-            let style = document.getElementById(`style-${id}`);
-            if (style === null) {
-                style = document.createElement('style');
-                style.id = `style-${id}`;
-                style.type = 'text/css';
-                head.appendChild(style);
-            }
-            const text = document.createTextNode(styling.css);
-            if (styling.overwrite === true) {
-                style.innerHTML = '';
-            }
-            style.appendChild(text);
-        } else if (typeof styling.url === 'string') {
-            const links = document.querySelectorAll(`id^=${id}`);
-            if (styling.overwrite === true) {
-                links.forEach((link) => {
-                    head.removeChild(link);
-                });
-            }
-            const link = document.createElement('link');
-            link.id = `id-${index}`;
-            link.type = 'text/css';
-            link.setAttribute('rel', 'stylesheet');
-            link.setAttribute('href', styling.url);
-            head.appendChild(link);
-            index += 1;
-        }
-    }
-};
 
 const renderViews = (data, renderer, container) => {
     data.forEach((d) => {
@@ -135,14 +101,17 @@ export const addViews = async (config, type = null) => {
         hover = false,
         specs,
         element,
-        cssClass = false,
         renderer = 'canvas',
         debug = false,
         overwrite = false,
         styling,
     } = config;
 
-    addStyling(styling, 'global');
+    addStyling({
+        styling,
+        id: 'global',
+        element: document.body,
+    });
 
     let specsArray;
     const [
@@ -200,7 +169,7 @@ export const addViews = async (config, type = null) => {
     }
 
     let data = await createSpecData(specsArray, type);
-    data = addElements(data, containerElement, cssClass);
+    data = addElements(data, containerElement);
     addTooltips(data);
     connectSignals(data);
     if (debug) {
@@ -222,7 +191,7 @@ export const addViews = async (config, type = null) => {
                         (hover === true && d.vmvConfig.hover !== false)) {
                         d.view.hover();
                     }
-                    addStyling(d.vmvConfig.styling, d.id);
+                    addStyling(d);
                 }
                 store[d.id] = d;
             });

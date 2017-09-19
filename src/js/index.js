@@ -11,9 +11,10 @@ const mapIndexed = R.addIndex(R.map);
 let firstRun = true;
 const store = {};
 const VERSION = '1.1.0';
+let index = 0;
 
 const head = document.getElementsByTagName('head').item(0);
-const addStyling = (styling, id, overwrite) => {
+const addStyling = (styling, id) => {
     if (R.isNil(styling) === false && styling.addToHead === true) {
         if (typeof styling.css === 'string') {
             let style = document.getElementById(id);
@@ -24,22 +25,24 @@ const addStyling = (styling, id, overwrite) => {
                 head.appendChild(style);
             }
             const text = document.createTextNode(styling.css);
-            if (overwrite === true) {
+            if (styling.overwrite === true) {
                 style.innerHTML = '';
             }
             style.appendChild(text);
         } else if (typeof styling.url === 'string') {
-            let link = document.getElementById(id);
-            // if (overwrite === true && link !== null) {
-            if (link !== null) {
-                head.removeChild(link);
+            const links = document.querySelectorAll(`id^=${id}`);
+            if (styling.overwrite === true) {
+                links.forEach((link) => {
+                    head.removeChild(link);
+                });
             }
-            link = document.createElement('link');
-            link.id = id;
+            const link = document.createElement('link');
+            link.id = `id-${index}`;
             link.type = 'text/css';
             link.setAttribute('rel', 'stylesheet');
             link.setAttribute('href', styling.url);
             head.appendChild(link);
+            index += 1;
         }
     }
 };
@@ -123,7 +126,7 @@ export const removeViews = (...args) => {
 
 export const addViews = async (config, type = null) => {
     if (firstRun === true) {
-        console.log(`vega-multi-view ${VERSION}`);
+        console.log(`vega- multi - view ${VERSION} `);
         firstRun = false;
     }
 
@@ -233,7 +236,7 @@ export const addViews = async (config, type = null) => {
 */
 export const showSpecInTab = (spec) => {
     // const json = encodeURIComponent(JSON.stringify(TestSpec4));
-    // window.open(`data:application / json, ${json }`, '_blank');
+    // window.open(`data: application / json, ${json } `, '_blank');
     const json = JSON.stringify(spec, null, 4);
     const w = window.open();
     w.document.open();

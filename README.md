@@ -154,8 +154,8 @@ specs:
 # styles on the server before sending to the client.
 # If you set overwrite to false, the new styling rules will be added
 # to the existing rules. Defaults to false which means that existing
-# rules will be replaced. This option only works if you add the
-# styling as css text.
+# rules will be replaced. Note that you can only style the elements
+# inside a view when you use the SVG renderer.
 styling:
     url: ../css/view1.css
     css: 'div {color: red}'
@@ -229,16 +229,12 @@ tooltipOptions:
 # The setting addToHead defaults to false, if you set it to
 # true the styling will be added to the head of the page before the
 # Vega view gets rendered. If you set it to false, you can bundle all
-# styles on the server before sending to the client.
-# If you set overwrite to false, the new styling rules will be added
-# to the existing rules of the view. Defaults to false which means
-# that existing rules will be replaced. This option only works if
-# you add the styling as css text.
+# styles on the server before sending to the client. Note that you can
+# only style a view when you use the SVG renderer.
 styling:
     url: ../css/view1.css
     css: 'div {color: red}'
     addToHead: false
-    overwrite: true
 ```
 Note that because a spec can be rendered without a view specific configuration file as well, none of these entries are mandatory.
 

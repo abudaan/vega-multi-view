@@ -86,5 +86,25 @@ const data = {
 addViews(data)
     .then((result) => {
         console.log(result);
+        const css = `.view {
+            background-color: yellow;
+        }`;
+        // setTimeout(() => {
+        //     const data1 = {
+        //         styling: {
+        //             css,
+        //             addToHead: true,
+        //             overwrite: false,
+        //         },
+        //         specs: {
+        //             spec2: ['./specs/spec4.json', {
+        //                 class: 'view',
+        //                 leaflet: false,
+        //                 renderer: 'svg',
+        //             }],
+        //         },
+        //     };
+        //     addViews(data1);
+        // }, 4000);
     });
 

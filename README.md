@@ -732,7 +732,7 @@ const { addViews, removeView } =  require('vega-multi-view');
 You can also add `vega-multi-view` as UMD bundle to your HTML page:
 
 ```html
-<script src="https://raw.githubusercontent.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.js"></script>
+<script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.js"></script>
 ```
 
 Then in your plain es5 javascript code:
@@ -778,10 +778,69 @@ Note that you do not accidentally add the `.css` extension otherwise the css com
 You can also add the pre-compiled stylesheet to your HTML page:
 
 ```html
-<link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.css" />
 ```
 
 ## See it in action
 
 You can see a live example [overhere](http://app4.bigdator.nl/6a/6b/4b/8a/8b). This is a related project called [vega-multi-view-server](https://github.com/abudaan/vega-multi-view-server) that adds Vega views to the page based in on the ids you add to the url. If you change the order of the ids in the url, the order of the views on the page will change accordingly.
 
+### Example with REST API call:
+
+This is an example that uses the UMD approach and loads the global configuration file via a REST API call. The REST API returns the specs of the ids you feed it, for instance:
+
+
+Check the live example [here](http://app4.bigdator.nl/rest). This example makes the following API call:
+
+<http://app4.bigdator.nl/json/6a/6b>
+
+Which returns a global configuration file that loads the specs 6a and 6b.
+
+You can also provide your own API url via the hash. The hash value overrides the hard-coded API url, for instance:
+
+<http://app4.bigdator.nl/rest/#4a>
+
+
+```html
+<!doctype html>
+<html>
+
+<head>
+    <title>vega</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.css" />
+    <script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.js"></script>
+</head>
+
+<body>
+    <div id="container"></div>
+    <script>
+        // vega-multi-view is available via the global variable vmv
+        var addViews = window.vmv.addViews;
+
+        // set a fallback rest api url
+        var restApiUrl = '/json/6a/6b';
+
+        // get the url from the hash
+        var hash = location.hash.substring(1);
+        if (hash.length > 0) {
+            if (restApiUrl.indexOf('/json/') === -1) {
+                restApiUrl = '/json/' + hash;
+            } else {
+                restApiUrl = hash;
+            }
+        }
+
+        // parse the global configuration and render the views
+        addViews(restApiUrl)
+            .then(function (result) {
+                console.log(result);
+            }).catch(function (error) {
+                console.error(error);
+            });
+    </script>
+</body>
+
+</html>
+```

@@ -267,10 +267,13 @@ specs:
     spec2: [../specs/spec2.vg.json, ../conf/spec2.yaml]
 styling:
     url: ../css/view1.css
-    css: 'div {color: red}'
-    cssAppend: true,
-    addToHead: false,
-    class: [view, square],
+    css: 'div {
+        color: red;
+        font-size: 1em;
+    }'
+    cssAppend: true
+    addToHead: false
+    class: [view, square]
     classAppend: true
 dataPath: ./assets/data
 imagePath: ./assets/img
@@ -378,7 +381,10 @@ tooltipOptions:
           title: displayName
 styling:
     url: ../css/view1.css
-    css: 'div {color: red}'
+    css: 'div {
+        color: red;
+        font-size: 1em;
+    }'
     addToHead: false
     classes: [view, small-view]
     classesAppend: true

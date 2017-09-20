@@ -783,7 +783,7 @@ You can also add the pre-compiled stylesheet to your HTML page:
 
 ## See it in action
 
-I made a related project called [vega-multi-view-server](https://github.com/abudaan/vega-multi-view-server) that is a simple REST API server that has a single endpoint that returns a global configuration based on the spec ids you send to the server.
+I made a related project called [vega-multi-view-server](https://github.com/abudaan/vega-multi-view-server) which is a simple REST API server that has a single endpoint that returns a global configuration based on the spec ids you send to the server.
 
 It can return 1) an HTML page with the rendered Vega views, or 2) a JSON string that you can process further to your liking.
 

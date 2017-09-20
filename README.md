@@ -161,10 +161,10 @@ type ResultType = {
     element: null | HTMLElement
 
     // The Vega specification as javascript object (see below)
-    spec: SpecType
+    spec: VegaSpecType
 
     // The view specific configuration (see below)
-    vmvConfig: VMVType
+    vmvConfig: ViewConfigType
 
     // Reference to the HTML element that contains the rendered Vega
     // view

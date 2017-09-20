@@ -16,7 +16,8 @@
             "error",
             {
                 "devDependencies": [
-                    "./Resources/tests/**"
+                    "./gulpfile.babel.js",
+                    "./examples/gulpfile.babel.js"
                 ]
             }
         ],

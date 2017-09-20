@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>vega</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../browser/vmv.css" />
+    <script src="../browser/vmv.js"></script>
+</head>
+
+<body>
+    <div id="container"></div>
+    <script>
+        // vega-multi-view is available via the global variable vmv
+        var addViews = window.vmv.addViews;
+        addViews({
+            specs: {
+                spec1: ['../specs/spec4.json', {
+                    element: 'container',
+                    leaflet: true
+                }]
+            },
+            debug: true
+        }).then(function (result) {
+            console.log(result);
+        }).catch(function (error) {
+            console.error(error);
+        });
+    </script>
+</body>
+
+</html>

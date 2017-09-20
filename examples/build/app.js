@@ -1,1 +1,0 @@
-console.error("Error: Cannot find module '/home/abudaan/workspace/vega-multi-view/examples/src/index.js' from '/home/abudaan/workspace/vega-multi-view/examples'");

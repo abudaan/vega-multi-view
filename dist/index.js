@@ -55,6 +55,10 @@ var _addElements = require('./util/add-elements');
 
 var _addElements2 = _interopRequireDefault(_addElements);
 
+var _addStyling = require('./util/add-styling');
+
+var _addStyling2 = _interopRequireDefault(_addStyling);
+
 var _loadSpecs = require('./util/load-specs');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -62,9 +66,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var mapIndexed = _ramda2.default.addIndex(_ramda2.default.map);
 var firstRun = true;
 var store = {};
-var VERSION = '1.1.0';
+var VERSION = '1.1.2';
 
-var renderViews = function renderViews(data, renderer) {
+var renderViews = function renderViews(data, renderer, container) {
     data.forEach(function (d) {
         var view = d.view,
             vmvConfig = d.vmvConfig,
@@ -72,7 +76,13 @@ var renderViews = function renderViews(data, renderer) {
 
         if (view !== null) {
             if (vmvConfig.leaflet === true) {
-                (0, _vegaAsLeafletLayer2.default)(d, renderer);
+                var config = {
+                    view: d.view,
+                    renderer: d.renderer || renderer,
+                    container: container,
+                    mapElement: element
+                };
+                (0, _vegaAsLeafletLayer2.default)(config);
             } else {
                 view.renderer(vmvConfig.renderer || renderer).initialize(element);
             }
@@ -119,11 +129,14 @@ var createSpecData = function createSpecData(specs, type) {
 
                         case 12:
                             specClone = (0, _extends3.default)({}, spec);
-                            vmvConfig = data.vmvConfig || {};
+                            vmvConfig = data.vmvConfig || { styling: {} };
 
                             if (_ramda2.default.isNil(specClone.vmvConfig) === false) {
                                 vmvConfig = (0, _extends3.default)({}, specClone.vmvConfig);
                                 delete specClone.vmvConfig;
+                            }
+                            if (_ramda2.default.isNil(vmvConfig.styling)) {
+                                vmvConfig.styling = {};
                             }
                             view = new _vega.View((0, _vega.parse)(specClone));
                             return _context.abrupt('return', new _promise2.default(function (resolve) {
@@ -135,7 +148,7 @@ var createSpecData = function createSpecData(specs, type) {
                                 });
                             }));
 
-                        case 17:
+                        case 18:
                         case 'end':
                             return _context.stop();
                     }
@@ -162,7 +175,7 @@ var removeViews = exports.removeViews = function removeViews() {
         if (_ramda2.default.isNil(data) === false) {
             var elem = data.element;
             if (elem !== null) {
-                data.parent.removeChild(elem);
+                elem.parentNode.removeChild(elem);
             }
             delete store[id];
         }
@@ -174,18 +187,22 @@ var addViews = exports.addViews = function () {
     var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(config) {
         var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-        var _config$run, run, _config$hover, hover, specs, element, _config$cssClass, cssClass, _config$renderer, renderer, _config$debug, debug, _config$overwrite, overwrite, specsArray, _R$splitWhen, _R$splitWhen2, inStore, outStore, containerElement, data;
+        var _config$run, run, _config$hover, hover, specs, element, _config$renderer, renderer, _config$debug, debug, _config$overwrite, overwrite, _config$styling, styling, specsArray, _R$splitWhen, _R$splitWhen2, inStore, outStore, containerElement, data;
 
         return _regenerator2.default.wrap(function _callee2$(_context2) {
             while (1) {
                 switch (_context2.prev = _context2.next) {
                     case 0:
                         if (firstRun === true) {
-                            console.log('vega-multi-view ' + VERSION);
+                            console.log('vega- multi - view ' + VERSION + ' ');
                             firstRun = false;
                         }
 
-                        _config$run = config.run, run = _config$run === undefined ? true : _config$run, _config$hover = config.hover, hover = _config$hover === undefined ? false : _config$hover, specs = config.specs, element = config.element, _config$cssClass = config.cssClass, cssClass = _config$cssClass === undefined ? false : _config$cssClass, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug, _config$overwrite = config.overwrite, overwrite = _config$overwrite === undefined ? false : _config$overwrite;
+                        _config$run = config.run, run = _config$run === undefined ? true : _config$run, _config$hover = config.hover, hover = _config$hover === undefined ? false : _config$hover, specs = config.specs, element = config.element, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug, _config$overwrite = config.overwrite, overwrite = _config$overwrite === undefined ? false : _config$overwrite, _config$styling = config.styling, styling = _config$styling === undefined ? {} : _config$styling;
+
+
+                        (0, _addStyling2.default)('global', styling, document.body);
+
                         specsArray = void 0;
                         _R$splitWhen = _ramda2.default.splitWhen(function (key) {
                             return _ramda2.default.isNil(store[key]);
@@ -194,7 +211,12 @@ var addViews = exports.addViews = function () {
 
                         if (overwrite) {
                             removeViews(inStore);
-                            specsArray = specs;
+                            if (inStore.length === 1) {
+                                console.info('view with id "' + inStore[0] + '" is overwritten');
+                            } else if (inStore.length > 1) {
+                                console.info('views with ids "' + inStore.join('", "') + '" is overwritten');
+                            }
+                            specsArray = _ramda2.default.keys(specs);
                         } else {
                             if (inStore.length === 1) {
                                 console.warn('view with id "' + inStore[0] + '" already exist!');
@@ -211,18 +233,18 @@ var addViews = exports.addViews = function () {
                                 id: key
                             };
                             if (Array.isArray(s) && s.length === 2) {
-                                data.spec = s[0];
-                                data.vmcConfig = s[1];
+                                var _s = (0, _slicedToArray3.default)(s, 2);
+
+                                data.spec = _s[0];
+                                data.vmvConfig = _s[1];
                             }
                             return data;
-                        }, _ramda2.default.keys(specs));
+                        }, specsArray);
 
-                        containerElement = null;
+                        // default to document.body
+                        containerElement = document.body;
 
-
-                        if (_ramda2.default.isNil(element)) {
-                            containerElement = document.body;
-                        } else if (typeof element === 'string') {
+                        if (typeof element === 'string') {
                             containerElement = document.getElementById(element);
                             if (_ramda2.default.isNil(containerElement)) {
                                 containerElement = document.createElement('div');
@@ -233,32 +255,37 @@ var addViews = exports.addViews = function () {
                             }
                         } else if (element instanceof HTMLElement) {
                             containerElement = element;
+                            if (document.getElementById(element) === null) {
+                                document.body.appendChild(containerElement);
+                            }
+                        } else if (typeof element !== 'undefined') {
+                            console.warn('invalid element, using document.body instead');
                         }
 
-                        _context2.next = 10;
+                        _context2.next = 11;
                         return createSpecData(specsArray, type);
 
-                    case 10:
+                    case 11:
                         data = _context2.sent;
 
-                        data = (0, _addElements2.default)(data, containerElement, cssClass);
+                        data = (0, _addElements2.default)(data, containerElement);
                         (0, _addTooltips2.default)(data);
                         (0, _signals2.default)(data);
 
                         if (!debug) {
-                            _context2.next = 17;
+                            _context2.next = 18;
                             break;
                         }
 
-                        _context2.next = 17;
+                        _context2.next = 18;
                         return (0, _debug2.default)(data);
 
-                    case 17:
+                    case 18:
                         return _context2.abrupt('return', new _promise2.default(function (resolve) {
                             // wait until the next paint cycle so the created elements
                             // are added to the DOM, add the views, then resolve
                             setTimeout(function () {
-                                renderViews(data, renderer);
+                                renderViews(data, renderer, containerElement);
                                 data.forEach(function (d) {
                                     if (d.view !== null) {
                                         if (d.vmvConfig.run === true || run === true && d.vmvConfig.run !== false) {
@@ -267,6 +294,7 @@ var addViews = exports.addViews = function () {
                                         if (d.vmvConfig.hover === true || hover === true && d.vmvConfig.hover !== false) {
                                             d.view.hover();
                                         }
+                                        (0, _addStyling2.default)(d.id, d.vmvConfig.styling, d.element, styling);
                                     }
                                     store[d.id] = d;
                                 });
@@ -274,7 +302,7 @@ var addViews = exports.addViews = function () {
                             }, 0);
                         }));
 
-                    case 18:
+                    case 19:
                     case 'end':
                         return _context2.stop();
                 }
@@ -292,7 +320,7 @@ var addViews = exports.addViews = function () {
 */
 var showSpecInTab = exports.showSpecInTab = function showSpecInTab(spec) {
     // const json = encodeURIComponent(JSON.stringify(TestSpec4));
-    // window.open(`data:application / json, ${json }`, '_blank');
+    // window.open(`data: application / json, ${json } `, '_blank');
     var json = (0, _stringify2.default)(spec, null, 4);
     var w = window.open();
     w.document.open();

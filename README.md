@@ -81,27 +81,41 @@ addViews(data)
     .then(result => console.log(result));
 ```
 
+## API
+
+You can also import a util function that prints the spec in JSON format to a new tab:
+
+```javascript
+import { showSpecInTab } from 'vega-multi-view';
+import spec from '../specs/my-spec';
+
+button.addEventListener('click', () => {
+    showSpecInTab(spec);
+});
+```
+
 ## Return value
 
 After all views have been added to the page, a key-value store object containing information about each view is returned. Information per view:
 ```javascript
-{
+type ResultType = {
     // The id as you have set it in the specs object (see below)
-    id: 'string'
+    id: string,
 
-    // Reference to the HTML Element that contains the Vega view
-    element: '<HTMLElement>'
+    // Reference to the HTML Element that contains the Vega view or
+    // null in case of headless rendering.
+    element: null | HTMLElement
 
-    // The Vega specification as javascript object (POJO)
-    spec: '<Object>'
+    // The Vega specification as javascript object (see below)
+    spec: SpecType
 
-    // The view specific configuration
-    vmvConfig: '<Object>'
+    // The view specific configuration (see below)
+    vmvConfig: VMVType
 
     // Reference to the HTML element that contains the rendered Vega
     // view
-    view: '<HTMLElement>'
-}
+    view: HTMLElement
+};
 ```
 
 ## Terminology
@@ -576,6 +590,10 @@ This is an example of how you can add styling (only when using the SVG renderer)
 
 ### Javascript
 
+`vega-multi-view` is available both as esnext and commonjs module, and as UMD bundle.
+
+#### install for use as esnext or commonjs module
+
 You can install `vega-multi-view` with npm or yarn:
 ```sh
 # yarn
@@ -584,19 +602,53 @@ yarn add vega-multi-view
 # npm
 npm install --save vega-multi-view
 ```
-Then in your javascript assuming you code in es2015 and up:
+
+#### esnext (recommended)
+
+Import the module to your javascript code:
+
 ```javascript
 import { addViews, removeView } from 'vega-multi-view';
 ```
-You can also import a util function that prints the spec in JSON format to a new tab:
-```javascript
-import { showSpecInTab } from 'vega-multi-view';
-import spec from '../specs/my-spec';
 
-button.addEventListener('click', () => {
-    showSpecInTab(spec);
+#### commonjs
+
+Import the module to your javascript code:
+
+```javascript
+const { addViews, removeView } =  require('vega-multi-view');
+```
+
+#### Coding like it's 1999
+
+You can also embed the UMD bundle to your HTML page:
+
+```html
+<script src="https://raw.githubusercontent.com/abudaan/vega-multi-view/master/browser/vmv.js"></script>
+```
+
+Then in your plain es5 javascript code:
+
+```javascript
+// vega-multi-view is available via the global variable vmv
+var addViews = window.vmv.addViews;
+
+addViews({
+    specs: {
+        spec1: ['../specs/spec4.json', {
+            element: 'container',
+            leaflet: true
+        }]
+    },
+    debug: true
+}).then(function (result) {
+    console.log(result);
+}).catch(function (error) {
+    console.error(error);
 });
 ```
+
+Note that promises are poly-filled so `then` and `catch` are supported in older browsers as well.
 
 ### CSS
 
@@ -615,6 +667,11 @@ Both Leaflet and Vega-tooltip provide their own stylesheet and unless your proje
 
 Note that you do not accidentally add the `.css` extension otherwise the css compiler will just add a css @import statement which triggers an extra HTTP request.
 
+You can also add a pre-compiled stylesheet to your HTML page:
+
+```html
+<link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/abudaan/vega-multi-view/master/browser/vmv.css" />
+```
 
 ## See it in action
 

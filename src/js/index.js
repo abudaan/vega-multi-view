@@ -11,7 +11,7 @@ import { loadSpec } from './util/load-specs';
 const mapIndexed = R.addIndex(R.map);
 let firstRun = true;
 const store = {};
-const VERSION = '1.1.1';
+const VERSION = '1.1.2';
 
 const renderViews = (data, renderer, container) => {
     data.forEach((d) => {
@@ -59,6 +59,9 @@ const createSpecData = (specs, type) => {
             vmvConfig = { ...specClone.vmvConfig };
             delete specClone.vmvConfig;
         }
+        if (R.isNil(vmvConfig.styling)) {
+            vmvConfig.styling = {};
+        }
         const view = new View(parse(specClone));
         return new Promise((resolve) => {
             resolve({
@@ -104,7 +107,7 @@ export const addViews = async (config, type = null) => {
         renderer = 'canvas',
         debug = false,
         overwrite = false,
-        styling,
+        styling = {},
     } = config;
 
     addStyling('global', styling, document.body);

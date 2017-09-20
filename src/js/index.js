@@ -12,7 +12,7 @@ import { loadSpec } from './util/load-specs';
 const mapIndexed = R.addIndex(R.map);
 let firstRun = true;
 const store = {};
-const VERSION = '1.1.2';
+const VERSION = '1.1.3';
 
 const renderViews = (data, renderer, container) => {
     data.forEach((d) => {

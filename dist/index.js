@@ -68,7 +68,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var mapIndexed = _ramda2.default.addIndex(_ramda2.default.map);
 var firstRun = true;
 var store = {};
-var VERSION = '1.1.2';
+var VERSION = '1.1.3';
 
 var renderViews = function renderViews(data, renderer, container) {
     data.forEach(function (d) {

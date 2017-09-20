@@ -1,6 +1,6 @@
 {
     "name": "vega-multi-view",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "Add multiple separate Vega views to a page and connect the signals of these views",
     "license": "MIT",
     "author": "abudaan",

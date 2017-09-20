@@ -1,6 +1,7 @@
 import R from 'ramda';
 import { parse, View } from 'vega';
 import vegaAsLeafletLayer from 'vega-as-leaflet-layer';
+import { load } from 'fetch-helpers';
 import addDebug from './util/debug';
 import addTooltips from './util/add-tooltips';
 import connectSignals from './util/signals';
@@ -93,10 +94,19 @@ export const removeViews = (...args) => {
 };
 
 
-export const addViews = async (config, type = null) => {
+export const addViews = async (cfg, type = null) => {
     if (firstRun === true) {
         console.log(`vega- multi - view ${VERSION} `);
         firstRun = false;
+    }
+
+    let config = cfg;
+    if (typeof config === 'string') {
+        try {
+            config = await load(config);
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     const {

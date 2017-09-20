@@ -39,6 +39,8 @@ var _vegaAsLeafletLayer = require('vega-as-leaflet-layer');
 
 var _vegaAsLeafletLayer2 = _interopRequireDefault(_vegaAsLeafletLayer);
 
+var _fetchHelpers = require('fetch-helpers');
+
 var _debug = require('./util/debug');
 
 var _debug2 = _interopRequireDefault(_debug);
@@ -184,10 +186,10 @@ var removeViews = exports.removeViews = function removeViews() {
 };
 
 var addViews = exports.addViews = function () {
-    var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(config) {
+    var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(cfg) {
         var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-        var _config$run, run, _config$hover, hover, specs, element, _config$renderer, renderer, _config$debug, debug, _config$overwrite, overwrite, _config$styling, styling, specsArray, _R$splitWhen, _R$splitWhen2, inStore, outStore, containerElement, data;
+        var config, _config, _config$run, run, _config$hover, hover, specs, element, _config$renderer, renderer, _config$debug, debug, _config$overwrite, overwrite, _config$styling, styling, specsArray, _R$splitWhen, _R$splitWhen2, inStore, outStore, containerElement, data;
 
         return _regenerator2.default.wrap(function _callee2$(_context2) {
             while (1) {
@@ -198,7 +200,30 @@ var addViews = exports.addViews = function () {
                             firstRun = false;
                         }
 
-                        _config$run = config.run, run = _config$run === undefined ? true : _config$run, _config$hover = config.hover, hover = _config$hover === undefined ? false : _config$hover, specs = config.specs, element = config.element, _config$renderer = config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = config.debug, debug = _config$debug === undefined ? false : _config$debug, _config$overwrite = config.overwrite, overwrite = _config$overwrite === undefined ? false : _config$overwrite, _config$styling = config.styling, styling = _config$styling === undefined ? {} : _config$styling;
+                        config = cfg;
+
+                        if (!(typeof config === 'string')) {
+                            _context2.next = 12;
+                            break;
+                        }
+
+                        _context2.prev = 3;
+                        _context2.next = 6;
+                        return (0, _fetchHelpers.load)(config);
+
+                    case 6:
+                        config = _context2.sent;
+                        _context2.next = 12;
+                        break;
+
+                    case 9:
+                        _context2.prev = 9;
+                        _context2.t0 = _context2['catch'](3);
+
+                        console.error(_context2.t0);
+
+                    case 12:
+                        _config = config, _config$run = _config.run, run = _config$run === undefined ? true : _config$run, _config$hover = _config.hover, hover = _config$hover === undefined ? false : _config$hover, specs = _config.specs, element = _config.element, _config$renderer = _config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = _config.debug, debug = _config$debug === undefined ? false : _config$debug, _config$overwrite = _config.overwrite, overwrite = _config$overwrite === undefined ? false : _config$overwrite, _config$styling = _config.styling, styling = _config$styling === undefined ? {} : _config$styling;
 
 
                         (0, _addStyling2.default)('global', styling, document.body);
@@ -262,10 +287,10 @@ var addViews = exports.addViews = function () {
                             console.warn('invalid element, using document.body instead');
                         }
 
-                        _context2.next = 11;
+                        _context2.next = 22;
                         return createSpecData(specsArray, type);
 
-                    case 11:
+                    case 22:
                         data = _context2.sent;
 
                         data = (0, _addElements2.default)(data, containerElement);
@@ -273,14 +298,14 @@ var addViews = exports.addViews = function () {
                         (0, _signals2.default)(data);
 
                         if (!debug) {
-                            _context2.next = 18;
+                            _context2.next = 29;
                             break;
                         }
 
-                        _context2.next = 18;
+                        _context2.next = 29;
                         return (0, _debug2.default)(data);
 
-                    case 18:
+                    case 29:
                         return _context2.abrupt('return', new _promise2.default(function (resolve) {
                             // wait until the next paint cycle so the created elements
                             // are added to the DOM, add the views, then resolve
@@ -302,12 +327,12 @@ var addViews = exports.addViews = function () {
                             }, 0);
                         }));
 
-                    case 19:
+                    case 30:
                     case 'end':
                         return _context2.stop();
                 }
             }
-        }, _callee2, undefined);
+        }, _callee2, undefined, [[3, 9]]);
     }));
 
     return function addViews(_x3) {

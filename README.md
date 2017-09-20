@@ -128,9 +128,9 @@ The `vega-multi-view` module exposes 3 methods:
 * [removeViews](#removeviewsstring--arraystring-resulttype)
 * [showSpecInTab](#showspecintabspectype)
 
-### `addViews(config: ConfigType): Promise<any>`
+### `addViews(config: string | ConfigType): Promise<any>`
 
-The types listed below will be explained in detail in [configuration chapter](#configuration).
+You can pass the uri of a global configuration file or the configuration as object. The types listed below will be explained in detail in [configuration chapter](#configuration).
 
 ```javascript
 // @flow

@@ -789,9 +789,9 @@ I made a related project called [vega-multi-view-server](https://github.com/abud
 
 The server returns an HTML page with the rendered Vega views or a JSON string that you can process further to your liking. Here some examples:
 
-1) <http://app4.bigdator.nl/6a/6b/4b/8a/8b> -> returns a rendered Twig template
-2) <http://app4.bigdator.nl/rest/4a/4b> -> returns configuration object as JSON string
-3) <http://app4.bigdator.nl/rest/simple.html> -> loads configuration via API call and renders the views
+1) <http://app4.bigdator.nl/6a/6b/4b/8a/8b> &rarr; returns a rendered Twig template
+2) <http://app4.bigdator.nl/rest/4a/4b> &rarr; returns configuration object as JSON string
+3) <http://app4.bigdator.nl/rest/simple.html> &rarr; loads configuration via API call and renders the views
 
 
 ### Example with REST API call:

@@ -756,7 +756,7 @@ addViews({
 });
 ```
 
-Note that promises are poly-filled so `then` and `catch` are supported in older browsers as well.
+The module has a poly-fill for Promise so `then` and `catch` are supported in older browsers as well. The module is hosted on [rawgit](https://rawgit.com/) which is a CDN that caches files from Github and serves them with the correct MIME type. Note that rawgit does not guarantee 100% uptime. If your application requires 100% uptime you can download the javascript and css file (see below) and host it from another server.
 
 ### CSS
 
@@ -783,23 +783,17 @@ You can also add the pre-compiled stylesheet to your HTML page:
 
 ## See it in action
 
-You can see a live example [overhere](http://app4.bigdator.nl/6a/6b/4b/8a/8b). This is a related project called [vega-multi-view-server](https://github.com/abudaan/vega-multi-view-server) that adds Vega views to the page based in on the ids you add to the url. If you change the order of the ids in the url, the order of the views on the page will change accordingly.
+I made a related project called [vega-multi-view-server](https://github.com/abudaan/vega-multi-view-server) that is a simple REST API server that has a single endpoint that returns a global configuration based on the spec ids you send to the server.
+
+It can return 1) an HTML page with the rendered Vega views, or 2) a JSON string that you can process further to your liking.
+
+1) <http://app4.bigdator.nl/6a/6b/4b/8a/8b>
+2) <http://app4.bigdator.nl/rest/simple.html>
+
 
 ### Example with REST API call:
 
-This is an example that uses the UMD approach and loads the global configuration file via a REST API call. The REST API returns the specs of the ids you feed it, for instance:
-
-
-Check the live example [here](http://app4.bigdator.nl/rest). This example makes the following API call:
-
-<http://app4.bigdator.nl/json/6a/6b>
-
-Which returns a global configuration file that loads the specs 6a and 6b.
-
-You can also provide your own API url via the hash. The hash value overrides the hard-coded API url, for instance:
-
-<http://app4.bigdator.nl/rest/#4a>
-
+Below the HTML that uses the UMD approach and loads the global configuration file via a REST API call.
 
 ```html
 <!doctype html>
@@ -819,18 +813,8 @@ You can also provide your own API url via the hash. The hash value overrides the
         // vega-multi-view is available via the global variable vmv
         var addViews = window.vmv.addViews;
 
-        // set a fallback rest api url
+        // feed the endpoint '/json' the parameters '6a' and '6b'
         var restApiUrl = '/json/6a/6b';
-
-        // get the url from the hash
-        var hash = location.hash.substring(1);
-        if (hash.length > 0) {
-            if (restApiUrl.indexOf('/json/') === -1) {
-                restApiUrl = '/json/' + hash;
-            } else {
-                restApiUrl = hash;
-            }
-        }
 
         // parse the global configuration and render the views
         addViews(restApiUrl)

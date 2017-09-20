@@ -131,12 +131,7 @@ type ViewConfigType = {
     styling?: StylingType,
     publish?: SignalType | Array<SignalType>,
     subscribe?: SignalType | Array<SignalType>,
-    tooltipOptions:
-        showAllFields: false
-        fields:
-            - formatType: string
-            field: fieldName
-            title: displayName
+    tooltipOptions: TooltipType,
 };
 
 type SignalType = {

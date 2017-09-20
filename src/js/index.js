@@ -96,7 +96,7 @@ export const removeViews = (...args) => {
 
 export const addViews = async (cfg, type = null) => {
     if (firstRun === true) {
-        console.log(`vega- multi - view ${VERSION} `);
+        console.log(`vega-multi-view ${VERSION}`);
         firstRun = false;
     }
 

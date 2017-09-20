@@ -260,7 +260,6 @@ tooltipOptions:
 styling:
     url: ../css/view1.css
     css: 'div {color: red}'
-    cssAppend: false
     addToHead: false
     classes: [view, small-view]
     classesAppend: true

@@ -7,66 +7,66 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
 
 ## Table of Contents
 
-   * [Vega multi view](#vega-multi-view)
-      * [Table of Contents](#table-of-contents)
-      * [How to use](#how-to-use)
-      * [Terminology](#terminology)
-         * [Types](#types)
-      * [API](#api)
-         * [addViews(config: ConfigType): Promise&lt;any&gt;](#addviewsconfig-configtype-promiseany)
-         * [removeViews(string | Array&lt;string&gt;): ResultType](#removeviewsstring--arraystring-resulttype)
-         * [showSpecInTab(SpecType)](#showspecintabspectype)
-      * [Configuration](#configuration)
-         * [Global configuration](#global-configuration)
-            * [debug: boolean](#debug-boolean)
-            * [overwrite: boolean](#overwrite-boolean)
-            * [element: string | HTMLElement](#element-string--htmlelement)
-            * [renderer: "canvas" | "svg"](#renderer-canvas--svg)
-            * [run: boolean](#run-boolean)
-            * [hover: boolean](#hover-boolean)
-            * [specs: { [string]: SpecType }](#specs--string-spectype-)
-            * [styling: StylingType](#styling-stylingtype)
-               * [url: string](#url-string)
-               * [css: string](#css-string)
-               * [addToHead: boolean](#addtohead-boolean)
-               * [cssAppend: boolean](#cssappend-boolean)
-               * [classes: string | Array&lt;string&gt;](#classes-string--arraystring)
-               * [classesAppend: boolean](#classesappend-boolean)
-            * [dataPath: string](#datapath-string)
-            * [imagePath: string](#imagepath-string)
-         * [View specific configuration](#view-specific-configuration)
-            * [spec: string](#spec-string)
-            * [renderer: "canvas" | "svg"](#renderer-canvas--svg-1)
-            * [element: false | string | HTMLElement](#element-false--string--htmlelement)
-            * [run: boolean](#run-boolean-1)
-            * [hover: boolean](#hover-boolean-1)
-            * [leaflet: boolean](#leaflet-boolean)
-            * [publish: SignalType | Array&lt;SignalType&gt;](#publish-signaltype--arraysignaltype)
-            * [subscribe: SignalType | Array&lt;SignalType&gt;](#subscribe-signaltype--arraysignaltype)
-            * [tooltipOptions: TooltipType](#tooltipoptions-tooltiptype)
-            * [styling: StylingType](#styling-stylingtype-1)
-               * [url: string](#url-string-1)
-               * [css: string](#css-string-1)
-               * [addToHead: boolean](#addtohead-boolean-1)
-               * [classes: string | Array&lt;string&gt;](#classes-string--arraystring-1)
-               * [classesAppend: boolean](#classesappend-boolean-1)
-         * [Leaflet](#leaflet)
-         * [Publish and subscribe signals](#publish-and-subscribe-signals)
-         * [Tooltips](#tooltips)
-      * [More examples](#more-examples)
-         * [Example #1](#example-1)
-         * [Example #2](#example-2)
-         * [Example #3](#example-3)
-         * [Example #4](#example-4)
-         * [Example #5](#example-5)
-      * [Add it to your own project](#add-it-to-your-own-project)
-         * [Javascript](#javascript)
-            * [Install for use as esnext or commonjs module](#install-for-use-as-esnext-or-commonjs-module)
-            * [Esnext (recommended)](#esnext-recommended)
-            * [Commonjs](#commonjs)
-            * [Coding like it's 1999](#coding-like-its-1999)
-         * [CSS](#css)
-      * [See it in action](#see-it-in-action)
+* [Vega multi view](#vega-multi-view)
+    * [Table of Contents](#table-of-contents)
+    * [How to use](#how-to-use)
+    * [Terminology](#terminology)
+        * [Types](#types)
+    * [API](#api)
+        * [addViews(config: ConfigType): Promise&lt;any&gt;](#addviewsconfig-configtype-promiseany)
+        * [removeViews(string | Array&lt;string&gt;): ResultType](#removeviewsstring--arraystring-resulttype)
+        * [showSpecInTab(SpecType)](#showspecintabspectype)
+    * [Configuration](#configuration)
+        * [Global configuration (ConfigType)](#global-configuration-configtype)
+        * [debug: boolean](#debug-boolean)
+        * [overwrite: boolean](#overwrite-boolean)
+        * [element: string | HTMLElement](#element-string--htmlelement)
+        * [renderer: "canvas" | "svg"](#renderer-canvas--svg)
+        * [run: boolean](#run-boolean)
+        * [hover: boolean](#hover-boolean)
+        * [specs: { [string]: SpecType }](#specs--string-spectype-)
+        * [styling: StylingType](#styling-stylingtype)
+            * [url: string](#url-string)
+            * [css: string](#css-string)
+            * [addToHead: boolean](#addtohead-boolean)
+            * [cssAppend: boolean](#cssappend-boolean)
+            * [classes: string | Array&lt;string&gt;](#classes-string--arraystring)
+            * [classesAppend: boolean](#classesappend-boolean)
+        * [dataPath: string](#datapath-string)
+        * [imagePath: string](#imagepath-string)
+        * [View specific configuration (ViewConfigType)](#view-specific-configuration-viewconfigtype)
+        * [spec: string](#spec-string)
+        * [renderer: "canvas" | "svg"](#renderer-canvas--svg-1)
+        * [element: false | string | HTMLElement](#element-false--string--htmlelement)
+        * [run: boolean](#run-boolean-1)
+        * [hover: boolean](#hover-boolean-1)
+        * [leaflet: boolean](#leaflet-boolean)
+        * [publish: SignalType | Array&lt;SignalType&gt;](#publish-signaltype--arraysignaltype)
+        * [subscribe: SignalType | Array&lt;SignalType&gt;](#subscribe-signaltype--arraysignaltype)
+        * [tooltipOptions: TooltipType](#tooltipoptions-tooltiptype)
+        * [styling: StylingType](#styling-stylingtype-1)
+            * [url: string](#url-string-1)
+            * [css: string](#css-string-1)
+            * [addToHead: boolean](#addtohead-boolean-1)
+            * [classes: string | Array&lt;string&gt;](#classes-string--arraystring-1)
+            * [classesAppend: boolean](#classesappend-boolean-1)
+        * [Leaflet](#leaflet)
+        * [Publish and subscribe signals](#publish-and-subscribe-signals)
+        * [Tooltips](#tooltips)
+    * [More examples](#more-examples)
+        * [Example #1](#example-1)
+        * [Example #2](#example-2)
+        * [Example #3](#example-3)
+        * [Example #4](#example-4)
+        * [Example #5](#example-5)
+    * [Add it to your own project](#add-it-to-your-own-project)
+        * [Javascript](#javascript)
+        * [Install for use as esnext or commonjs module](#install-for-use-as-esnext-or-commonjs-module)
+        * [Esnext (recommended)](#esnext-recommended)
+        * [Commonjs](#commonjs)
+        * [Coding like it's 1999](#coding-like-its-1999)
+        * [CSS](#css)
+    * [See it in action](#see-it-in-action)
 
 <sub>(toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc))</sub>
 
@@ -129,6 +129,8 @@ The `vega-multi-view` module exposes 3 methods:
 * [showSpecInTab](#showspecintabspectype)
 
 ### `addViews(config: ConfigType): Promise<any>`
+
+The types listed below will be explained in detail in [configuration chapter](#configuration).
 
 ```javascript
 // @flow
@@ -246,14 +248,14 @@ button.addEventListener('click', () => {
 
 ## Configuration
 
-Let's see what the configurations look like. Below I have chosen to use YAML because it provides a clear syntax but of course you can define your configuration in any supported format.
+Let's have a look at what the configurations actually look like. Below I have chosen to use YAML because it provides a clear syntax but of course you can define your configuration in any supported format.
 
-### Global configuration
+### Global configuration (ConfigType)
 
 ```yaml
 ---
 debug: false
-overwrite:  false
+overwrite: false
 element: id
 renderer: canvas
 run: true
@@ -348,7 +350,7 @@ Path to data sets that the Vega spec needs to load. The entries `dataPath` and `
 Path to the images that the Vega spec needs to load, for instance for rendering marks.
 
 
-### View specific configuration
+### View specific configuration (ViewConfigType)
 
 ```yaml
 ---
@@ -769,7 +771,7 @@ Both Leaflet and Vega-tooltip provide their own stylesheet and unless your proje
 
 Note that you do not accidentally add the `.css` extension otherwise the css compiler will just add a css @import statement which triggers an extra HTTP request.
 
-You can also add a pre-compiled stylesheet to your HTML page:
+You can also add the pre-compiled stylesheet to your HTML page:
 
 ```html
 <link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.css" />

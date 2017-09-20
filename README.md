@@ -81,6 +81,39 @@ addViews(data)
     .then(result => console.log(result));
 ```
 
+## Terminology
+
+A `spec` is a Vega specification, it tells the [Vega runtime](https://github.com/vega/vega/wiki/Runtime) what to render on the page.
+
+A `view` is the rendered instance of that spec on a HTML page.
+
+The `vega-multi-view` wrapper applies settings to the Vega runtime *before* rendering, such as setting the renderer type (canvas or svg), and performs some extra steps *after* rendering, notably connecting the signals of the views.
+
+The global configuration of `vega-multi-view` defines which specs will be added as views to your page, and you can set parameters that are applied to the pre- and post-processing of these views.
+
+With a view specific configuration you can override some of the global settings and add extra parameters that for instance tell `vega-multi-view` which signals to publish or to subscribe to.
+
+This view specific configuration can be added to a spec (inlined), for this you can use the key `vmvConfig` (see [example #1](#example-1) below). You can also provide a configuration separately. It is also possible to use no view specific configuration at all: then the view will be rendered with the global settings.
+
+Both the global and the view specific configuration, as well as the Vega spec can be:
+* a javascript object (POJO)
+* a JSON string
+* a uri of a JSON, BSON, CSON or YAML file.
+
+### Types
+
+Below the mapping of the terms above to javascript types; these types are used in the upcoming API chapter:
+
+- `spec`: `VegaSpecType`
+- `view`: `VegaViewType`
+- global configuration: `ConfigType`
+- view specific configuration: `ViewConfigType`
+
+For the type definition of `VegaSpecType` see [this part](https://vega.github.io/vega/docs/specification/) of the Vega 3 documentation.
+
+For the type definition of `VegaViewType` see [this part](https://vega.github.io/vega/docs/api/view/) of the Vega 3 documentation.
+
+
 ## API
 
 The `vega-multi-view` module exposes 3 methods.
@@ -148,7 +181,6 @@ type TooltipType = {
     },
 };
 ```
-For the type definition of `VegaSpecType` see the Vega 3 [documentation](https://vega.github.io/vega/docs/specification/).
 
 After all views have been added to the page, the resolve function returns a key-value store object containing information about each view. Information per view:
 
@@ -191,7 +223,7 @@ removeViews(['spec1', 'spec2', 'spec3']);
 
 ### `showSpecInTab(SpecType)`
 
-You can also import a util function that prints the spec in JSON format to a new tab:
+You can also import a utility function that prints the spec in JSON format to a new tab:
 
 ```javascript
 import { showSpecInTab } from 'vega-multi-view';
@@ -202,28 +234,11 @@ button.addEventListener('click', () => {
 });
 ```
 
-## Terminology
-
-A `spec` is a Vega specification, it tells the [Vega runtime](https://github.com/vega/vega/wiki/Runtime) what to render on the page.
-
-A `view` is the rendered instance of that spec on a HTML page.
-
-The `vega-multi-view` wrapper applies settings to the Vega runtime *before* rendering, such as setting the renderer type (canvas or svg), and performs some extra steps *after* rendering, notably connecting the signals of the views.
-
-The global configuration of `vega-multi-view` defines which specs will be added as views to your page, and you can set parameters that are applied to the pre- and post-processing of these views.
-
-With the view specific configuration you can override some of the global settings and add extra parameters that for instance tell `vega-multi-view` which signals to publish or to subscribe to.
-
-This view specific configuration can be added to a spec (inlined), for this you can use the key `vmvConfig` (see [example #1](#example-1) below). You can also provide a configuration separately. It is also possible to use no view specific configuration at all: then the view will be rendered with the global settings.
-
-Both the global and the view specific configuration, as well as the Vega spec can be:
-* a javascript object (POJO)
-* a JSON string
-* a uri of a JSON, BSON, CSON or YAML file.
+## Configuration
 
 Let's see what the configurations look like. Below I have chosen to use YAML because it provides a clear syntax but of course you can define your configuration in any supported format.
 
-## Global configuration
+### Global configuration
 
 ```yaml
 ---
@@ -247,10 +262,7 @@ dataPath: ./assets/data
 imagePath: ./assets/img
 ```
 
-### Parameters explained
-
 Note that only the `specs` entry is mandatory. That is, you can leave it out but then nothing will be rendered.
-
 
 #### `debug: boolean`
 Print signal and data updates to the browser console. Defaults to false.
@@ -326,7 +338,7 @@ Path to data sets that the Vega spec needs to load. The entries `dataPath` and `
 Path to the images that the Vega spec needs to load, for instance for rendering marks.
 
 
-## View specific configuration
+### View specific configuration
 
 ```yaml
 ---
@@ -358,9 +370,7 @@ styling:
     classesAppend: true
 ```
 
-### Explanation of the parameters
-
-Note that because a spec can be rendered without a view specific configuration file, none of these parameters are mandatory.
+Note that because a spec can be rendered without a view specific configuration file, none of the parameters above are mandatory.
 
 #### `spec: string`
 

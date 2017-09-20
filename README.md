@@ -309,12 +309,12 @@ Add styling that applies to all views and / or containing elements of the views.
 ```javascript
 // @flow
 type StylingType = {
-    url?: string
-    css?: string
-    cssAppend?: boolean
-    addToHead?: boolean
-    classes?: string | Array<string>
-    classesAppend?: boolean
+    url?: string,
+    css?: string,
+    cssAppend?: boolean,
+    addToHead?: boolean,
+    classes?: string | Array<string>,
+    classesAppend?: boolean,
 };
 ```
 
@@ -447,12 +447,13 @@ Add view specific styling to the view. You can add the URI of an external css fi
 ```javascript
 // @flow
 type StylingType = {
-    url?: string
-    css?: string
-    addToHead?: boolean
-    classes?: string | Array<string>
-    classesAppend?: boolean
-}
+    url?: string,
+    css?: string,
+    cssAppend?: boolean,
+    addToHead?: boolean,
+    classes?: string | Array<string>,
+    classesAppend?: boolean,
+};
 ```
 
 ##### `url: string`
@@ -462,6 +463,9 @@ The url of an external stylesheet. Note that this setting only has effect when t
 ##### `css: string`
 
 SVG renderer only. The css as string, allows you to inline the css in the configuration file which saves a HTTP request. If you set both `url` and `css`, the value set for `css` will prevail.
+
+##### `cssAppend: boolean`
+Not supported in `ViewConfigType`. You can pass a value but it will be ignored.
 
 ##### `addToHead: boolean`
 

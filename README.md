@@ -10,17 +10,21 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
    * [Vega multi view](#vega-multi-view)
       * [Table of Contents](#table-of-contents)
       * [How to use](#how-to-use)
-      * [Return value](#return-value)
       * [Terminology](#terminology)
-      * [Global configuration](#global-configuration)
-         * [Parameters explained](#parameters-explained)
+         * [Types](#types)
+      * [API](#api)
+         * [addViews(config: ConfigType): Promise&lt;any&gt;](#addviewsconfig-configtype-promiseany)
+         * [removeViews(string | Array&lt;string&gt;): ResultType](#removeviewsstring--arraystring-resulttype)
+         * [showSpecInTab(SpecType)](#showspecintabspectype)
+      * [Configuration](#configuration)
+         * [Global configuration](#global-configuration)
             * [debug: boolean](#debug-boolean)
             * [overwrite: boolean](#overwrite-boolean)
             * [element: string | HTMLElement](#element-string--htmlelement)
             * [renderer: "canvas" | "svg"](#renderer-canvas--svg)
             * [run: boolean](#run-boolean)
             * [hover: boolean](#hover-boolean)
-            * [specs: SpecsType](#specs-specstype)
+            * [specs: { [string]: SpecType }](#specs--string-spectype-)
             * [styling: StylingType](#styling-stylingtype)
                * [url: string](#url-string)
                * [css: string](#css-string)
@@ -30,8 +34,7 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
                * [classesAppend: boolean](#classesappend-boolean)
             * [dataPath: string](#datapath-string)
             * [imagePath: string](#imagepath-string)
-      * [View specific configuration](#view-specific-configuration)
-         * [Explanation of the parameters](#explanation-of-the-parameters)
+         * [View specific configuration](#view-specific-configuration)
             * [spec: string](#spec-string)
             * [renderer: "canvas" | "svg"](#renderer-canvas--svg-1)
             * [element: false | string | HTMLElement](#element-false--string--htmlelement)
@@ -42,11 +45,11 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
             * [subscribe: SignalType | Array&lt;SignalType&gt;](#subscribe-signaltype--arraysignaltype)
             * [tooltipOptions: TooltipType](#tooltipoptions-tooltiptype)
             * [styling: StylingType](#styling-stylingtype-1)
-                * [url: string](#url-string-1)
-                * [css: string](#css-string-1)
-                * [addToHead: boolean](#addtohead-boolean-1)
-                * [classes: string | Array&lt;string&gt;](#classes-string--arraystring-1)
-                * [classesAppend: boolean](#classesappend-boolean-1)
+               * [url: string](#url-string-1)
+               * [css: string](#css-string-1)
+               * [addToHead: boolean](#addtohead-boolean-1)
+               * [classes: string | Array&lt;string&gt;](#classes-string--arraystring-1)
+               * [classesAppend: boolean](#classesappend-boolean-1)
          * [Leaflet](#leaflet)
          * [Publish and subscribe signals](#publish-and-subscribe-signals)
          * [Tooltips](#tooltips)
@@ -58,6 +61,10 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
          * [Example #5](#example-5)
       * [Add it to your own project](#add-it-to-your-own-project)
          * [Javascript](#javascript)
+            * [Install for use as esnext or commonjs module](#install-for-use-as-esnext-or-commonjs-module)
+            * [Esnext (recommended)](#esnext-recommended)
+            * [Commonjs](#commonjs)
+            * [Coding like it's 1999](#coding-like-its-1999)
          * [CSS](#css)
       * [See it in action](#see-it-in-action)
 
@@ -95,14 +102,14 @@ With a view specific configuration you can override some of the global settings 
 
 This view specific configuration can be added to a spec (inlined), for this you can use the key `vmvConfig` (see [example #1](#example-1) below). You can also provide a configuration separately. It is also possible to use no view specific configuration at all: then the view will be rendered with the global settings.
 
-Both the global and the view specific configuration, as well as the Vega spec can be:
-* a javascript object (POJO)
-* a JSON string
-* a uri of a JSON, BSON, CSON or YAML file.
+Both the global and the view specific configuration, as well as the Vega spec can be created from a:
+* javascript object (POJO)
+* JSON string
+* uri of a JSON, BSON, CSON or YAML file.
 
 ### Types
 
-Below the mapping of the terms above to javascript types; these types are used in the upcoming API chapter:
+Below the mapping of the terms above to their javascript types; these types are used in the upcoming API chapter:
 
 - `spec`: `VegaSpecType`
 - `view`: `VegaViewType`
@@ -116,7 +123,10 @@ For the type definition of `VegaViewType` see [this part](https://vega.github.io
 
 ## API
 
-The `vega-multi-view` module exposes 3 methods.
+The `vega-multi-view` module exposes 3 methods:
+* [addViews](#addviewsconfig-configtype-promiseany)
+* [removeViews](#removeviewsstring--arraystring-resulttype)
+* [showSpecInTab](#showspecintabspectype)
 
 ### `addViews(config: ConfigType): Promise<any>`
 
@@ -539,11 +549,11 @@ What we see here is two specs that respond to each other's hover signal.
 
 The spec is imported as javascript object, then a configuration is added to the spec. You can safely add a `vmvConfig` entry to a spec because it will be stripped off before the spec is passed to the Vega parser. If you have to load a spec from the server it saves you a HTTP request if you inline the view specific configuration in the spec.
 
-The second spec is added as a tuple; the first element is always the spec, the second the configuration. Remember that both spec and configuration can be:
+The second spec is added as a tuple; the first element is always the spec, the second the configuration. Remember that both spec and configuration can created from a:
 
-* a javascript object (POJO)
-* a JSON string
-* a uri of a JSON, BSON, CSON or YAML file.
+* javascript object (POJO)
+* JSON string
+* uri of a JSON, BSON, CSON or YAML file.
 
 Personally I find a Vega specs in YAML format the best readable. Also a YAML file is a bit smaller in file size compared to JSON.
 

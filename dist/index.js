@@ -203,26 +203,34 @@ var addViews = exports.addViews = function () {
                         config = cfg;
 
                         if (!(typeof config === 'string')) {
-                            _context2.next = 12;
+                            _context2.next = 14;
                             break;
                         }
 
-                        _context2.prev = 3;
-                        _context2.next = 6;
+                        if (!(config.length === 0)) {
+                            _context2.next = 5;
+                            break;
+                        }
+
+                        return _context2.abrupt('return', _promise2.default.reject(new Error('You have passed an empty string!')));
+
+                    case 5:
+                        _context2.prev = 5;
+                        _context2.next = 8;
                         return (0, _fetchHelpers.load)(config);
 
-                    case 6:
+                    case 8:
                         config = _context2.sent;
-                        _context2.next = 12;
+                        _context2.next = 14;
                         break;
 
-                    case 9:
-                        _context2.prev = 9;
-                        _context2.t0 = _context2['catch'](3);
+                    case 11:
+                        _context2.prev = 11;
+                        _context2.t0 = _context2['catch'](5);
 
                         console.error(_context2.t0);
 
-                    case 12:
+                    case 14:
                         _config = config, _config$run = _config.run, run = _config$run === undefined ? true : _config$run, _config$hover = _config.hover, hover = _config$hover === undefined ? false : _config$hover, specs = _config.specs, element = _config.element, _config$renderer = _config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = _config.debug, debug = _config$debug === undefined ? false : _config$debug, _config$overwrite = _config.overwrite, overwrite = _config$overwrite === undefined ? false : _config$overwrite, _config$styling = _config.styling, styling = _config$styling === undefined ? {} : _config$styling;
 
 
@@ -287,10 +295,10 @@ var addViews = exports.addViews = function () {
                             console.warn('invalid element, using document.body instead');
                         }
 
-                        _context2.next = 22;
+                        _context2.next = 24;
                         return createSpecData(specsArray, type);
 
-                    case 22:
+                    case 24:
                         data = _context2.sent;
 
                         data = (0, _addElements2.default)(data, containerElement);
@@ -298,14 +306,14 @@ var addViews = exports.addViews = function () {
                         (0, _signals2.default)(data);
 
                         if (!debug) {
-                            _context2.next = 29;
+                            _context2.next = 31;
                             break;
                         }
 
-                        _context2.next = 29;
+                        _context2.next = 31;
                         return (0, _debug2.default)(data);
 
-                    case 29:
+                    case 31:
                         return _context2.abrupt('return', new _promise2.default(function (resolve) {
                             // wait until the next paint cycle so the created elements
                             // are added to the DOM, add the views, then resolve
@@ -327,12 +335,12 @@ var addViews = exports.addViews = function () {
                             }, 0);
                         }));
 
-                    case 30:
+                    case 32:
                     case 'end':
                         return _context2.stop();
                 }
             }
-        }, _callee2, undefined, [[3, 9]]);
+        }, _callee2, undefined, [[5, 11]]);
     }));
 
     return function addViews(_x3) {

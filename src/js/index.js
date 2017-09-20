@@ -102,6 +102,9 @@ export const addViews = async (cfg, type = null) => {
 
     let config = cfg;
     if (typeof config === 'string') {
+        if (config.length === 0) {
+            return Promise.reject(new Error('You have passed an empty string!'));
+        }
         try {
             config = await load(config);
         } catch (e) {

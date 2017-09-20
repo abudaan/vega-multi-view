@@ -68,7 +68,7 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
             * [Coding like it's 1999](#coding-like-its-1999)
          * [CSS](#css)
       * [See it in action](#see-it-in-action)
-         * [Example with REST API call:](#example-with-rest-api-call)
+         * [Example with REST API call](#example-with-rest-api-call)
 
 <sub>(toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc))</sub>
 
@@ -734,7 +734,7 @@ const { addViews, removeView } =  require('vega-multi-view');
 You can also add `vega-multi-view` as UMD bundle to your HTML page:
 
 ```html
-<script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.js"></script>
+<script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.3/browser/vmv.js"></script>
 ```
 
 Then in your plain es5 javascript code:
@@ -780,7 +780,7 @@ Note that you do not accidentally add the `.css` extension otherwise the css com
 You can also add the pre-compiled stylesheet to your HTML page:
 
 ```html
-<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.3/browser/vmv.css" />
 ```
 
 ## See it in action
@@ -794,7 +794,7 @@ The server returns an HTML page with the rendered Vega views or a JSON string th
 3) <http://app4.bigdator.nl/rest/simple.html> &rarr; loads configuration via API call and renders the views
 
 
-### Example with REST API call:
+### Example with REST API call
 
 Below the HTML that uses the UMD approach and loads the global configuration file via a REST API call.
 
@@ -806,8 +806,8 @@ Below the HTML that uses the UMD approach and loads the global configuration fil
     <title>vega</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.css" />
-    <script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.3/browser/vmv.css" />
+    <script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.3/browser/vmv.js"></script>
 </head>
 
 <body>

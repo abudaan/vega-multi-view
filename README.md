@@ -83,18 +83,9 @@ addViews(data)
 
 ## API
 
-You can also import a util function that prints the spec in JSON format to a new tab:
+The `vega-multi-view` module exposes 3 methods.
 
-```javascript
-import { showSpecInTab } from 'vega-multi-view';
-import spec from '../specs/my-spec';
-
-button.addEventListener('click', () => {
-    showSpecInTab(spec);
-});
-```
-
-## Return value
+### `addViews(config: SpecsType): Promise<any>`
 
 After all views have been added to the page, a key-value store object containing information about each view is returned. Information per view:
 ```javascript
@@ -116,6 +107,34 @@ type ResultType = {
     // view
     view: HTMLElement
 };
+```
+
+### `removeViews(string | Array<string>): ResultType`
+
+You can remove views by providing the ids of the views that you want to be removed.
+
+```javascript
+// single view
+removeViews('spec1');
+
+// list of views
+removeViews('spec1', 'spec2', 'spec3');
+
+// array of views
+removeViews(['spec1', 'spec2', 'spec3']);
+```
+
+### `showSpecInTab(SpecType)`
+
+You can also import a util function that prints the spec in JSON format to a new tab:
+
+```javascript
+import { showSpecInTab } from 'vega-multi-view';
+import spec from '../specs/my-spec';
+
+button.addEventListener('click', () => {
+    showSpecInTab(spec);
+});
 ```
 
 ## Terminology
@@ -592,7 +611,7 @@ This is an example of how you can add styling (only when using the SVG renderer)
 
 `vega-multi-view` is available both as esnext and commonjs module, and as UMD bundle.
 
-#### install for use as esnext or commonjs module
+#### Install for use as esnext or commonjs module
 
 You can install `vega-multi-view` with npm or yarn:
 ```sh
@@ -603,7 +622,7 @@ yarn add vega-multi-view
 npm install --save vega-multi-view
 ```
 
-#### esnext (recommended)
+#### Esnext (recommended)
 
 Import the module to your javascript code:
 
@@ -611,7 +630,7 @@ Import the module to your javascript code:
 import { addViews, removeView } from 'vega-multi-view';
 ```
 
-#### commonjs
+#### Commonjs
 
 Import the module to your javascript code:
 
@@ -621,10 +640,10 @@ const { addViews, removeView } =  require('vega-multi-view');
 
 #### Coding like it's 1999
 
-You can also embed the UMD bundle to your HTML page:
+You can also add `vega-multi-view` as UMD bundle to your HTML page:
 
 ```html
-<script src="https://raw.githubusercontent.com/abudaan/vega-multi-view/master/browser/vmv.js"></script>
+<script src="https://raw.githubusercontent.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.js"></script>
 ```
 
 Then in your plain es5 javascript code:
@@ -670,7 +689,7 @@ Note that you do not accidentally add the `.css` extension otherwise the css com
 You can also add a pre-compiled stylesheet to your HTML page:
 
 ```html
-<link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/abudaan/vega-multi-view/master/browser/vmv.css" />
+<link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/abudaan/vega-multi-view/v1.1.2/browser/vmv.css" />
 ```
 
 ## See it in action

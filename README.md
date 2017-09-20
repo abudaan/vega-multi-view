@@ -787,7 +787,7 @@ You can also add the pre-compiled stylesheet to your HTML page:
 
 I made a related project called [vega-multi-view-server](https://github.com/abudaan/vega-multi-view-server) which is a simple REST API server that has a single endpoint that returns a global configuration object based on the spec ids you send to the server.
 
-It can return an HTML page with the rendered Vega views, or a JSON string that you can process further to your liking. Here some examples:
+The server returns an HTML page with the rendered Vega views or a JSON string that you can process further to your liking. Here some examples:
 
 1) <http://app4.bigdator.nl/6a/6b/4b/8a/8b> -> returns a rendered Twig template
 2) <http://app4.bigdator.nl/rest/4a/4b> -> returns configuration object as JSON string

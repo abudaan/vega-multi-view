@@ -148,8 +148,10 @@ type TooltipType = {
     },
 };
 ```
+For the type definition of `VegaSpecType` see the Vega 3 [documentation](https://vega.github.io/vega/docs/specification/).
 
 After all views have been added to the page, the resolve function returns a key-value store object containing information about each view. Information per view:
+
 ```javascript
 // @flow
 type ResultType = {

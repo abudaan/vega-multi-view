@@ -85,10 +85,47 @@ addViews(data)
 
 The `vega-multi-view` module exposes 3 methods.
 
-### `addViews(config: SpecsType): Promise<any>`
+### `addViews(config: ConfigType): Promise<any>`
 
-After all views have been added to the page, a key-value store object containing information about each view is returned. Information per view:
 ```javascript
+// @flow
+type ConfigType = {
+    debug?: boolean,
+    overwrite?: boolean,
+    element?: string
+    renderer?: "canvas" | "svg",
+    run?: boolean,
+    hover?: boolean,
+    specs: {
+        [string]: ViewConfigType,
+    },
+    styling?: StylingType,
+    dataPath?: string,
+    imagePath?: string,
+};
+
+type ViewConfigType =
+    | string
+    | object
+    | [string, string]
+    | [object, string]
+    | [object, object]
+;
+
+type StylingType = {
+    url?: string,
+    css?: string,
+    cssAppend?: boolean,
+    addToHead?: boolean,
+    classes?: string | Array<string>,
+    classesAppend?: boolean,
+};
+
+```
+
+After all views have been added to the page, the resolve function returns a key-value store object containing information about each view. Information per view:
+```javascript
+// @flow
 type ResultType = {
     // The id as you have set it in the specs object (see below)
     id: string,

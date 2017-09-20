@@ -92,24 +92,24 @@ The `vega-multi-view` module exposes 3 methods.
 type ConfigType = {
     debug?: boolean,
     overwrite?: boolean,
-    element?: string
+    element?: string | HTMLElement
     renderer?: "canvas" | "svg",
     run?: boolean,
     hover?: boolean,
     specs: {
-        [string]: ViewConfigType,
+        [string]: SpecType,
     },
     styling?: StylingType,
     dataPath?: string,
     imagePath?: string,
 };
 
-type ViewConfigType =
+type SpecType =
     | string
-    | object
+    | VegaSpecType
     | [string, string]
-    | [object, string]
-    | [object, object]
+    | [VegaSpecType, string]
+    | [VegaSpecType, ViewConfigType]
 ;
 
 type StylingType = {
@@ -121,6 +121,37 @@ type StylingType = {
     classesAppend?: boolean,
 };
 
+type ViewConfigType = {
+    spec?: string,
+    element?: false | string | HTMLElement
+    renderer?: "canvas" | "svg",
+    run?: boolean,
+    hover?: boolean,
+    leaflet?: boolean,
+    styling?: StylingType,
+    publish?: SignalType | Array<SignalType>,
+    subscribe?: SignalType | Array<SignalType>,
+    tooltipOptions:
+        showAllFields: false
+        fields:
+            - formatType: string
+            field: fieldName
+            title: displayName
+};
+
+type SignalType = {
+    [signal: string]: string,
+    [as: string]: string,
+};
+
+type TooltipType = {
+    [showAllFields: string]?: boolean,
+    [fields: string]?: {
+        [formatType: string]: string,
+        [field: string]: string,
+        [title: string]: string,
+    },
+};
 ```
 
 After all views have been added to the page, the resolve function returns a key-value store object containing information about each view. Information per view:
@@ -246,13 +277,7 @@ Whether or not to call the `run()` method of a view after it has been added to t
 
 Whether or not to call the `hover()` method of the view after it has been added to the page. Defaults to false and will be overridden by a view specific configuration.
 
-#### `specs: SpecsType`
-
-```javascript
-type SpecsType = {
-    [string]: string | [string, string]
-};
-```
+#### `specs: { [string]: SpecType }`
 
 A key-value store object where the keys are the unique ids by which the Vega specs can be identified. The value is a single spec or a tuple, in case you set a tuple the second value is the view specific configuration file (see  below). Both the spec and the configuration can be any of the types listed  above.
 
@@ -261,6 +286,7 @@ A key-value store object where the keys are the unique ids by which the Vega spe
 Add styling that applies to all views and / or containing elements of the views. Can be overwritten by view specific configuration.
 
 ```javascript
+// @flow
 type StylingType = {
     url?: string
     css?: string
@@ -268,7 +294,7 @@ type StylingType = {
     addToHead?: boolean
     classes?: string | Array<string>
     classesAppend?: boolean
-}
+};
 ```
 
 ##### `url: string`
@@ -366,6 +392,7 @@ Whether or not the Vega view should be added as a layer to a Leaflet map. Defaul
 #### `publish: SignalType | Array<SignalType>`
 
 ```javascript
+// @flow
 type SignalType = {
     [signal: string]: string,
     [as: string]: string,
@@ -383,6 +410,7 @@ A signal or array of signals originating from another view that this view wants 
 The options that will be passed on to vega-tooltip for rendering custom tooltips on top of the view.
 
 ```javascript
+// @flow
 type TooltipType = {
     [showAllFields: string]?: boolean,
     [fields: string]?: {
@@ -398,6 +426,7 @@ type TooltipType = {
 Add view specific styling to the view. You can add the URI of an external css file or inline the styling as text. If you set values for both url and css, the value set for css will prevail. The setting addToHead defaults to false, if you set it totrue the styling will be added to the head of the page before the Vega view gets rendered. If you set it to false, you can bundle all styles on the server before sending to the client. Note that you can only style a view when you use the SVG renderer.
 
 ```javascript
+// @flow
 type StylingType = {
     url?: string
     css?: string

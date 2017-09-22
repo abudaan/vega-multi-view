@@ -740,7 +740,7 @@ const { addViews, removeView } =  require('vega-multi-view');
 You can also add `vega-multi-view` as UMD bundle to your HTML page:
 
 ```html
-<script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.4/browser/vmv.js"></script>
+<script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.4/browser/vmv.min.js"></script>
 ```
 
 Then in your plain es5 javascript code:
@@ -813,7 +813,7 @@ Below the HTML that uses the UMD approach and loads the global configuration fil
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.4/browser/vmv.css" />
-    <script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.4/browser/vmv.js"></script>
+    <script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.4/browser/vmv.min.js"></script>
 </head>
 
 <body>

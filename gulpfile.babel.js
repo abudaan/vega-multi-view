@@ -13,6 +13,35 @@ import browserify from 'browserify';
 import babelify from 'babelify';
 
 
+gulp.task('build_js_min', () => {
+    const opts = {
+        debug: true,
+        standalone: 'vmv',
+    };
+    const b = browserify(opts);
+    b.add('./src/js/index.js');
+    b.transform(babelify.configure({
+        compact: true,
+    }));
+
+    return b.bundle()
+        .on('error', e => gutil.log(gutil.colors.red(e.message)))
+        .pipe(source('vmv.min.js'))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({
+            loadMaps: false,
+        }))
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('./browser'))
+        .pipe(filter('**/*.js'))
+        .pipe(minify({
+            mangle: {
+                keepClassName: true,
+            },
+        }))
+        .pipe(gulp.dest('./browser'));
+});
+
 gulp.task('build_js', () => {
     const opts = {
         debug: true,
@@ -34,11 +63,6 @@ gulp.task('build_js', () => {
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./browser'))
         .pipe(filter('**/*.js'))
-        .pipe(minify({
-            mangle: {
-                keepClassName: true,
-            },
-        }))
         .pipe(gulp.dest('./browser'));
 });
 
@@ -58,5 +82,6 @@ gulp.task('copy', () => gulp.src('./browser/*')
 gulp.task('build', gulp.series(
     'build_css',
     'build_js',
+    'build_js_min',
     'copy',
 ));

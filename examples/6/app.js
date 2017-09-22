@@ -1,6 +1,6 @@
 // import { addViews, removeViews } from '../../src/js/index';
 // const vmv = require('../../src/js/index');
-const { addViews, removeViews } = require('../../dist/index');
+const { addViews, removeViews } = require('../../src/js/index');
 
 addViews({
     specs: {

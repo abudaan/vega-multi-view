@@ -2257,8 +2257,8 @@ eslint-scope@^3.7.1:
     estraverse "^4.1.1"
 
 eslint@^4.6.1:
-  version "4.7.1"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-4.7.1.tgz#849804136953ebe366782f9f8611e2cbd1b54681"
+  version "4.7.2"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-4.7.2.tgz#ff6f5f5193848a27ee9b627be3e73fb9cb5e662e"
   dependencies:
     ajv "^5.2.0"
     babel-code-frame "^6.22.0"
@@ -2457,8 +2457,8 @@ fast-levenshtein@~2.0.4:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
 
 "fetch-helpers@https://github.com/abudaan/fetch-helpers":
-  version "1.0.0"
-  resolved "https://github.com/abudaan/fetch-helpers#103cbf317c5c0fd22e5ac6d0c673ffec1667e3ef"
+  version "1.0.1"
+  resolved "https://github.com/abudaan/fetch-helpers#938df5d542f45d72c23dcaf7d683d6b49640a7f0"
   dependencies:
     bson "^1.0.4"
     cson-parser "^2.0.0"

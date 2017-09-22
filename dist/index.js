@@ -68,7 +68,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var mapIndexed = _ramda2.default.addIndex(_ramda2.default.map);
 var firstRun = true;
 var store = {};
-var VERSION = '1.1.3';
+var VERSION = '1.1.4';
 
 var renderViews = function renderViews(data, renderer, container) {
     data.forEach(function (d) {
@@ -92,7 +92,9 @@ var renderViews = function renderViews(data, renderer, container) {
     });
 };
 
-var createSpecData = function createSpecData(specs, type) {
+var createSpecData = function createSpecData(specs) {
+    var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'json';
+
     var promises = mapIndexed(function () {
         var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(data) {
             var spec, specClone, vmvConfig, view;
@@ -158,7 +160,7 @@ var createSpecData = function createSpecData(specs, type) {
             }, _callee, undefined, [[1, 7]]);
         }));
 
-        return function (_x) {
+        return function (_x2) {
             return _ref.apply(this, arguments);
         };
     }(), specs);
@@ -196,7 +198,7 @@ var addViews = exports.addViews = function () {
                 switch (_context2.prev = _context2.next) {
                     case 0:
                         if (firstRun === true) {
-                            console.log('vega- multi - view ' + VERSION + ' ');
+                            console.log('vega-multi-view ' + VERSION);
                             firstRun = false;
                         }
 
@@ -217,7 +219,7 @@ var addViews = exports.addViews = function () {
                     case 5:
                         _context2.prev = 5;
                         _context2.next = 8;
-                        return (0, _fetchHelpers.load)(config);
+                        return (0, _fetchHelpers.load)(config, type);
 
                     case 8:
                         config = _context2.sent;
@@ -296,7 +298,7 @@ var addViews = exports.addViews = function () {
                         }
 
                         _context2.next = 24;
-                        return createSpecData(specsArray, type);
+                        return createSpecData(specsArray);
 
                     case 24:
                         data = _context2.sent;
@@ -343,7 +345,7 @@ var addViews = exports.addViews = function () {
         }, _callee2, undefined, [[5, 11]]);
     }));
 
-    return function addViews(_x3) {
+    return function addViews(_x4) {
         return _ref2.apply(this, arguments);
     };
 }();

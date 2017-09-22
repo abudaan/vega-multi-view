@@ -12,7 +12,8 @@ import { loadSpec } from './util/load-specs';
 const mapIndexed = R.addIndex(R.map);
 let firstRun = true;
 const store = {};
-const VERSION = '1.1.3';
+const VERSION = '1.1.4';
+
 
 const renderViews = (data, renderer, container) => {
     data.forEach((d) => {
@@ -38,7 +39,7 @@ const renderViews = (data, renderer, container) => {
     });
 };
 
-const createSpecData = (specs, type) => {
+const createSpecData = (specs, type = 'json') => {
     const promises = mapIndexed(async (data) => {
         let spec = null;
         try {
@@ -106,7 +107,7 @@ export const addViews = async (cfg, type = null) => {
             return Promise.reject(new Error('You have passed an empty string!'));
         }
         try {
-            config = await load(config);
+            config = await load(config, type);
         } catch (e) {
             console.error(e);
         }
@@ -180,7 +181,7 @@ export const addViews = async (cfg, type = null) => {
         console.warn('invalid element, using document.body instead');
     }
 
-    let data = await createSpecData(specsArray, type);
+    let data = await createSpecData(specsArray);
     data = addElements(data, containerElement);
     addTooltips(data);
     connectSignals(data);

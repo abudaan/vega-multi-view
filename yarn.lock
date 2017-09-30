@@ -5532,11 +5532,11 @@ validate-npm-package-license@^3.0.1:
 
 "vega-as-leaflet-layer@git+https://github.com/abudaan/vega-as-leaflet-layer.git":
   version "1.1.4"
-  resolved "git+https://github.com/abudaan/vega-as-leaflet-layer.git#09f1bd0b4822f63e0983485cc3895a946d40f099"
+  resolved "git+https://github.com/abudaan/vega-as-leaflet-layer.git#28523ecb713d5b703ea1c774126bb2b83b3fa2d0"
   dependencies:
     fetch-helpers "https://github.com/abudaan/fetch-helpers"
     leaflet "^1.2.0"
-    vega "3.0.2"
+    vega "^3.0.4"
 
 vega-crossfilter@2:
   version "2.0.0"
@@ -5586,7 +5586,7 @@ vega-force@2:
     vega-dataflow "3"
     vega-util "1"
 
-vega-geo@2, vega-geo@^2.1:
+vega-geo@^2.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/vega-geo/-/vega-geo-2.1.1.tgz#eaf128927cd146e1c0843d15f25a0a08d5dbf524"
   dependencies:
@@ -5597,7 +5597,7 @@ vega-geo@2, vega-geo@^2.1:
     vega-projection "1"
     vega-util "1"
 
-vega-hierarchy@2, vega-hierarchy@^2.1:
+vega-hierarchy@^2.1:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/vega-hierarchy/-/vega-hierarchy-2.1.0.tgz#92119c43a9dc8f534c1836446661161dc9e42196"
   dependencies:
@@ -5678,7 +5678,7 @@ vega-scenegraph@2:
     canvas "^1.6"
     canvas-prebuilt "^1.6"
 
-vega-statistics@1, vega-statistics@^1.2:
+vega-statistics@^1.2:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/vega-statistics/-/vega-statistics-1.2.1.tgz#a35b3fc3d0039f8bb0a8ba1381d42a1df79ecb34"
   dependencies:
@@ -5694,7 +5694,7 @@ vega-tooltip@^0.4.4:
     vega "^3.0.0"
     vega-lite "^2.0.0-beta.14"
 
-vega-transforms@1, vega-transforms@^1.1:
+vega-transforms@^1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/vega-transforms/-/vega-transforms-1.1.1.tgz#65ea98708f1218a21c7f56fd2857a7ab62362972"
   dependencies:
@@ -5707,7 +5707,7 @@ vega-util@1, vega-util@^1.1, vega-util@^1.5.0, vega-util@^1.6:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/vega-util/-/vega-util-1.6.0.tgz#9be8b1f297cbc6e078a50f8ecd231450f2b4f7ef"
 
-vega-view-transforms@1, vega-view-transforms@^1.1:
+vega-view-transforms@^1.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/vega-view-transforms/-/vega-view-transforms-1.1.0.tgz#bc7f61d653622cb676100b11ae1284ead73f9bd6"
   dependencies:
@@ -5745,33 +5745,6 @@ vega-wordcloud@2:
   optionalDependencies:
     canvas "^1.6"
     canvas-prebuilt "^1.6"
-
-vega@3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/vega/-/vega-3.0.2.tgz#51233d2aabf1b13b2aaffe66845838639474364f"
-  dependencies:
-    vega-crossfilter "2"
-    vega-dataflow "3"
-    vega-datasets vega/vega-datasets#gh-pages
-    vega-encode "2"
-    vega-expression "2"
-    vega-force "2"
-    vega-geo "2"
-    vega-hierarchy "2"
-    vega-loader "2"
-    vega-parser "2"
-    vega-projection "1"
-    vega-runtime "2"
-    vega-scale "2"
-    vega-scenegraph "2"
-    vega-statistics "1"
-    vega-transforms "1"
-    vega-util "1"
-    vega-view "2"
-    vega-view-transforms "1"
-    vega-voronoi "2"
-    vega-wordcloud "2"
-    yargs "4"
 
 vega@^3.0.0, vega@^3.0.4:
   version "3.0.4"

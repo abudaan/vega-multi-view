@@ -5,7 +5,8 @@
     "license": "MIT",
     "author": "abudaan",
     "main": "dist/index.js",
-    "module": "src/js/index.js",
+    "browser": "dist/index.js",
+    "module": "index.js",
     "repository": "git://github.com/abudaan/vega-multi-view.git",
     "bugs": {
         "url": "https://github.com/abudaan/vega-multi-view/issues"
@@ -24,9 +25,9 @@
     "dependencies": {
         "fetch-helpers": "https://github.com/abudaan/fetch-helpers",
         "ramda": "0.23.0",
-        "vega": "^3.0.2",
-        "vega-as-leaflet-layer": "https://github.com/abudaan/vega-as-leaflet-layer",
-        "vega-tooltip": "^0.4.3",
+        "vega": "^3.0.4",
+        "vega-as-leaflet-layer": "git+https://github.com/abudaan/vega-as-leaflet-layer.git",
+        "vega-tooltip": "^0.4.4",
         "xstream": "^10.9.0"
     },
     "devDependencies": {

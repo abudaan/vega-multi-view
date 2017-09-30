@@ -32,14 +32,14 @@ gulp.task('build_js_min', () => {
             loadMaps: false,
         }))
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./browser'))
+        .pipe(gulp.dest('./build'))
         .pipe(filter('**/*.js'))
         .pipe(minify({
             mangle: {
                 keepClassName: true,
             },
         }))
-        .pipe(gulp.dest('./browser'));
+        .pipe(gulp.dest('./build'));
 });
 
 gulp.task('build_js', () => {
@@ -61,9 +61,9 @@ gulp.task('build_js', () => {
             loadMaps: false,
         }))
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./browser'))
+        .pipe(gulp.dest('./build'))
         .pipe(filter('**/*.js'))
-        .pipe(gulp.dest('./browser'));
+        .pipe(gulp.dest('./build'));
 });
 
 
@@ -71,10 +71,10 @@ gulp.task('build_css', () => gulp.src('./src/styles/main.sass')
     .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer())
     .pipe(concat('vmv.css'))
-    .pipe(gulp.dest('./browser')));
+    .pipe(gulp.dest('./build')));
 
 
-gulp.task('copy', () => gulp.src('./browser/*')
+gulp.task('copy', () => gulp.src('./build/*')
     .pipe(copy('./examples'))
     .pipe(gulp.dest('./examples')));
 

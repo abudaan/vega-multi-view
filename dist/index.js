@@ -68,7 +68,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var mapIndexed = _ramda2.default.addIndex(_ramda2.default.map);
 var firstRun = true;
 var store = {};
-var VERSION = '1.1.4';
+var VERSION = '1.1.5';
 
 var renderViews = function renderViews(data, renderer, container) {
     data.forEach(function (d) {
@@ -92,35 +92,34 @@ var renderViews = function renderViews(data, renderer, container) {
     });
 };
 
-var createSpecData = function createSpecData(specs) {
-    var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'json';
-
+var createSpecData = function createSpecData(specs, type) {
     var promises = mapIndexed(function () {
         var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(data) {
-            var spec, specClone, vmvConfig, view;
+            var spec, t, specClone, vmvConfig, view;
             return _regenerator2.default.wrap(function _callee$(_context) {
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
                             spec = null;
                             _context.prev = 1;
-                            _context.next = 4;
-                            return (0, _loadSpecs.loadSpec)(data.spec, type);
+                            t = data.spec.type || type;
+                            _context.next = 5;
+                            return (0, _loadSpecs.loadSpec)(data.spec, t);
 
-                        case 4:
+                        case 5:
                             spec = _context.sent;
-                            _context.next = 10;
+                            _context.next = 11;
                             break;
 
-                        case 7:
-                            _context.prev = 7;
+                        case 8:
+                            _context.prev = 8;
                             _context.t0 = _context['catch'](1);
 
                             console.error(_context.t0);
 
-                        case 10:
+                        case 11:
                             if (!(spec === null)) {
-                                _context.next = 12;
+                                _context.next = 13;
                                 break;
                             }
 
@@ -131,7 +130,7 @@ var createSpecData = function createSpecData(specs) {
                                 vmvConfig: null
                             }));
 
-                        case 12:
+                        case 13:
                             specClone = (0, _extends3.default)({}, spec);
                             vmvConfig = data.vmvConfig || { styling: {} };
 
@@ -152,15 +151,15 @@ var createSpecData = function createSpecData(specs) {
                                 });
                             }));
 
-                        case 18:
+                        case 19:
                         case 'end':
                             return _context.stop();
                     }
                 }
-            }, _callee, undefined, [[1, 7]]);
+            }, _callee, undefined, [[1, 8]]);
         }));
 
-        return function (_x2) {
+        return function (_x) {
             return _ref.apply(this, arguments);
         };
     }(), specs);
@@ -267,12 +266,20 @@ var addViews = exports.addViews = function () {
                                 spec: s,
                                 id: key
                             };
-                            if (Array.isArray(s) && s.length === 2) {
-                                var _s = (0, _slicedToArray3.default)(s, 2);
 
-                                data.spec = _s[0];
-                                data.vmvConfig = _s[1];
+                            if (Array.isArray(s)) {
+                                if (s.length === 2) {
+                                    var _s = (0, _slicedToArray3.default)(s, 2);
+
+                                    data.spec = _s[0];
+                                    data.vmvConfig = _s[1];
+                                } else if (s.length === 1) {
+                                    var _s2 = (0, _slicedToArray3.default)(s, 1);
+
+                                    data.spec = _s2[0];
+                                }
                             }
+
                             return data;
                         }, specsArray);
 
@@ -298,7 +305,7 @@ var addViews = exports.addViews = function () {
                         }
 
                         _context2.next = 24;
-                        return createSpecData(specsArray);
+                        return createSpecData(specsArray, type);
 
                     case 24:
                         data = _context2.sent;
@@ -345,7 +352,7 @@ var addViews = exports.addViews = function () {
         }, _callee2, undefined, [[5, 11]]);
     }));
 
-    return function addViews(_x4) {
+    return function addViews(_x3) {
         return _ref2.apply(this, arguments);
     };
 }();

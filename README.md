@@ -130,9 +130,11 @@ The `vega-multi-view` module exposes 3 methods:
 * [removeViews](#removeviewsstring--arraystring-resulttype)
 * [showSpecInTab](#showspecintabspectype)
 
-### `addViews(config: string | ConfigType): Promise<any>`
+### `addViews(config: string | ConfigType, type?: "yaml" | "json" | "cson" | "bson" | "json-string"): Promise<any>`
 
-You can pass the uri of a global configuration file or the configuration as object. The types listed below will be explained in detail in [configuration chapter](#configuration).
+You can pass the uri of a global configuration file or the configuration as object or JSON string. If you provide a uri, you can provide the file-type of the configuration file with the optional second argument. If you provide the configuration file as an object or a JSON string you can pass `object` and `json-string` respectively as the second argument. If you leave this empty, `vega-multi-view` will detect the file-type for you.
+
+The types listed below will be explained in detail in [configuration chapter](#configuration).
 
 ```javascript
 // @flow
@@ -141,6 +143,7 @@ type ConfigType = {
     overwrite?: boolean,
     element?: string | HTMLElement
     renderer?: "canvas" | "svg",
+    type?: "yaml" | "json" | "cson" | "bson" | "json-string" | "object",
     run?: boolean,
     hover?: boolean,
     specs: {
@@ -172,6 +175,7 @@ type ViewConfigType = {
     spec?: string,
     element?: false | string | HTMLElement
     renderer?: "canvas" | "svg",
+    type?: "yaml" | "json" | "cson" | "bson" | "json-string" | "object",
     run?: boolean,
     hover?: boolean,
     leaflet?: boolean,
@@ -260,6 +264,7 @@ debug: false
 overwrite: false
 element: id
 renderer: canvas
+type: yaml
 run: true
 hover: false
 specs:
@@ -295,6 +300,18 @@ The element where all Vega views will be rendered to. Inside this element every 
 
 The renderer that will used for all views, unless overridden by a view specific configuration.
 
+#### `type: "yaml" | "json" | "cson" | "bson" | "json-string" | "object"`
+
+File-type of the specs. This setting can be overruled by the view specific setting. `vega-multi-view` detects file types automatically, however providing a type can make the parsing process a tiny bit faster. In case you serve your specs using a REST API, `vega-multi-view` uses the content type in header of the response to detect the file-type. If your server is not sending the correct content types you should provide a file type. Content types:
+
+* `json`: `application/json`
+* `yaml`: `text/yaml`
+* `bson`: `application/bson`
+* `cson`: `text/cson`
+
+Specs in the types `json-string` and `object` are typically already available in the client-side and don't need to be loaded from a server.
+
+
 #### `run: boolean`
 
 Whether or not to call the `run()` method of a view after it has been added to the DOM. Defaults to true and will be overridden by a view specific configuration.
@@ -305,7 +322,7 @@ Whether or not to call the `hover()` method of the view after it has been added 
 
 #### `specs: { [string]: SpecType }`
 
-A key-value store object where the keys are the unique ids by which the Vega specs can be identified. The value is a single spec or a tuple, in case you set a tuple the second value is the view specific configuration file (see  below). Both the spec and the configuration can be any of the types listed  above.
+A key-value store object where the keys are the unique ids by which the Vega specs can be identified. The value is a single spec or a tuple, in case you set a tuple the second value is the view specific configuration file (see  below). Both the spec and the configuration can be any of the types listed above.
 
 #### `styling: StylingType`
 
@@ -361,6 +378,7 @@ Path to the images that the Vega spec needs to load, for instance for rendering 
 ---
 spec: spec_1
 renderer: canvas
+type: bson
 element: id
 run: true
 hover: false
@@ -399,6 +417,17 @@ The spec this configuration belongs to.
 #### `renderer: "canvas" | "svg"`
 
 The renderer to use this view
+
+#### `type: "yaml" | "json" | "cson" | "bson" | "json-string" | "object"`
+
+File-type of the spec. This setting overrules the global setting. `vega-multi-view` detects file types automatically, however providing a type can make the parsing process a tiny bit faster. In case you serve your specs using a REST API, `vega-multi-view` uses the content type in the response header to detect the file-type. If your server is not sending the correct content types you should provide a file type. Content types:
+
+* `json`: `application/json`
+* `yaml`: `text/yaml`
+* `bson`: `application/bson`
+* `cson`: `text/cson`
+
+Specs in the types `json-string` and `object` are typically already available in the client-side runtime and don't need to be loaded from a server.
 
 #### `element: false | string | HTMLElement`
 
@@ -740,7 +769,7 @@ const { addViews, removeView } =  require('vega-multi-view');
 You can also add `vega-multi-view` as UMD bundle to your HTML page:
 
 ```html
-<script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.4/browser/vmv.min.js"></script>
+<script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.5/browser/vmv.min.js"></script>
 ```
 
 Then in your plain es5 javascript code:
@@ -786,7 +815,7 @@ Note that you do not accidentally add the `.css` extension otherwise the css com
 You can also add the pre-compiled stylesheet to your HTML page:
 
 ```html
-<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.4/browser/vmv.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.5/browser/vmv.css" />
 ```
 
 ## See it in action
@@ -812,8 +841,8 @@ Below the HTML that uses the UMD approach and loads the global configuration fil
     <title>vega</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.4/browser/vmv.css" />
-    <script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.4/browser/vmv.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.5/browser/vmv.css" />
+    <script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.5/browser/vmv.min.js"></script>
 </head>
 
 <body>

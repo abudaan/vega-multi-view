@@ -10,10 +10,7 @@ import addStyling from './util/add-styling';
 import { loadSpec } from './util/load-specs';
 
 const mapIndexed = R.addIndex(R.map);
-let firstRun = true;
 const store = {};
-const VERSION = '1.1.4';
-
 
 const renderViews = (data, renderer, container) => {
     data.forEach((d) => {
@@ -39,11 +36,12 @@ const renderViews = (data, renderer, container) => {
     });
 };
 
-const createSpecData = (specs, type = 'json') => {
+const createSpecData = (specs, type) => {
     const promises = mapIndexed(async (data) => {
         let spec = null;
         try {
-            spec = await loadSpec(data.spec, type);
+            const t = data.spec.type || type;
+            spec = await loadSpec(data.spec, t);
         } catch (e) {
             console.error(e);
         }
@@ -96,11 +94,6 @@ export const removeViews = (...args) => {
 
 
 export const addViews = async (cfg, type = null) => {
-    if (firstRun === true) {
-        console.log(`vega-multi-view ${VERSION}`);
-        firstRun = false;
-    }
-
     let config = cfg;
     if (typeof config === 'string') {
         if (config.length === 0) {
@@ -155,9 +148,15 @@ export const addViews = async (cfg, type = null) => {
             spec: s,
             id: key,
         };
-        if (Array.isArray(s) && s.length === 2) {
-            [data.spec, data.vmvConfig] = s;
+
+        if (Array.isArray(s)) {
+            if (s.length === 2) {
+                [data.spec, data.vmvConfig] = s;
+            } else if (s.length === 1) {
+                [data.spec] = s;
+            }
         }
+
         return data;
     }, specsArray);
 
@@ -181,7 +180,7 @@ export const addViews = async (cfg, type = null) => {
         console.warn('invalid element, using document.body instead');
     }
 
-    let data = await createSpecData(specsArray);
+    let data = await createSpecData(specsArray, type);
     data = addElements(data, containerElement);
     addTooltips(data);
     connectSignals(data);

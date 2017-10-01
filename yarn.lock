@@ -2441,9 +2441,9 @@ fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
 
-"fetch-helpers@https://github.com/abudaan/fetch-helpers":
+"fetch-helpers@git+https://github.com/abudaan/fetch-helpers.git":
   version "1.0.1"
-  resolved "https://github.com/abudaan/fetch-helpers#01e529b2b70819082b647a0abd8c805326a5dd2f"
+  resolved "git+https://github.com/abudaan/fetch-helpers.git#01e529b2b70819082b647a0abd8c805326a5dd2f"
   dependencies:
     bson "^1.0.4"
     cson-parser "^2.0.0"
@@ -4534,7 +4534,7 @@ quote-stream@~0.0.0:
     minimist "0.0.8"
     through2 "~0.4.1"
 
-ramda@0.23.0:
+ramda@^0.23.0:
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.23.0.tgz#ccd13fff73497a93974e3e86327bfd87bd6e8e2b"
 
@@ -5530,9 +5530,9 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "~1.0.0"
     spdx-expression-parse "~1.0.0"
 
-"vega-as-leaflet-layer@git+https://github.com/abudaan/vega-as-leaflet-layer.git":
-  version "1.1.4"
-  resolved "git+https://github.com/abudaan/vega-as-leaflet-layer.git#28523ecb713d5b703ea1c774126bb2b83b3fa2d0"
+vega-as-leaflet-layer@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/vega-as-leaflet-layer/-/vega-as-leaflet-layer-1.1.5.tgz#4b85a4cb8b0168ec585066f5c47e3928defd2368"
   dependencies:
     fetch-helpers "https://github.com/abudaan/fetch-helpers"
     leaflet "^1.2.0"
@@ -5746,7 +5746,7 @@ vega-wordcloud@2:
     canvas "^1.6"
     canvas-prebuilt "^1.6"
 
-vega@^3.0.0, vega@^3.0.4:
+vega@3.0.4, vega@^3.0.0, vega@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/vega/-/vega-3.0.4.tgz#d69fba0ddcc4f7211f559032ba4a6b9d7efed683"
   dependencies:

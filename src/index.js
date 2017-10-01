@@ -8,6 +8,7 @@ import connectSignals from './util/signals';
 import addElements from './util/add-elements';
 import addStyling from './util/add-styling';
 import { loadSpec } from './util/load-specs';
+import { version } from '../package.json';
 
 const mapIndexed = R.addIndex(R.map);
 const store = {};
@@ -223,5 +224,10 @@ export const showSpecInTab = (spec) => {
     w.document.open();
     w.document.write(`< html > <body><pre>${json}</pre></body></html > `);
     w.document.close();
+};
+
+const v = `vega-multi-view ${version}`;
+export {
+    v as version,
 };
 

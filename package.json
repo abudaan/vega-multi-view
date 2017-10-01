@@ -18,15 +18,18 @@
         "signals"
     ],
     "scripts": {
+        "prebuild": "rm -rf build && mkdir build",
         "gulp:build": "gulp build",
-        "compile": "babel src/js --out-dir ./dist",
-        "update": "npm run compile && npm run gulp:build"
+        "compile": "babel ./src --out-dir ./dist",
+        "update": "npm run compile && npm run gulp:build",
+        "prepublish": "npm run update",
+        "postpublish": "git push && git push --tags"
     },
     "dependencies": {
-        "fetch-helpers": "https://github.com/abudaan/fetch-helpers",
-        "ramda": "0.23.0",
-        "vega": "^3.0.4",
-        "vega-as-leaflet-layer": "git+https://github.com/abudaan/vega-as-leaflet-layer.git",
+        "fetch-helpers": "git+https://github.com/abudaan/fetch-helpers.git",
+        "ramda": "^0.23.0",
+        "vega": "^3.0.5",
+        "vega-as-leaflet-layer": "^1.1.5",
         "vega-tooltip": "^0.4.4",
         "xstream": "^10.9.0"
     },

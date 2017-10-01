@@ -13,15 +13,17 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
       * [Terminology](#terminology)
          * [Types](#types)
       * [API](#api)
-         * [addViews(config: string | ConfigType): Promise&lt;any&gt;](#addviewsconfig-string--configtype-promiseany)
+         * [addViews(config: string | ConfigType, type?: "yaml" | "json" | "cson" | "bson" | "json-string"): Promise&lt;any&gt;](#addviewsconfig-string--configtype-type-yaml--json--cson--bson--json-string-promiseany)
          * [removeViews(string | Array&lt;string&gt;): ResultType](#removeviewsstring--arraystring-resulttype)
          * [showSpecInTab(SpecType)](#showspecintabspectype)
+         * [version](#version)
       * [Configuration](#configuration)
          * [Global configuration (ConfigType)](#global-configuration-configtype)
             * [debug: boolean](#debug-boolean)
             * [overwrite: boolean](#overwrite-boolean)
             * [element: string | HTMLElement](#element-string--htmlelement)
             * [renderer: "canvas" | "svg"](#renderer-canvas--svg)
+            * [type: "yaml" | "json" | "cson" | "bson" | "json-string" | "object"](#type-yaml--json--cson--bson--json-string--object)
             * [run: boolean](#run-boolean)
             * [hover: boolean](#hover-boolean)
             * [specs: { [string]: SpecType }](#specs--string-spectype-)
@@ -37,6 +39,7 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
          * [View specific configuration (ViewConfigType)](#view-specific-configuration-viewconfigtype)
             * [spec: string](#spec-string)
             * [renderer: "canvas" | "svg"](#renderer-canvas--svg-1)
+            * [type: "yaml" | "json" | "cson" | "bson" | "json-string" | "object"](#type-yaml--json--cson--bson--json-string--object-1)
             * [element: false | string | HTMLElement](#element-false--string--htmlelement)
             * [run: boolean](#run-boolean-1)
             * [hover: boolean](#hover-boolean-1)
@@ -69,6 +72,7 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
          * [CSS](#css)
       * [See it in action](#see-it-in-action)
          * [Example with REST API call](#example-with-rest-api-call)
+
 
 <sub>(toc created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc))</sub>
 
@@ -129,6 +133,7 @@ The `vega-multi-view` module exposes 3 methods:
 * [addViews](#addviewsconfig-configtype-promiseany)
 * [removeViews](#removeviewsstring--arraystring-resulttype)
 * [showSpecInTab](#showspecintabspectype)
+* [version](#version)
 
 ### `addViews(config: string | ConfigType, type?: "yaml" | "json" | "cson" | "bson" | "json-string"): Promise<any>`
 
@@ -250,6 +255,16 @@ import spec from '../specs/my-spec';
 button.addEventListener('click', () => {
     showSpecInTab(spec);
 });
+```
+
+### `version`
+
+You can print the current version of `vega-multi-view`:
+
+```javascript
+import { version } from 'vega-multi-view'
+
+console.log(version) // prints: vega-multi-view 1.1.5
 ```
 
 ## Configuration

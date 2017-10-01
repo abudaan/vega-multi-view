@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.showSpecInTab = exports.addViews = exports.removeViews = undefined;
+exports.version = exports.showSpecInTab = exports.addViews = exports.removeViews = undefined;
 
 var _stringify = require('babel-runtime/core-js/json/stringify');
 
@@ -63,12 +63,12 @@ var _addStyling2 = _interopRequireDefault(_addStyling);
 
 var _loadSpecs = require('./util/load-specs');
 
+var _package = require('../package.json');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mapIndexed = _ramda2.default.addIndex(_ramda2.default.map);
-var firstRun = true;
 var store = {};
-var VERSION = '1.1.5';
 
 var renderViews = function renderViews(data, renderer, container) {
     data.forEach(function (d) {
@@ -196,42 +196,37 @@ var addViews = exports.addViews = function () {
             while (1) {
                 switch (_context2.prev = _context2.next) {
                     case 0:
-                        if (firstRun === true) {
-                            console.log('vega-multi-view ' + VERSION);
-                            firstRun = false;
-                        }
-
                         config = cfg;
 
                         if (!(typeof config === 'string')) {
-                            _context2.next = 14;
+                            _context2.next = 13;
                             break;
                         }
 
                         if (!(config.length === 0)) {
-                            _context2.next = 5;
+                            _context2.next = 4;
                             break;
                         }
 
                         return _context2.abrupt('return', _promise2.default.reject(new Error('You have passed an empty string!')));
 
-                    case 5:
-                        _context2.prev = 5;
-                        _context2.next = 8;
+                    case 4:
+                        _context2.prev = 4;
+                        _context2.next = 7;
                         return (0, _fetchHelpers.load)(config, type);
 
-                    case 8:
+                    case 7:
                         config = _context2.sent;
-                        _context2.next = 14;
+                        _context2.next = 13;
                         break;
 
-                    case 11:
-                        _context2.prev = 11;
-                        _context2.t0 = _context2['catch'](5);
+                    case 10:
+                        _context2.prev = 10;
+                        _context2.t0 = _context2['catch'](4);
 
                         console.error(_context2.t0);
 
-                    case 14:
+                    case 13:
                         _config = config, _config$run = _config.run, run = _config$run === undefined ? true : _config$run, _config$hover = _config.hover, hover = _config$hover === undefined ? false : _config$hover, specs = _config.specs, element = _config.element, _config$renderer = _config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = _config.debug, debug = _config$debug === undefined ? false : _config$debug, _config$overwrite = _config.overwrite, overwrite = _config$overwrite === undefined ? false : _config$overwrite, _config$styling = _config.styling, styling = _config$styling === undefined ? {} : _config$styling;
 
 
@@ -304,10 +299,10 @@ var addViews = exports.addViews = function () {
                             console.warn('invalid element, using document.body instead');
                         }
 
-                        _context2.next = 24;
+                        _context2.next = 23;
                         return createSpecData(specsArray, type);
 
-                    case 24:
+                    case 23:
                         data = _context2.sent;
 
                         data = (0, _addElements2.default)(data, containerElement);
@@ -315,14 +310,14 @@ var addViews = exports.addViews = function () {
                         (0, _signals2.default)(data);
 
                         if (!debug) {
-                            _context2.next = 31;
+                            _context2.next = 30;
                             break;
                         }
 
-                        _context2.next = 31;
+                        _context2.next = 30;
                         return (0, _debug2.default)(data);
 
-                    case 31:
+                    case 30:
                         return _context2.abrupt('return', new _promise2.default(function (resolve) {
                             // wait until the next paint cycle so the created elements
                             // are added to the DOM, add the views, then resolve
@@ -344,12 +339,12 @@ var addViews = exports.addViews = function () {
                             }, 0);
                         }));
 
-                    case 32:
+                    case 31:
                     case 'end':
                         return _context2.stop();
                 }
             }
-        }, _callee2, undefined, [[5, 11]]);
+        }, _callee2, undefined, [[4, 10]]);
     }));
 
     return function addViews(_x3) {
@@ -369,3 +364,6 @@ var showSpecInTab = exports.showSpecInTab = function showSpecInTab(spec) {
     w.document.write('< html > <body><pre>' + json + '</pre></body></html > ');
     w.document.close();
 };
+
+var v = 'vega-multi-view ' + _package.version;
+exports.version = v;

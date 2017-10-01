@@ -19,7 +19,7 @@ gulp.task('build_js_min', () => {
         standalone: 'vmv',
     };
     const b = browserify(opts);
-    b.add('./src/js/index.js');
+    b.add('./src/index.js');
     b.transform(babelify.configure({
         compact: true,
     }));
@@ -48,7 +48,7 @@ gulp.task('build_js', () => {
         standalone: 'vmv',
     };
     const b = browserify(opts);
-    b.add('./src/js/index.js');
+    b.add('./src/index.js');
     b.transform(babelify.configure({
         compact: true,
     }));

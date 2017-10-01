@@ -1,6 +1,6 @@
 // import { addViews, removeViews } from '../../src/js/index';
 // const vmv = require('../../src/js/index');
-const { addViews, removeViews, version } = require('../../index');
+const { addViews, removeViews, version } = require('../../src/index');
 
 console.log(version);
 

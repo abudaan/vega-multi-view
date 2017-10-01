@@ -22,7 +22,6 @@
         "gulp:build": "gulp build",
         "compile": "babel ./src --out-dir ./dist",
         "update": "npm run compile && npm run gulp:build",
-        "prepublish": "npm run update",
         "postpublish": "git push && git push --tags"
     },
     "dependencies": {

@@ -784,7 +784,7 @@ const { addViews, removeView } =  require('vega-multi-view');
 You can also add `vega-multi-view` as UMD bundle to your HTML page:
 
 ```html
-<script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.5/browser/vmv.min.js"></script>
+<script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.5/build/vmv.min.js"></script>
 ```
 
 Then in your plain es5 javascript code:
@@ -830,7 +830,7 @@ Note that you do not accidentally add the `.css` extension otherwise the css com
 You can also add the pre-compiled stylesheet to your HTML page:
 
 ```html
-<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.5/browser/vmv.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.5/build/vmv.css" />
 ```
 
 ## See it in action
@@ -856,8 +856,8 @@ Below the HTML that uses the UMD approach and loads the global configuration fil
     <title>vega</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.5/browser/vmv.css" />
-    <script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.5/browser/vmv.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.5/build/vmv.css" />
+    <script src="https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.5/build/vmv.min.js"></script>
 </head>
 
 <body>

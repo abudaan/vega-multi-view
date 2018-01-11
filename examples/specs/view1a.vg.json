@@ -1,16 +1,9 @@
 {
     "$schema": "https://vega.github.io/schema/vega/v3.0.json",
-    "description": "points and line",
+    "description": "bars",
     "width": 400,
     "height": 200,
     "padding": 5,
-    "config": {
-        "axis": {
-            "grid": true,
-            "gridColor": "#555",
-            "opacity": 0.5
-        }
-    },
     "data": [
         {
             "name": "table",
@@ -18,35 +11,13 @@
             "on": [
                 {
                     "trigger": "changeAmount",
-                    "modify": "changeAmount.datum",
+                    "modify": "changeAmount.durp",
                     "values": "{category: changeAmount.datum.category, amount: changeAmount.amount}"
-                },
-                {
-                    "trigger": "importData2",
-                    "modify": "importData2.datum",
-                    "values": "{category: importData.category, amount: importData.amount}"
                 }
             ]
         }
     ],
     "signals": [
-        {
-            "name": "importData",
-            "value": "{}",
-            "update": "sequence(debug('aap'), warn('kont'))"
-        },
-        {
-            "name": "importData2",
-            "on": [
-                {
-                    "events": {
-                        "signal": "importData"
-                    },
-                    "update": "{datum: data('table')[indexof(data('table'), importData.category)], paap: indexof(data('table'), importData.category)}"
-                }
-            ],
-            "value": "{}"
-        },
         {
             "name": "exportData",
             "on": [
@@ -66,7 +37,7 @@
                     "events": [
                         {
                             "type": "mousedown",
-                            "markname": "point"
+                            "markname": "bar"
                         }
                     ],
                     "update": "datum"
@@ -84,7 +55,8 @@
         {
             "name": "changeAmount",
             "value": {
-                "datum": {}
+                "datum": {},
+                "durp": {}
             },
             "on": [
                 {
@@ -104,26 +76,33 @@
                             "type": "click"
                         }
                     ],
-                    "update": "{amount: round(invert('yscale', y())), datum: selectedCategory}"
+                    "update": "{amount: round(invert('yscale', y())), category: selectedCategory.category, datum: selectedCategory, durp: data('table')[indexof(data('table'), selectedCategory)]}",
+                    "filter": [
+                        "event.button === 0"
+                    ]
                 }
             ]
         },
         {
-            "name": "info",
+            "name": "tooltip",
             "value": {},
             "on": [
                 {
-                    "events": {
-                        "type": "mouseover",
-                        "markname": "point"
-                    },
+                    "events": [
+                        {
+                            "type": "mouseover",
+                            "markname": "bar"
+                        }
+                    ],
                     "update": "datum"
                 },
                 {
-                    "events": {
-                        "type": "mouseout",
-                        "markname": "point"
-                    },
+                    "events": [
+                        {
+                            "type": "mouseout",
+                            "markname": "bar"
+                        }
+                    ],
                     "update": "{}"
                 }
             ]
@@ -235,57 +214,16 @@
     ],
     "marks": [
         {
-            "type": "line",
-            "from": {
-                "data": "table"
-            },
-            "encode": {
-                "enter": {
-                    "x": {
-                        "scale": "xscale",
-                        "field": "category",
-                        "band": 0.5
-                    },
-                    "y": {
-                        "scale": "yscale",
-                        "field": "amount"
-                    },
-                    "stroke": {
-                        "value": "#5357a1"
-                    },
-                    "strokeWidth": {
-                        "value": 2
-                    }
-                },
-                "update": {
-                    "x": {
-                        "scale": "xscale",
-                        "field": "category",
-                        "band": 0.5
-                    },
-                    "y": {
-                        "scale": "yscale",
-                        "field": "amount"
-                    },
-                    "stroke": {
-                        "value": "#5357a1"
-                    },
-                    "strokeWidth": {
-                        "value": 2
-                    }
-                }
-            }
-        },
-        {
-            "name": "info",
+            "name": "feedback",
             "type": "text",
+            "zindex": 3,
             "encode": {
                 "enter": {
                     "x": {
-                        "offset": 390
+                        "offset": 20
                     },
                     "y": {
-                        "offset": -20
+                        "offset": -30
                     },
                     "align": {
                         "value": "center"
@@ -298,21 +236,18 @@
                     },
                     "text": {
                         "value": ""
-                    },
-                    "fontWeight": {
-                        "value": "bold"
                     }
                 },
                 "update": {
                     "text": {
-                        "signal": "importData.datum.category + ':' + importData.datum.amount + ':' + importData2.paap"
+                        "signal": "changeAmount.amount + ' ' + selectedCategory ? selectedCategory.category : ''"
                     }
                 }
             }
         },
         {
-            "type": "symbol",
-            "name": "point",
+            "type": "rect",
+            "name": "bar",
             "from": {
                 "data": "table"
             },
@@ -321,53 +256,81 @@
                     "x": {
                         "scale": "xscale",
                         "field": "category",
-                        "band": 0.5
+                        "offset": 1
+                    },
+                    "width": {
+                        "scale": "xscale",
+                        "band": 1,
+                        "offset": -1
                     },
                     "y": {
                         "scale": "yscale",
                         "field": "amount"
                     },
-                    "fill": {
-                        "value": "steelblue"
-                    },
-                    "stroke": {
-                        "value": "white"
-                    },
-                    "strokeWidth": {
-                        "value": 1
-                    },
-                    "size": {
-                        "value": 100
+                    "y2": {
+                        "scale": "yscale",
+                        "value": 0
                     }
                 },
                 "update": {
                     "x": {
                         "scale": "xscale",
                         "field": "category",
-                        "band": 0.5
+                        "offset": 1
+                    },
+                    "width": {
+                        "scale": "xscale",
+                        "band": 1,
+                        "offset": -1
                     },
                     "y": {
                         "scale": "yscale",
                         "field": "amount"
                     },
+                    "y2": {
+                        "scale": "yscale",
+                        "value": 0
+                    },
                     "fill": [
                         {
-                            "test": "datum.category === info.category || datum.category === selectedCategory.category",
+                            "test": "datum.category === tooltip.category || datum.category === selectedCategory.category",
                             "value": "orange"
                         },
                         {
                             "value": "steelblue"
                         }
-                    ],
-                    "size": [
-                        {
-                            "test": "datum.category === info.category",
-                            "value": 150
-                        },
-                        {
-                            "value": 100
-                        }
                     ]
+                }
+            }
+        },
+        {
+            "type": "text",
+            "encode": {
+                "enter": {
+                    "align": {
+                        "value": "center"
+                    },
+                    "baseline": {
+                        "value": "bottom"
+                    },
+                    "fill": {
+                        "value": "#fff"
+                    }
+                },
+                "update": {
+                    "x": {
+                        "scale": "xscale",
+                        "signal": "tooltip.category",
+                        "band": 0.5
+                    },
+                    "y": {
+                        "scale": "yscale",
+                        "signal": "tooltip.amount",
+                        "offset": -2
+                    },
+                    "text": {
+                        "signal": "tooltip.amount"
+                    }
                 }
             }
         }

@@ -3,13 +3,14 @@ import { addViews } from '../../src/index';
 
 const data = {
     specs: {
-        spec1: ['../specs/view1.vg.json', {
+        spec1: ['../specs/view1a.vg.json', {
             renderer: 'svg',
             publish: [
                 {
                     signal: 'changeAmount',
                     as: 'updateFromView1',
-                    // dataUpdate: true,
+                    // dataReplace: true,
+                    // dataModify: true,
                 },
             ],
             // subscribe: [
@@ -31,8 +32,13 @@ const data = {
             subscribe: [
                 {
                     signal: 'updateFromView1',
-                    as: 'changeAmount',
-                    // dataUpdate: true,
+                    as: 'importData',
+                    // dataReplace: true,
+                    // dataModify: true,
+                    // - dataset
+                    // - field
+                    // - value
+                    // or: [{field, value}]
                 },
             ],
         }],
@@ -46,14 +52,14 @@ addViews(data).then((result) => {
         const name = a;
         const category = b.datum.category;
         const amount = b.amount;
-        if (typeof category !== 'undefined') {
-            // console.log(name, category, amount);
-            // console.log(1, result.spec2.view.data('table'));
-            const cs = changeset()
-                .modify(d => d.category === category, 'amount', amount);
-            result.spec2.view.change('table', cs).run();
-            // console.log(2, result.spec2.view.data('table'));
-        }
+        // if (typeof category !== 'undefined') {
+        //     // console.log(name, category, amount);
+        //     // console.log(1, result.spec2.view.data('table'));
+        //     const cs = changeset()
+        //         .modify(d => d.category === category, 'amount', amount);
+        //     result.spec2.view.change('table', cs).run();
+        //     // console.log(2, result.spec2.view.data('table'));
+        // }
     });
 }).catch((error) => {
     console.error(error);

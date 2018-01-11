@@ -119,8 +119,6 @@ const connectSignals = (data) => {
             subscribeToSignal(d, streams);
         }
     }, R.values(data));
-
-    console.log(streams);
 };
 
 export default connectSignals;

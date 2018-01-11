@@ -2,3 +2,4 @@ build
 node_modules
 toc.md
 examples/**/app.bundle.js
+.vscode

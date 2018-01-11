@@ -239,7 +239,7 @@
                 },
                 "update": {
                     "text": {
-                        "signal": "changeAmount + ' ' + selectedCategory ? selectedCategory.category : ''"
+                        "signal": "changeAmount.amount + ' ' + selectedCategory ? selectedCategory.category : ''"
                     }
                 }
             }

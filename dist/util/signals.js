@@ -37,23 +37,13 @@ var publishSignal = function publishSignal(data) {
     }
 
     _ramda2.default.forEach(function (publish) {
+        // console.log(publish);
         try {
             var s = _xstream2.default.create({
                 start: function start(listener) {
-                    // if (publish.signal === 'dataUpdate') {
-                    //     view.addSignalListener(
-                    //         'dataUpdate',
-                    //         (name, data) => {
-                    //             console.log(data.name, data.values);
-                    //             listener.remove(data.name, () => true).run();
-                    //             listener.insert(data.name, data.values).run();
-                    //         },
-                    //     );
-                    // } else {
                     view.addSignalListener(publish.signal, function (name, value) {
                         listener.next(value);
                     });
-                    // }
                 },
                 stop: function stop() {
                     view.removeSignalListener(publish.signal);
@@ -63,7 +53,7 @@ var publishSignal = function publishSignal(data) {
                 id: streamId
             });
             streamId += 1;
-            streams[publish.as] = s;
+            streams[publish.as || publish.signal] = s;
         } catch (e) {
             console.error(e.message);
         }
@@ -93,22 +83,44 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
             console.error('no stream for signal "' + subscribe.signal + '"');
             return;
         }
-        if (_ramda2.default.isNil(_ramda2.default.find(_ramda2.default.propEq('name', subscribe.as))(spec.signals))) {
-            console.error('no signal "' + subscribe.as + '" found in spec');
-            return;
-        }
 
-        s.addListener({
-            next: function next(value) {
-                view.signal(subscribe.as, value).run();
-            },
-            error: function error(err) {
-                console.error('Stream ' + s.id + ' error: ' + err);
-            },
-            complete: function complete() {
-                console.log('Stream ' + s.id + ' is done');
+        if (subscribe.dataUpdate === true) {
+            s.addListener({
+                next: function next(value) {
+                    if (_ramda2.default.isNil(value) === false) {
+                        // TODO: validation here!
+                        view.remove(value.name, function () {
+                            return true;
+                        }).run();
+                        view.insert(value.name, value.values).run();
+                    }
+                },
+                error: function error(err) {
+                    console.error('Stream ' + s.id + ' error: ' + err);
+                },
+                complete: function complete() {
+                    console.log('Stream ' + s.id + ' is done');
+                }
+            });
+        } else {
+            if (_ramda2.default.isNil(_ramda2.default.find(_ramda2.default.propEq('name', subscribe.as))(spec.signals))) {
+                console.error('no signal "' + subscribe.as + '" found in spec');
+                return;
             }
-        });
+
+            s.addListener({
+                next: function next(value) {
+                    console.log(value);
+                    view.signal(subscribe.as, value).run();
+                },
+                error: function error(err) {
+                    console.error('Stream ' + s.id + ' error: ' + err);
+                },
+                complete: function complete() {
+                    console.log('Stream ' + s.id + ' is done');
+                }
+            });
+        }
     }, subscribes);
 };
 

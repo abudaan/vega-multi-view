@@ -1,6 +1,6 @@
 import R from 'ramda';
 import { parse, View } from 'vega';
-import vegaAsLeafletLayer from 'vega-as-leaflet-layer';
+import vegaAsLeafletLayer from 'vega-as-leaflet-layer/dist';
 import { load } from 'fetch-helpers';
 import addDebug from './util/debug';
 import addTooltips from './util/add-tooltips';

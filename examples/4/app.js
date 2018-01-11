@@ -1,5 +1,4 @@
-import { addViews, removeViews } from '../../src/js/index';
-
+import { addViews, removeViews } from '../../src/index';
 
 const globalStylingJson = {
     html: {
@@ -77,7 +76,7 @@ const data = {
         addToHead: true,
     },
     specs: {
-        spec1: ['./specs/spec4.json', {
+        spec1: ['../specs/spec4.json', {
             // element: 'map',
             leaflet: false,
             renderer: 'svg',
@@ -108,7 +107,7 @@ addViews(data)
                     overwrite: false,
                 },
                 specs: {
-                    spec2: ['./specs/spec4.json', {
+                    spec2: ['../specs/spec4.json', {
                         leaflet: false,
                         renderer: 'svg',
                         styling: {

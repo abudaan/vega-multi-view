@@ -1,4 +1,4 @@
-import { addViews, removeViews } from '../../src/js/index';
+import { addViews, removeViews } from '../../src/index';
 
 const data = {
     specs: {
@@ -9,7 +9,7 @@ const data = {
             renderer: 'svg',
         }],
     },
-    debug: true,
+    debug: false,
     cssClass: 'view',
 };
 

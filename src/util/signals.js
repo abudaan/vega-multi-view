@@ -1,3 +1,4 @@
+// @no-flow
 import R from 'ramda';
 import xs from 'xstream';
 
@@ -20,6 +21,7 @@ const publishSignal = (data) => {
     }
 
     R.forEach((publish) => {
+        // console.log(publish);
         try {
             const s = xs.create({
                 start(listener) {
@@ -34,7 +36,7 @@ const publishSignal = (data) => {
                 id: streamId,
             });
             streamId += 1;
-            streams[publish.as] = s;
+            streams[publish.as || publish.signal] = s;
         } catch (e) {
             console.error(e.message);
         }
@@ -66,22 +68,41 @@ const subscribeToSignal = (data, streams) => {
             console.error(`no stream for signal "${subscribe.signal}"`);
             return;
         }
-        if (R.isNil(R.find(R.propEq('name', subscribe.as))(spec.signals))) {
-            console.error(`no signal "${subscribe.as}" found in spec`);
-            return;
-        }
 
-        s.addListener({
-            next: (value) => {
-                view.signal(subscribe.as, value).run();
-            },
-            error: (err) => {
-                console.error(`Stream ${s.id} error: ${err}`);
-            },
-            complete: () => {
-                console.log(`Stream ${s.id} is done`);
-            },
-        });
+        if (subscribe.dataUpdate === true) {
+            s.addListener({
+                next: (value) => {
+                    if (R.isNil(value) === false) {
+                        // TODO: validation here!
+                        view.remove(value.name, () => true).run();
+                        view.insert(value.name, value.values).run();
+                    }
+                },
+                error: (err) => {
+                    console.error(`Stream ${s.id} error: ${err}`);
+                },
+                complete: () => {
+                    console.log(`Stream ${s.id} is done`);
+                },
+            });
+        } else {
+            if (R.isNil(R.find(R.propEq('name', subscribe.as))(spec.signals))) {
+                console.error(`no signal "${subscribe.as}" found in spec`);
+                return;
+            }
+
+            s.addListener({
+                next: (value) => {
+                    view.signal(subscribe.as, value).run();
+                },
+                error: (err) => {
+                    console.error(`Stream ${s.id} error: ${err}`);
+                },
+                complete: () => {
+                    console.log(`Stream ${s.id} is done`);
+                },
+            });
+        }
     }, subscribes);
 };
 
@@ -98,6 +119,8 @@ const connectSignals = (data) => {
             subscribeToSignal(d, streams);
         }
     }, R.values(data));
+
+    console.log(streams);
 };
 
 export default connectSignals;

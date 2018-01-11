@@ -18,6 +18,7 @@ var _xstream2 = _interopRequireDefault(_xstream);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// @no-flow
 var streamId = 0;
 
 var publishSignal = function publishSignal(data) {
@@ -39,9 +40,20 @@ var publishSignal = function publishSignal(data) {
         try {
             var s = _xstream2.default.create({
                 start: function start(listener) {
+                    // if (publish.signal === 'dataUpdate') {
+                    //     view.addSignalListener(
+                    //         'dataUpdate',
+                    //         (name, data) => {
+                    //             console.log(data.name, data.values);
+                    //             listener.remove(data.name, () => true).run();
+                    //             listener.insert(data.name, data.values).run();
+                    //         },
+                    //     );
+                    // } else {
                     view.addSignalListener(publish.signal, function (name, value) {
                         listener.next(value);
                     });
+                    // }
                 },
                 stop: function stop() {
                     view.removeSignalListener(publish.signal);

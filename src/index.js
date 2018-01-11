@@ -107,6 +107,7 @@ export const addViews = async (cfg, type = null) => {
         }
     }
 
+    // console.log(config);
     const {
         run = true,
         hover = false,

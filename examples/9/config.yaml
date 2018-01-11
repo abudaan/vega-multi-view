@@ -1,0 +1,24 @@
+baseurl: ./assets/data/
+data: data.yaml # file containing the dataset that is used in all specs
+specs: # array containing all specs that should be loaded
+    - url: view1.vg.json
+      name: view1 # listener
+      # The bind array maps signals of other specs onto this spec
+      # note. Use a tuple to map signals with different names.
+      bind:
+        - name: view2 # emitter
+          signals:
+            - [info, tooltip] # [emitterSignal, listenerSignal] -> map emitter signal 'info' to listener signal'tooltip'
+            - selectedCategory # emitterSignal and listenerSignal are both 'selectedCategory'
+            - changeAmount
+            # - dataUpdate
+
+    - url: view2.vg.json
+      name: view2
+      bind:
+        - name: view1
+          signals:
+            - [tooltip, info]
+            - selectedCategory
+            - changeAmount
+            # - dataUpdate

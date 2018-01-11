@@ -1,6 +1,7 @@
 import R from 'ramda';
 
 const addDebug = (datas) => {
+    console.log(datas);
     R.forEach((d) => {
         const {
             spec,

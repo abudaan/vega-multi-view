@@ -229,7 +229,8 @@ type ResultType = {
 };
 ```
 
-### `removeViews(string | Array<string>): ResultType`
+### removeViews()
+>`removeViews(string | Array<string>): ResultType`
 
 You can remove views by providing the ids of the views that you want to be removed.
 

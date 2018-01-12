@@ -20,11 +20,33 @@
                     "trigger": "changeAmount",
                     "modify": "changeAmount.datum",
                     "values": "{category: changeAmount.datum.category, amount: changeAmount.amount}"
+                },
+                {
+                    "trigger": "importData2",
+                    "modify": "importData2.datum",
+                    "values": "{category: importData.category, amount: importData.amount}"
                 }
             ]
         }
     ],
     "signals": [
+        {
+            "name": "importData",
+            "value": "{}",
+            "update": "sequence(debug('debug message'), warn('warning message'))"
+        },
+        {
+            "name": "importData2",
+            "on": [
+                {
+                    "events": {
+                        "signal": "importData"
+                    },
+                    "update": "{datum: data('table')[indexof(data('table'), importData.category)], paap: indexof(data('table'), importData.category)}"
+                }
+            ],
+            "value": "{}"
+        },
         {
             "name": "exportData",
             "on": [
@@ -283,7 +305,7 @@
                 },
                 "update": {
                     "text": {
-                        "signal": "'update'"
+                        "signal": "importData.datum.category + ':' + importData.datum.amount + ':' + importData2.paap"
                     }
                 }
             }

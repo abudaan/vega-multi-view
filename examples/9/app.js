@@ -1,16 +1,24 @@
-import { changeset } from 'vega';
+import { changeset, version } from 'vega';
 import { addViews } from '../../src/index';
+
+console.log(`vega: ${version}`);
 
 const data = {
     specs: {
-        spec1: ['../specs/view1a.vg.json', {
+        spec1: ['../specs/view1.change.json', {
             renderer: 'svg',
             publish: [
                 {
-                    signal: 'changeAmount',
+                    signal: 'exportData',
                     as: 'updateFromView1',
-                    // dataReplace: true,
-                    // dataModify: true,
+                    // dataset: {
+                    //     name: 'table',
+                    //     action: 'replace_all',
+                    //     action: 'replaceAll',
+                    //     action: 'change',
+                    //     action: 'remove',
+                    //     action: 'insert',
+                    // },
                 },
             ],
             // subscribe: [

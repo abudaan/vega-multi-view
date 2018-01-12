@@ -16,10 +16,12 @@ var _xstream = require('xstream');
 
 var _xstream2 = _interopRequireDefault(_xstream);
 
+var _vega = require('vega');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// @no-flow
-var streamId = 0;
+var streamId = 0; // @no-flow
+
 
 var publishSignal = function publishSignal(data) {
     var vmvConfig = data.vmvConfig,
@@ -83,44 +85,54 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
             console.error('no stream for signal "' + subscribe.signal + '"');
             return;
         }
+        s.addListener({
+            next: function next(value) {
+                if (typeof value.dataset !== 'undefined') {
+                    var dataset = value.dataset,
+                        action = value.action,
+                        values = value.values;
 
-        if (subscribe.dataUpdate === true) {
-            s.addListener({
-                next: function next(value) {
-                    if (_ramda2.default.isNil(value) === false) {
-                        // TODO: validation here!
-                        view.remove(value.name, function () {
+
+                    if (action === 'replace_all' || action === 'replaceAll') {
+                        view.remove(dataset, function () {
                             return true;
                         }).run();
-                        view.insert(value.name, value.values).run();
+                        view.insert(dataset, values).run();
+                        // } else if (action === 'modify') {
+                        //     const cs = changeset();
+                        //     values.forEach((v) => {
+                        //         const {
+                        //             field,
+                        //             value,
+                        //         } = v;
+                        //         cs.modify(d => d[field] === value, field, value);
+                        //     });
+                        // } else if (action === 'remove') {
+                        //     const cs = changeset();
+                        //     values.forEach((v) => {
+                        //         const {
+                        //             field,
+                        //             value,
+                        //         } = v;
+                        //         cs.remove(d => d[field] === value, field, value);
+                        //     });
                     }
-                },
-                error: function error(err) {
-                    console.error('Stream ' + s.id + ' error: ' + err);
-                },
-                complete: function complete() {
-                    console.log('Stream ' + s.id + ' is done');
+                } else {
+                    var signalName = subscribe.as || subscribe.signal;
+                    if (_ramda2.default.isNil(_ramda2.default.find(_ramda2.default.propEq('name', signalName))(spec.signals))) {
+                        console.error('no signal "' + signalName + '" found in spec');
+                    } else {
+                        view.signal(signalName, value).run();
+                    }
                 }
-            });
-        } else {
-            if (_ramda2.default.isNil(_ramda2.default.find(_ramda2.default.propEq('name', subscribe.as))(spec.signals))) {
-                console.error('no signal "' + subscribe.as + '" found in spec');
-                return;
+            },
+            error: function error(err) {
+                console.error('Stream ' + s.id + ' error: ' + err);
+            },
+            complete: function complete() {
+                console.log('Stream ' + s.id + ' is done');
             }
-
-            s.addListener({
-                next: function next(value) {
-                    console.log(value);
-                    view.signal(subscribe.as, value).run();
-                },
-                error: function error(err) {
-                    console.error('Stream ' + s.id + ' error: ' + err);
-                },
-                complete: function complete() {
-                    console.log('Stream ' + s.id + ' is done');
-                }
-            });
-        }
+        });
     }, subscribes);
 };
 

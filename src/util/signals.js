@@ -1,6 +1,7 @@
 // @no-flow
 import R from 'ramda';
 import xs from 'xstream';
+import { changeset } from 'vega';
 
 let streamId = 0;
 
@@ -68,41 +69,69 @@ const subscribeToSignal = (data, streams) => {
             console.error(`no stream for signal "${subscribe.signal}"`);
             return;
         }
+        s.addListener({
+            next: (value) => {
+                if (typeof value.dataset !== 'undefined') {
+                    const {
+                        dataset,
+                        action,
+                        values,
+                    } = value;
 
-        if (subscribe.dataUpdate === true) {
-            s.addListener({
-                next: (value) => {
-                    if (R.isNil(value) === false) {
-                        // TODO: validation here!
-                        view.remove(value.name, () => true).run();
-                        view.insert(value.name, value.values).run();
+                    if (action === 'replace_all' || action === 'replaceAll') {
+                        view.remove(dataset, () => true).run();
+                        view.insert(dataset, values).run();
+                    } else if (action === 'change') {
+                        const cs = changeset();
+                        values.forEach((v) => {
+                            const {
+                                select,
+                                update,
+                                } = v;
+                            if (select.test === '==') {
+                                cs.modify(d => d[select.field] === select.value, update.field, update.value);
+                            }
+                        });
+                        view.change(dataset, cs).run();
+                    } else if (action === 'remove') {
+                        const cs = changeset();
+                        values.forEach((v) => {
+                            const {
+                                field,
+                                value,
+                            } = v;
+                            cs.remove(d => d[field] === value, field, value);
+                        });
+                        view.change(dataset, cs).run();
+                    } else if (action === 'removeAll') {
+                        view.remove(dataset, () => true).run();
+                    } else if (action === 'insert') {
+                        const cs = changeset();
+                        values.forEach((v) => {
+                            const {
+                                field,
+                                value,
+                            } = v;
+                            cs.remove(d => d[field] === value, field, value);
+                        });
+                        view.change(dataset, cs).run();
                     }
-                },
-                error: (err) => {
-                    console.error(`Stream ${s.id} error: ${err}`);
-                },
-                complete: () => {
-                    console.log(`Stream ${s.id} is done`);
-                },
-            });
-        } else {
-            if (R.isNil(R.find(R.propEq('name', subscribe.as))(spec.signals))) {
-                console.error(`no signal "${subscribe.as}" found in spec`);
-                return;
-            }
-
-            s.addListener({
-                next: (value) => {
-                    view.signal(subscribe.as, value).run();
-                },
-                error: (err) => {
-                    console.error(`Stream ${s.id} error: ${err}`);
-                },
-                complete: () => {
-                    console.log(`Stream ${s.id} is done`);
-                },
-            });
-        }
+                } else if (R.isEmpty(value) === false) {
+                    const signalName = subscribe.as || subscribe.signal;
+                    if (R.isNil(R.find(R.propEq('name', signalName))(spec.signals))) {
+                        console.error(`no signal "${signalName}" found in spec`);
+                    } else {
+                        view.signal(signalName, value).run();
+                    }
+                }
+            },
+            error: (err) => {
+                console.error(`Stream ${s.id} error: ${err}`);
+            },
+            complete: () => {
+                console.log(`Stream ${s.id} is done`);
+            },
+        });
     }, subscribes);
 };
 

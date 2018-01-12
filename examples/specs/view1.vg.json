@@ -20,12 +20,13 @@
     "signals": [
         {
             "name": "exportData",
+            "value": {},
             "on": [
                 {
                     "events": {
                         "signal": "changeAmount"
                     },
-                    "update": "{name: 'table', values: data('table')}"
+                    "update": "{dataset: 'table', action: 'replace_all', values: data('table')}"
                 }
             ]
         },

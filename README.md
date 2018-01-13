@@ -573,7 +573,7 @@ Note that you define publish and subscribe aliases in the configuration of a vie
 
 ### Data binding between views
 
-You can send a dataset or a manipulation of a dataset between separate view by adding a key `dataset` to you view specific configuration (vmv config). For the examples below we use the following dataset named `table`:
+You can send a dataset or a manipulation of a dataset between separate views by adding a key `dataset` to you view specific configuration (vmv config). The code examples below are related to [this example](http://app3.bigdator.nl/) and dataset that we use is named `table`:
 
 ```yaml
 - category: A
@@ -601,7 +601,7 @@ Your vmv config would look something like this:
 ```yaml
 publish:
 - signal: exportData
-  as: updateFromView1
+  as: updateDataFromView1
   dataset:
     name: table
     action: replace_all
@@ -626,7 +626,7 @@ The vmv config:
 ```yaml
 publish:
 - signal: exportData
-  as: updateFromView1
+  as: updateDataFromView1
   dataset:
     name: table
     action: change
@@ -638,11 +638,11 @@ publish:
       - amount
 ```
 
-As you can see the `action` is now set to "change"; now the `dataset` key behaves like a sort of SQL query that selects rows and updates values of fields in the selected rows.
+As you can see the `action` is set to "change"; now the `dataset` object behaves like a sort of SQL query that selects rows and updates values of fields in the selected rows.
 
-The `select` object tells us how to select the right data row (or tuple) in the dataset. In this example we want to test for the category so `field` is set to "category" and `test` is set to "==". The value that we are going to test against will be provided by the signal, see below.
+The `select` object tells us how to select the right data row in the dataset. In this example we want to select a row by category so `field` is set to "category" and `test` is set to "==". The value that we are going to test against will be provided by the signal, see below.
 
-Then we have a `update` object, in this object we list the field(s) in the data row that will be replaced by the new value(s) that will be provided by the signal as well. In this case we have only 2 fields in a data row and we only want to update the fiels "amount" of the selected category.
+Then we have an `update` object, in this object we list the field(s) in the data row that will be replaced by the new value(s). These values will be provided by the signal as well. In this case we have only 2 fields in a data row and we only want to update the field "amount" of the selected category.
 
 Now let's have a look at the spec to see how the signal sets the necessary values:
 

@@ -27,7 +27,7 @@ github_username:  abudaan
 # Build settings
 markdown: kramdown
 highlighter: rouge
-theme: git-wiki
+theme: slate
 plugins:
   - jekyll-feed
 

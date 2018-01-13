@@ -1,8 +1,10 @@
 # Vega multi view
 
-This library is a wrapper of the Vega runtime API that allows you to add multiple Vega views to a HTML page that can listen to each others signals, despite the fact that each view lives in a separate HTML element.
+This library is a wrapper of the Vega runtime API that allows you to add multiple Vega views to a HTML page that can listen to each other's signals and share datasets or manipulations thereof, despite the fact that each view lives in a separate HTML element.
 
 It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-leaflet-layer](https://github.com/abudaan/vega-as-leaflet-layer) which is based on [leaflet-vega](https://github.com/nyurik/leaflet-vega).
+
+Connecting signals of separate Vega views is setup using a publish-subscribe mechanism: a Vega view can publish signals for other views to subscribe to, and subscribe to signals that have been published by other views. There is no limit in the number of signals that a view can publish or subscribe to.
 
 
 ## Table of Contents
@@ -13,7 +15,7 @@ It includes [vega-tooltip](https://github.com/vega/vega-tooltip) and [vega-as-le
       * [Terminology](#terminology)
          * [Types](#types)
       * [API](#api)
-         * [addViews(config: string | ConfigType, type?: "yaml" | "json" | "cson" | "bson" | "json-string"): Promise&lt;any&gt;](#addviewsconfig-string--configtype-type-yaml--json--cson--bson--json-string-promiseany)
+         * [addViews()](#addviewsconfig-string--configtype-type-yaml--json--cson--bson--json-string-promiseany)
          * [removeViews(string | Array&lt;string&gt;): ResultType](#removeviewsstring--arraystring-resulttype)
          * [showSpecInTab(SpecType)](#showspecintabspectype)
          * [version](#version)
@@ -130,12 +132,18 @@ For the type definition of `VegaViewType` see [this part](https://vega.github.io
 ## API
 
 The `vega-multi-view` module exposes 3 methods:
-* [addViews](#addviewsconfig-configtype-promiseany)
-* [removeViews](#removeviewsstring--arraystring-resulttype)
-* [showSpecInTab](#showspecintabspectype)
+* [addViews](#addviews)
+* [removeViews](#removeviews)
+* [showSpecInTab](#showspecintab)
 * [version](#version)
 
-### `addViews(config: string | ConfigType, type?: "yaml" | "json" | "cson" | "bson" | "json-string"): Promise<any>`
+### addViews()
+
+```javascript
+// @flow
+addViews(config: string | ConfigType, type?: "yaml" | "json" | "cson" | "bson" | "json-string"): Promise<any>
+```
+
 
 You can pass the uri of a global configuration file or the configuration as object or JSON string. If you provide a uri, you can provide the file-type of the configuration file with the optional second argument. If you provide the configuration file as an object or a JSON string you can pass `object` and `json-string` respectively as the second argument. If you leave this empty, `vega-multi-view` will detect the file-type for you.
 
@@ -231,6 +239,7 @@ type ResultType = {
 
 ### removeViews()
 ```javascript
+// @flow
 removeViews(string | Array<string>): ResultType
 ```
 
@@ -247,8 +256,11 @@ removeViews('spec1', 'spec2', 'spec3');
 removeViews(['spec1', 'spec2', 'spec3']);
 ```
 
-### `showSpecInTab(SpecType)`
-
+### showSpecInTab()
+```javascript
+// @flow
+showSpecInTab(SpecType)
+```
 You can also import a utility function that prints the spec in JSON format to a new tab:
 
 ```javascript
@@ -547,13 +559,132 @@ You can read more about zoom, latitude and longitude in the Leaflet [documentati
 
 ### Publish and subscribe signals
 
-This is the core functionality of `vega-multi-view` that makes internal signals of views available for each other despite the fact that they all live in a separate HTML element. Both publish and subscribe use aliases so as to avoid name clashes.
+This is the core functionality of `vega-multi-view` that makes internal signals of views available for each other despite the fact that they all live in a separate HTML element. Both publish and subscribe can use aliases so as to avoid name clashes.
 
 For instance if 2 specs both have a signal named `hover` you can publish them with an alias to keep them apart, you could use the aliases `hover_spec1` and `hover_spec2`. Now other views can pick the signal they are interested in.
 
 A common scenario is when a mouse over event in one view should trigger the hover of another view as well or when one spec sets a range in the data that is rendered by another spec.
 
 Note that you define publish and subscribe aliases in the configuration of a view. This means that when the view is added to a page it might be possible that the configuration of another spec has already defined aliases with the same name. Therefor I recommend to prefix or suffix the names of your aliases with the filename or the name of the spec.
+
+
+### Data binding between views
+
+You can send a dataset or a manipulation of a dataset between separate view by adding a key `dataset` to you view specific configuration (vmv config). For the examples below we use the following dataset named `table`:
+
+```yaml
+- category: A
+  amount: 28
+- category: B
+  amount: 55
+- category: C
+  amount: 43
+- category: D
+  amount: 91
+- category: E
+  amount: 81
+- category: F
+  amount: 53
+- category: G
+  amount: 19
+- category: H
+  amount: 87
+```
+
+#### 1. replace a complete dataset
+
+Your vmv config would look something like this:
+
+```yaml
+publish:
+- signal: exportData
+  as: updateFromView1
+  dataset:
+    name: table
+    action: replace_all
+```
+
+And your then `exportData` signal should hold the complete `table` dataset:
+
+```yaml
+signals:
+- name: exportData
+  value: {}
+  'on':
+  - events:
+      signal: changeAmount
+    update: "data('table')"
+```
+
+#### 2. change selected values
+
+The vmv config:
+
+```yaml
+publish:
+- signal: exportData
+  as: updateFromView1
+  dataset:
+    name: table
+    action: change
+    select:
+      field: category
+      test: "=="
+    update:
+      fields:
+      - amount
+```
+
+As you can see the `action` is now set to "change"; now the `dataset` key behaves like a sort of SQL query that selects rows and updates values of fields in the selected rows.
+
+The `select` object tells us how to select the right data row (or tuple) in the dataset. In this example we want to test for the category so `field` is set to "category" and `test` is set to "==". The value that we are going to test against will be provided by the signal, see below.
+
+Then we have a `update` object, in this object we list the field(s) in the data row that will be replaced by the new value(s) that will be provided by the signal as well. In this case we have only 2 fields in a data row and we only want to update the fiels "amount" of the selected category.
+
+Now let's have a look at the spec to see how the signal sets the necessary values:
+
+```yaml
+signals:
+- name: exportData
+  value: {}
+  'on':
+  - events:
+      signal: changeAmount
+    update: "[[category, changeAmount.amount], ['A', changeAmount.amount * 0.2]]"
+```
+
+Let's break down the last line into json:
+
+```json
+[
+  [
+    "category",
+    "changeAmount.amount"
+  ],
+  [
+    "A",
+    "changeAmount.amount * 0.2"
+  ]
+]
+```
+and into yaml:
+```yaml
+- - category
+  - changeAmount.amount
+- - A
+  - changeAmount.amount * 0.2
+```
+
+Now you can clearly see the signal is an array of tuples.
+
+The first value of every tuple is the value that will be used for the test. The second and subsequent values are the new values of the fields that will be updated. In this example we only update the `amount` field, so the tuples have only 2 values.
+
+In the first tuple we test against the value of the `category` signal which is the currently selected category. In the second tuple we simply select category "A".
+
+In the first tuple we set the value of the currently selected category to the current value of the `amount` key of the `changeAmount` signal. In the second tuple we set the amount of category A to a fraction of this value.
+
+As you can see, the vmv config provides the logic and the spec provides the values that this logic acts upon.
+
 
 ### Tooltips
 

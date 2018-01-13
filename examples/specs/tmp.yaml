@@ -1,0 +1,17 @@
+dataset: table
+action: change
+values:
+    -   select:
+            test: ==
+            field: category
+            value: selectedCategory.category
+        update:
+            field: amount
+            value: changeAmount.amount
+    -   select:
+            test: '=='
+            field: 'category'
+            value: 'A'
+    -   update:
+            field: 'amount'
+            value: changeAmount.amount * 0.2

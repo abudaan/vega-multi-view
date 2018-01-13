@@ -11,6 +11,17 @@ const data = {
                 {
                     signal: 'exportData',
                     as: 'updateFromView1',
+                    dataset: {
+                        name: 'table',
+                        action: 'change',
+                        select: {
+                            field: 'category',
+                            test: '==',
+                        },
+                        update: {
+                            fields: ['amount'],
+                        },
+                    },
                     // dataset: {
                     //     name: 'table',
                     //     action: 'replace_all',
@@ -40,7 +51,7 @@ const data = {
             subscribe: [
                 {
                     signal: 'updateFromView1',
-                    as: 'importData',
+                    // as: 'importData',
                     // dataReplace: true,
                     // dataModify: true,
                     // - dataset

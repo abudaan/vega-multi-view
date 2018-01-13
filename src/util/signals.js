@@ -87,7 +87,7 @@ const subscribeToSignal = (data, streams) => {
                             const {
                                 select,
                                 update,
-                                } = v;
+                            } = v;
                             if (select.test === '==') {
                                 cs.modify(d => d[select.field] === select.value, update.field, update.value);
                             }

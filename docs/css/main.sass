@@ -1,0 +1,36 @@
+---
+---
+@charset "utf-8"
+@import reset
+
+$base-font-family: sans
+$base-font-size: 200px
+$base-font-color: #222
+$base-line-height: 1.5em
+
+$jlm-pink: rgb(250, 95, 131)
+$jlm-red: rgb(240, 45, 84)//#f02d54
+
+$header-bg-color: rgba(229, 239, 239, 1)
+$bg-white-alpha: rgba(255,255,255,0.7)
+
+$container-padding: 2%
+
+*
+    box-sizing: border-box
+
+
+body, html
+    height: 100%
+
+p
+    font-family: sans
+    color: blue
+
+
+%clearfix
+    &:after
+        content: ""
+        display: table
+        clear: both
+

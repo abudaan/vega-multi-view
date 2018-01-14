@@ -1,74 +1,9 @@
 // @no-flow
 import R from 'ramda';
 import xs from 'xstream';
-import { changeset } from 'vega';
+import { change, replaceAll } from './process';
 
 let streamId = 0;
-
-
-const processChangeDataset = (logic, signalValues) => {
-    const {
-        name,
-        action,
-    } = logic || {};
-
-    if (R.isNil(action) || R.keys(signalValues).length === 0) {
-        return signalValues;
-    }
-    /*
-        example signalValues:
-
-        dataset: table
-        action: change
-        values:
-            -   select:
-                    test: ==
-                    field: category
-                    value: selectedCategory.category
-                update:
-                    field: amount
-                    value: changeAmount.amount
-            -   select:
-                    test: '=='
-                    field: 'category'
-                    value: 'A'
-            -   update:
-                    field: 'amount'
-                    value: changeAmount.amount * 0.2
-            -   select:
-                    test: '=='
-                    field: 'category'
-                    value: 'A'
-            -   update:
-                    field: 'color'
-                    value: red
-    */
-    const values = [];
-    signalValues.forEach((tuple) => {
-        const sel = {
-            field: logic.select.field,
-            test: logic.select.test,
-            value: tuple[0],
-        };
-        let i = 0;
-        R.tail(tuple).forEach((value) => {
-            values.push({
-                select: sel,
-                update: {
-                    field: logic.update.fields[i],
-                    value,
-                },
-            });
-            i += 1;
-        });
-    });
-
-    return {
-        dataset: name,
-        action,
-        values,
-    };
-};
 
 const publishSignal = (data) => {
     const {
@@ -92,7 +27,7 @@ const publishSignal = (data) => {
             const s = xs.create({
                 start(listener) {
                     view.addSignalListener(publish.signal, (name, value) => {
-                        listener.next(processChangeDataset(publish.dataset, value));
+                        listener.next({ publish, value });
                     });
                 },
                 stop() {
@@ -133,54 +68,20 @@ const subscribeToSignal = (data, streams) => {
             return;
         }
         s.addListener({
-            next: (value) => {
-                console.log(value);
-                if (typeof value.dataset !== 'undefined') {
-                    const {
-                        dataset,
-                        action,
-                        values,
-                    } = value;
-
-                    if (action === 'replace_all' || action === 'replaceAll') {
-                        view.remove(dataset, () => true).run();
-                        view.insert(dataset, values).run();
-                    } else if (action === 'change') {
-                        const cs = changeset();
-                        values.forEach((v) => {
-                            const {
-                                select,
-                                update,
-                            } = v;
-                            if (select.test === '==') {
-                                cs.modify(d => d[select.field] === select.value, update.field, update.value);
-                            }
-                        });
-                        view.change(dataset, cs).run();
-                    } else if (action === 'remove') {
-                        const cs = changeset();
-                        values.forEach((v) => {
-                            const {
-                                field,
-                                value,
-                            } = v;
-                            cs.remove(d => d[field] === value, field, value);
-                        });
-                        view.change(dataset, cs).run();
-                    } else if (action === 'removeAll') {
-                        view.remove(dataset, () => true).run();
-                    } else if (action === 'insert') {
-                        const cs = changeset();
-                        values.forEach((v) => {
-                            const {
-                                field,
-                                value,
-                            } = v;
-                            cs.remove(d => d[field] === value, field, value);
-                        });
-                        view.change(dataset, cs).run();
-                    }
-                } else if (R.isEmpty(value) === false) {
+            next: (d) => {
+                const {
+                    publish,
+                    value,
+                } = d;
+                let action = null;
+                if (publish && publish.dataset) {
+                    ({ dataset: { action } } = publish);
+                }
+                if (action === 'replace_all' || action === 'replaceAll') {
+                    replaceAll(view, publish, value);
+                } else if (action === 'change') {
+                    change(view, publish, value);
+                } else { // if (R.isEmpty(value) === false) {
                     const signalName = subscribe.as || subscribe.signal;
                     if (R.isNil(R.find(R.propEq('name', signalName))(spec.signals))) {
                         console.error(`no signal "${signalName}" found in spec`);
@@ -212,6 +113,7 @@ const connectSignals = (data) => {
             subscribeToSignal(d, streams);
         }
     }, R.values(data));
+    // console.log(streams);
 };
 
 export default connectSignals;

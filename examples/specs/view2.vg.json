@@ -283,7 +283,7 @@
                 },
                 "update": {
                     "text": {
-                        "signal": "'update'"
+                        "signal": "info.category"
                     }
                 }
             }

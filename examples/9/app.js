@@ -20,6 +20,10 @@ const data = {
                         },
                     },
                 },
+                {
+                    signal: 'tooltip',
+                    as: 'hover1',
+                },
             ],
             // subscribe: [
             //     {
@@ -30,16 +34,20 @@ const data = {
         }],
         spec2: ['../specs/view2.vg.json', {
             renderer: 'svg',
-            // publish: [
-            //     {
-            //         // signal: 'exportData',
-            //         // as: 'updateFromView2',
-            //         // dataUpdate: true,
-            //     },
-            // ],
+            publish: [
+                {
+                    // signal: 'exportData',
+                    // as: 'updateFromView2',
+                    // dataUpdate: true,
+                },
+            ],
             subscribe: [
                 {
                     signal: 'updateFromView1',
+                },
+                {
+                    signal: 'hover1',
+                    as: 'info',
                 },
             ],
         }],

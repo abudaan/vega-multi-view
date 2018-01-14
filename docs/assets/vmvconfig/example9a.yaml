@@ -1,0 +1,48 @@
+specs:
+  spec1:
+    - assets/specs/example9a_view1.yaml
+    - renderer: svg
+      publish:
+        - signal: exportData
+          as: updateFromView1
+          dataset:
+            name: table
+            action: change
+            select:
+                field: category
+                test: ==
+            update:
+                fields:
+                  - amount
+                  - color
+        -   signal: tooltip
+            as: hover1
+      subscribe:
+        - signal: updateFromView2
+        - signal: hover2
+          as: tooltip
+  spec2:
+    - assets/specs/example9a_view2.yaml
+    - renderer: svg
+      publish:
+        - signal: exportData
+          as: updateFromView2
+          dataset:
+            name: table
+            action: change
+            select:
+                field: category
+                test: ==
+            update:
+                fields:
+                  - amount
+        - signal: info
+          as: hover2
+      subscribe:
+        - signal: updateFromView1
+        - signal: hover1
+          as: info
+debug: false
+element: example9a
+styling:
+    classes: view

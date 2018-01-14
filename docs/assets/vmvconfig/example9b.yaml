@@ -1,6 +1,6 @@
 specs:
   spec1:
-    - assets/specs/dataset_change_view1.yaml
+    - assets/specs/example9_view1.yaml
     - renderer: svg
       publish:
         - signal: exportData
@@ -18,13 +18,13 @@ specs:
         -   signal: tooltip
             as: hover1
   spec2:
-    - assets/specs/view2.vg.json
+    - assets/specs/example9_view2.yaml
     - renderer: svg
       subscribe:
         - signal: updateFromView1
         - signal: hover1
           as: info
 debug: false
-element: example9
+element: example9b
 styling:
     classes: view

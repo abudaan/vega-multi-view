@@ -2,6 +2,7 @@ build
 node_modules
 toc.md
 examples/**/app.bundle.js
-docs/.sass-cache
 docs/_site
+docs/Gemfile.lock
+docs/.sass-cache
 .vscode

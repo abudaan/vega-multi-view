@@ -5,12 +5,14 @@ id: example9
 ---
 
 
-{% include example.html %}
 
 
 ### Data binding between views
 
 You can send a dataset or a manipulation of a dataset between separate views by adding a key `dataset` to you view specific configuration (vmv config). The code examples below are related to [this example](http://app3.bigdator.nl/) and dataset that we use is named `table`:
+
+{% include example.html %}
+
 
 ```yaml
 - category: A

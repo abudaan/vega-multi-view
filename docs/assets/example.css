@@ -1,13 +1,20 @@
 .example {
     color: white;
-    background-color: #333;
+    background-color: #444;
     padding: 0;
     margin: 0;
+    width: auto;
+}
+
+.example:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .view {
-    /* background-color: #F700FF !important; */
     padding: 20px;
+    float: left;
 }
 
 .mark-path>path {

@@ -26,3 +26,5 @@ specs:
           as: info
 debug: false
 element: example9
+styling:
+    classes: view

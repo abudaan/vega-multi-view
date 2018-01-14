@@ -14,12 +14,16 @@ body {
   text-decoration-skip: ink;
 }
 header {
-  background-color: #325;
+  background-color: #444;
 }
 .container {
     margin: auto;
     min-width: 500px;
     max-width: 1024px;
+}
+.title {
+  color: white;
+  font-weight: bold;
 }
 
 a {

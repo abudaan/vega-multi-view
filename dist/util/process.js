@@ -62,18 +62,24 @@ var change = function change(view, publish, signal) {
             _ramda2.default.tail(tuple).forEach(function (value) {
                 var field = dataset.update.fields[i];
                 i += 1;
-                if (dataset.select.test === '==') {
-                    cs.modify(function (d) {
-                        return d[dataset.select.field] === tuple[0];
-                    }, field, value);
-                } else if (dataset.select.test === '<') {
-                    cs.modify(function (d) {
-                        return d[dataset.select.field] < tuple[0];
-                    }, field, value);
-                } else if (dataset.select.test === '>') {
-                    cs.modify(function (d) {
-                        return d[dataset.select.field] > tuple[0];
-                    }, field, value);
+                if (value !== null) {
+                    if (dataset.select.test === '==') {
+                        cs.modify(function (d) {
+                            return d[dataset.select.field] === tuple[0];
+                        }, field, value);
+                    } else if (dataset.select.test === '!=') {
+                        cs.modify(function (d) {
+                            return d[dataset.select.field] !== tuple[0];
+                        }, field, value);
+                    } else if (dataset.select.test === '<') {
+                        cs.modify(function (d) {
+                            return d[dataset.select.field] < tuple[0];
+                        }, field, value);
+                    } else if (dataset.select.test === '>') {
+                        cs.modify(function (d) {
+                            return d[dataset.select.field] > tuple[0];
+                        }, field, value);
+                    }
                 }
             });
         });
@@ -91,18 +97,24 @@ var remove = function remove(view, publish, signal) {
             _ramda2.default.tail(tuple).forEach(function (value) {
                 var field = dataset.update.fields[i];
                 i += 1;
-                if (dataset.select.test === '==') {
-                    cs.remove(function (d) {
-                        return d[dataset.select.field] === tuple[0];
-                    }, field, value);
-                } else if (dataset.select.test === '<') {
-                    cs.remove(function (d) {
-                        return d[dataset.select.field] < tuple[0];
-                    }, field, value);
-                } else if (dataset.select.test === '>') {
-                    cs.remove(function (d) {
-                        return d[dataset.select.field] > tuple[0];
-                    }, field, value);
+                if (value !== null) {
+                    if (dataset.select.test === '==') {
+                        cs.remove(function (d) {
+                            return d[dataset.select.field] === tuple[0];
+                        }, field, value);
+                    } else if (dataset.select.test === '!=') {
+                        cs.remove(function (d) {
+                            return d[dataset.select.field] !== tuple[0];
+                        }, field, value);
+                    } else if (dataset.select.test === '<') {
+                        cs.remove(function (d) {
+                            return d[dataset.select.field] < tuple[0];
+                        }, field, value);
+                    } else if (dataset.select.test === '>') {
+                        cs.remove(function (d) {
+                            return d[dataset.select.field] > tuple[0];
+                        }, field, value);
+                    }
                 }
             });
         });

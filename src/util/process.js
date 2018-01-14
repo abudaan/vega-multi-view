@@ -53,12 +53,16 @@ const change = (view, publish, signal) => {
             R.tail(tuple).forEach((value) => {
                 const field = dataset.update.fields[i];
                 i += 1;
-                if (dataset.select.test === '==') {
-                    cs.modify(d => d[dataset.select.field] === tuple[0], field, value);
-                } else if (dataset.select.test === '<') {
-                    cs.modify(d => d[dataset.select.field] < tuple[0], field, value);
-                } else if (dataset.select.test === '>') {
-                    cs.modify(d => d[dataset.select.field] > tuple[0], field, value);
+                if (value !== null) {
+                    if (dataset.select.test === '==') {
+                        cs.modify(d => d[dataset.select.field] === tuple[0], field, value);
+                    } else if (dataset.select.test === '!=') {
+                        cs.modify(d => d[dataset.select.field] !== tuple[0], field, value);
+                    } else if (dataset.select.test === '<') {
+                        cs.modify(d => d[dataset.select.field] < tuple[0], field, value);
+                    } else if (dataset.select.test === '>') {
+                        cs.modify(d => d[dataset.select.field] > tuple[0], field, value);
+                    }
                 }
             });
         });
@@ -75,12 +79,16 @@ const remove = (view, publish, signal) => {
             R.tail(tuple).forEach((value) => {
                 const field = dataset.update.fields[i];
                 i += 1;
-                if (dataset.select.test === '==') {
-                    cs.remove(d => d[dataset.select.field] === tuple[0], field, value);
-                } else if (dataset.select.test === '<') {
-                    cs.remove(d => d[dataset.select.field] < tuple[0], field, value);
-                } else if (dataset.select.test === '>') {
-                    cs.remove(d => d[dataset.select.field] > tuple[0], field, value);
+                if (value !== null) {
+                    if (dataset.select.test === '==') {
+                        cs.remove(d => d[dataset.select.field] === tuple[0], field, value);
+                    } else if (dataset.select.test === '!=') {
+                        cs.remove(d => d[dataset.select.field] !== tuple[0], field, value);
+                    } else if (dataset.select.test === '<') {
+                        cs.remove(d => d[dataset.select.field] < tuple[0], field, value);
+                    } else if (dataset.select.test === '>') {
+                        cs.remove(d => d[dataset.select.field] > tuple[0], field, value);
+                    }
                 }
             });
         });

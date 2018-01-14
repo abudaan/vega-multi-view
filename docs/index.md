@@ -2,8 +2,6 @@
 layout: page
 ---
 
-# Data binding between views.
-
 You can send a dataset or a manipulation of a dataset between separate views by adding a key `dataset` to you view specific configuration (vmv config). There are 5 possible actions that you can perform on a dataset:
 
  - change fields in selected data rows of a dataset

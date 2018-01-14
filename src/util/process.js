@@ -55,6 +55,10 @@ const change = (view, publish, signal) => {
                 i += 1;
                 if (dataset.select.test === '==') {
                     cs.modify(d => d[dataset.select.field] === tuple[0], field, value);
+                } else if (dataset.select.test === '<') {
+                    cs.modify(d => d[dataset.select.field] < tuple[0], field, value);
+                } else if (dataset.select.test === '>') {
+                    cs.modify(d => d[dataset.select.field] > tuple[0], field, value);
                 }
             });
         });
@@ -62,13 +66,55 @@ const change = (view, publish, signal) => {
     }
 };
 
+const remove = (view, publish, signal) => {
+    if (Array.isArray(signal)) {
+        const { dataset } = publish;
+        const cs = changeset();
+        signal.forEach((tuple) => {
+            let i = 0;
+            R.tail(tuple).forEach((value) => {
+                const field = dataset.update.fields[i];
+                i += 1;
+                if (dataset.select.test === '==') {
+                    cs.remove(d => d[dataset.select.field] === tuple[0], field, value);
+                } else if (dataset.select.test === '<') {
+                    cs.remove(d => d[dataset.select.field] < tuple[0], field, value);
+                } else if (dataset.select.test === '>') {
+                    cs.remove(d => d[dataset.select.field] > tuple[0], field, value);
+                }
+            });
+        });
+        view.change(publish.dataset.name, cs).run();
+    }
+};
 
-const replaceAll = (view, publish, value) => {
-    view.remove(publish.dataset.name, () => true).run();
-    view.insert(publish.dataset.name, value).run();
+const insert = (view, publish, signal) => {
+    if (Array.isArray(signal)) {
+        const { dataset } = publish;
+        const cs = changeset();
+        signal.forEach((tuple) => {
+            cs.insert(dataset.name, tuple);
+        });
+        view.change(publish.dataset.name, cs).run();
+    }
+};
+
+const replaceDataset = (view, publish, signal) => {
+    const { dataset } = publish;
+    view.remove(dataset.name, () => true).run();
+    view.insert(dataset.name, signal).run();
+};
+
+const removeDataset = (view, publish) => {
+    const { dataset } = publish;
+    view.remove(dataset.name, () => true).run();
+    view.insert(dataset.name, {}).run();
 };
 
 export {
     change,
-    replaceAll,
+    insert,
+    remove,
+    replaceDataset,
+    removeDataset,
 };

@@ -1,4 +1,5 @@
 baseurl: ./assets/data/
+element: example-9
 data: data.yaml # file containing the dataset that is used in all specs
 specs: # array containing all specs that should be loaded
     - url: view1.vg.json

@@ -51,7 +51,6 @@
         "gulp": "github:gulpjs/gulp#4.0.0",
         "gulp-autoprefixer": "^4.0.0",
         "gulp-babel-minify": "^0.2.0",
-        "gulp-cli": "^4.0.0",
         "gulp-concat": "^2.6.1",
         "gulp-copy": "^1.0.1",
         "gulp-filter": "^5.0.1",
@@ -59,6 +58,6 @@
         "gulp-sourcemaps": "^2.6.1",
         "gulp-util": "^3.0.8",
         "vinyl-buffer": "^1.0.0",
-        "vinyl-source-stream": "^1.1.0"
+        "vinyl-source-stream": "^2.0.0"
     }
 }

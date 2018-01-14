@@ -16,7 +16,7 @@ var _xstream = require('xstream');
 
 var _xstream2 = _interopRequireDefault(_xstream);
 
-var _vega = require('vega');
+var _process = require('./process');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -44,13 +44,12 @@ var publishSignal = function publishSignal(data) {
             var s = _xstream2.default.create({
                 start: function start(listener) {
                     view.addSignalListener(publish.signal, function (name, value) {
-                        listener.next(value);
+                        listener.next({ publish: publish, value: value });
                     });
                 },
                 stop: function stop() {
                     view.removeSignalListener(publish.signal);
                 },
-
 
                 id: streamId
             });
@@ -60,7 +59,6 @@ var publishSignal = function publishSignal(data) {
             console.error(e.message);
         }
     }, publishes);
-
     return streams;
 };
 
@@ -86,59 +84,20 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
             return;
         }
         s.addListener({
-            next: function next(value) {
-                if (typeof value.dataset !== 'undefined') {
-                    var dataset = value.dataset,
-                        action = value.action,
-                        values = value.values;
+            next: function next(d) {
+                var publish = d.publish,
+                    value = d.value;
 
-
-                    if (action === 'replace_all' || action === 'replaceAll') {
-                        view.remove(dataset, function () {
-                            return true;
-                        }).run();
-                        view.insert(dataset, values).run();
-                    } else if (action === 'change') {
-                        var cs = (0, _vega.changeset)();
-                        values.forEach(function (v) {
-                            var select = v.select,
-                                update = v.update;
-
-                            if (select.test === '==') {
-                                cs.modify(function (d) {
-                                    return d[select.field] === select.value;
-                                }, update.field, update.value);
-                            }
-                        });
-                        view.change(dataset, cs).run();
-                    } else if (action === 'remove') {
-                        var _cs = (0, _vega.changeset)();
-                        values.forEach(function (v) {
-                            var field = v.field,
-                                value = v.value;
-
-                            _cs.remove(function (d) {
-                                return d[field] === value;
-                            }, field, value);
-                        });
-                        view.change(dataset, _cs).run();
-                    } else if (action === 'removeAll') {
-                        view.remove(dataset, function () {
-                            return true;
-                        }).run();
-                    } else if (action === 'insert') {
-                        var _cs2 = (0, _vega.changeset)();
-                        values.forEach(function (v) {
-                            var field = v.field,
-                                value = v.value;
-
-                            _cs2.remove(function (d) {
-                                return d[field] === value;
-                            }, field, value);
-                        });
-                        view.change(dataset, _cs2).run();
-                    }
-                } else if (_ramda2.default.isEmpty(value) === false) {
+                var action = null;
+                if (publish && publish.dataset) {
+                    action = publish.dataset.action;
+                }
+                if (action === 'replace_all' || action === 'replaceAll') {
+                    (0, _process.replaceAll)(view, publish, value);
+                } else if (action === 'change') {
+                    (0, _process.change)(view, publish, value);
+                } else {
+                    // if (R.isEmpty(value) === false) {
                     var signalName = subscribe.as || subscribe.signal;
                     if (_ramda2.default.isNil(_ramda2.default.find(_ramda2.default.propEq('name', signalName))(spec.signals))) {
                         console.error('no signal "' + signalName + '" found in spec');
@@ -170,6 +129,7 @@ var connectSignals = function connectSignals(data) {
             subscribeToSignal(d, streams);
         }
     }, _ramda2.default.values(data));
+    // console.log(streams);
 };
 
 exports.default = connectSignals;

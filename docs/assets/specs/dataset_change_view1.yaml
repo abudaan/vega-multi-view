@@ -1,0 +1,200 @@
+---
+"$schema": https://vega.github.io/schema/vega/v3.0.json
+description: bars
+width: 400
+height: 200
+padding: 5
+data:
+- name: table
+  url: "assets/data/table-data.json"
+  'on':
+  - trigger: changeAmount
+    modify: changeAmount.datum
+    values: "{category: changeAmount.datum.category, amount: changeAmount.amount}"
+signals:
+- name: exportData
+  value: {}
+  'on':
+  - events:
+      signal: changeAmount
+    update: "[
+        [selectedCategory.category, changeAmount.amount],
+        ['A', changeAmount.amount * 0.5, changeAmount.amount > 50 ? 'red' : 'steelblue']
+    ]"
+- name: selectedCategory
+  value: {}
+  'on':
+  - events:
+    - type: mousedown
+      markname: bar
+    update: datum
+  - events:
+    - type: mouseup
+    update: "{}"
+- name: changeAmount
+  value:
+    datum: {}
+  'on':
+  - events:
+    - type: mousemove
+      between:
+      - type: mousedown
+      - type: mouseup
+    - type: click
+    update: "{amount: round(invert('yscale', y())), datum: selectedCategory}"
+    filter:
+    - event.button === 0
+- name: tooltip
+  value: {}
+  'on':
+  - events:
+    - type: mouseover
+      markname: bar
+    update: datum
+  - events:
+    - type: mouseout
+      markname: bar
+    update: "{}"
+scales:
+- name: xscale
+  type: band
+  domain:
+    data: table
+    field: category
+    sort:
+      field: x
+      op: min
+  range: width
+- name: yscale
+  domain:
+    data: table
+    field: amount
+  nice: true
+  range: height
+axes:
+- orient: bottom
+  scale: xscale
+  encode:
+    ticks:
+      enter:
+        stroke:
+          value: white
+    labels:
+      enter:
+        fill:
+          value: white
+        angle:
+          value: 0
+        align:
+          value: left
+        baseline:
+          value: middle
+        dx:
+          value: 3
+    domain:
+      enter:
+        stroke:
+          value: "#fff"
+- orient: left
+  scale: yscale
+  encode:
+    ticks:
+      enter:
+        stroke:
+          value: white
+    labels:
+      enter:
+        fill:
+          value: white
+        angle:
+          value: 0
+        align:
+          value: left
+        baseline:
+          value: middle
+        dx:
+          value: 3
+    domain:
+      enter:
+        stroke:
+          value: "#fff"
+marks:
+- name: feedback
+  type: text
+  zindex: 3
+  encode:
+    enter:
+      x:
+        offset: 20
+      y:
+        offset: -30
+      align:
+        value: center
+      baseline:
+        value: bottom
+      fill:
+        value: "#fff"
+      text:
+        value: ''
+    update:
+      text:
+        signal: "changeAmount.amount + ' ' + selectedCategory ? selectedCategory.category : ''"
+- type: rect
+  name: bar
+  from:
+    data: table
+  encode:
+    enter:
+      x:
+        scale: xscale
+        field: category
+        offset: 1
+      width:
+        scale: xscale
+        band: 1
+        offset: -1
+      y:
+        scale: yscale
+        field: amount
+      y2:
+        scale: yscale
+        value: 0
+    update:
+      x:
+        scale: xscale
+        field: category
+        offset: 1
+      width:
+        scale: xscale
+        band: 1
+        offset: -1
+      y:
+        scale: yscale
+        field: amount
+      y2:
+        scale: yscale
+        value: 0
+      fill:
+      - test: datum.category === tooltip.category || datum.category === selectedCategory.category
+        value: orange
+      - field: color
+- type: text
+  encode:
+    enter:
+      align:
+        value: center
+      baseline:
+        value: bottom
+      fill:
+        value: "#fff"
+    update:
+      x:
+        scale: xscale
+        signal: tooltip.category
+        band: 0.5
+      y:
+        scale: yscale
+        signal: tooltip.amount
+        offset: -2
+      text:
+        signal: tooltip.amount

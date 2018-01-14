@@ -27,7 +27,7 @@ github_username:  abudaan
 # Build settings
 markdown: kramdown
 highlighter: rouge
-theme: jekyll-theme-hacker
+theme: minima
 plugins:
   - jekyll-feed
 

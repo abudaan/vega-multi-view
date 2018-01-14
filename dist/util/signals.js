@@ -98,26 +98,47 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
                             return true;
                         }).run();
                         view.insert(dataset, values).run();
-                        // } else if (action === 'modify') {
-                        //     const cs = changeset();
-                        //     values.forEach((v) => {
-                        //         const {
-                        //             field,
-                        //             value,
-                        //         } = v;
-                        //         cs.modify(d => d[field] === value, field, value);
-                        //     });
-                        // } else if (action === 'remove') {
-                        //     const cs = changeset();
-                        //     values.forEach((v) => {
-                        //         const {
-                        //             field,
-                        //             value,
-                        //         } = v;
-                        //         cs.remove(d => d[field] === value, field, value);
-                        //     });
+                    } else if (action === 'change') {
+                        var cs = (0, _vega.changeset)();
+                        values.forEach(function (v) {
+                            var select = v.select,
+                                update = v.update;
+
+                            if (select.test === '==') {
+                                cs.modify(function (d) {
+                                    return d[select.field] === select.value;
+                                }, update.field, update.value);
+                            }
+                        });
+                        view.change(dataset, cs).run();
+                    } else if (action === 'remove') {
+                        var _cs = (0, _vega.changeset)();
+                        values.forEach(function (v) {
+                            var field = v.field,
+                                value = v.value;
+
+                            _cs.remove(function (d) {
+                                return d[field] === value;
+                            }, field, value);
+                        });
+                        view.change(dataset, _cs).run();
+                    } else if (action === 'removeAll') {
+                        view.remove(dataset, function () {
+                            return true;
+                        }).run();
+                    } else if (action === 'insert') {
+                        var _cs2 = (0, _vega.changeset)();
+                        values.forEach(function (v) {
+                            var field = v.field,
+                                value = v.value;
+
+                            _cs2.remove(function (d) {
+                                return d[field] === value;
+                            }, field, value);
+                        });
+                        view.change(dataset, _cs2).run();
                     }
-                } else {
+                } else if (_ramda2.default.isEmpty(value) === false) {
                     var signalName = subscribe.as || subscribe.signal;
                     if (_ramda2.default.isNil(_ramda2.default.find(_ramda2.default.propEq('name', signalName))(spec.signals))) {
                         console.error('no signal "' + signalName + '" found in spec');

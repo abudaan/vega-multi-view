@@ -1,3 +1,9 @@
 examples
+docs
 toc.md
 toc.sh
+yarn.lock
+package-lock.json
+.eslintrc
+.editorconfig
+.babelrc

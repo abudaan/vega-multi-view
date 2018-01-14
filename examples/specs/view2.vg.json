@@ -14,7 +14,7 @@
     "data": [
         {
             "name": "table",
-            "url": "../specs/table-data.json",
+            "url": "../data/table-data.json",
             "on": [
                 {
                     "trigger": "changeAmount",
@@ -306,7 +306,7 @@
                         "field": "amount"
                     },
                     "fill": {
-                        "value": "steelblue"
+                        "field": "color"
                     },
                     "stroke": {
                         "value": "white"
@@ -334,7 +334,7 @@
                             "value": "orange"
                         },
                         {
-                            "value": "steelblue"
+                            "field": "color"
                         }
                     ],
                     "size": [

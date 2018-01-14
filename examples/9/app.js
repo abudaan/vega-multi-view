@@ -1,11 +1,8 @@
-import { changeset, version } from 'vega';
 import { addViews } from '../../src/index';
-
-console.log(`vega: ${version}`);
 
 const data = {
     specs: {
-        spec1: ['../specs/view1.change.json', {
+        spec1: ['../specs/dataset_change_view1.yaml', {
             renderer: 'svg',
             publish: [
                 {
@@ -19,17 +16,9 @@ const data = {
                             test: '==',
                         },
                         update: {
-                            fields: ['amount'],
+                            fields: ['amount', 'color'],
                         },
                     },
-                    // dataset: {
-                    //     name: 'table',
-                    //     action: 'replace_all',
-                    //     action: 'replaceAll',
-                    //     action: 'change',
-                    //     action: 'remove',
-                    //     action: 'insert',
-                    // },
                 },
             ],
             // subscribe: [
@@ -51,13 +40,6 @@ const data = {
             subscribe: [
                 {
                     signal: 'updateFromView1',
-                    // as: 'importData',
-                    // dataReplace: true,
-                    // dataModify: true,
-                    // - dataset
-                    // - field
-                    // - value
-                    // or: [{field, value}]
                 },
             ],
         }],
@@ -67,19 +49,6 @@ const data = {
 
 addViews(data).then((result) => {
     console.log(result);
-    result.spec1.view.addSignalListener('changeAmount', (a, b) => {
-        const name = a;
-        const category = b.datum.category;
-        const amount = b.amount;
-        // if (typeof category !== 'undefined') {
-        //     // console.log(name, category, amount);
-        //     // console.log(1, result.spec2.view.data('table'));
-        //     const cs = changeset()
-        //         .modify(d => d.category === category, 'amount', amount);
-        //     result.spec2.view.change('table', cs).run();
-        //     // console.log(2, result.spec2.view.data('table'));
-        // }
-    });
 }).catch((error) => {
     console.error(error);
 });

@@ -5,6 +5,71 @@ import { changeset } from 'vega';
 
 let streamId = 0;
 
+
+const processChangeDataset = (logic, signalValues) => {
+    const {
+        name,
+        action,
+    } = logic || {};
+
+    if (R.isNil(action) || R.keys(signalValues).length === 0) {
+        return signalValues;
+    }
+    /*
+        example signalValues:
+
+        dataset: table
+        action: change
+        values:
+            -   select:
+                    test: ==
+                    field: category
+                    value: selectedCategory.category
+                update:
+                    field: amount
+                    value: changeAmount.amount
+            -   select:
+                    test: '=='
+                    field: 'category'
+                    value: 'A'
+            -   update:
+                    field: 'amount'
+                    value: changeAmount.amount * 0.2
+            -   select:
+                    test: '=='
+                    field: 'category'
+                    value: 'A'
+            -   update:
+                    field: 'color'
+                    value: red
+    */
+    const values = [];
+    signalValues.forEach((tuple) => {
+        const sel = {
+            field: logic.select.field,
+            test: logic.select.test,
+            value: tuple[0],
+        };
+        let i = 0;
+        R.tail(tuple).forEach((value) => {
+            values.push({
+                select: sel,
+                update: {
+                    field: logic.update.fields[i],
+                    value,
+                },
+            });
+            i += 1;
+        });
+    });
+
+    return {
+        dataset: name,
+        action,
+        values,
+    };
+};
+
 const publishSignal = (data) => {
     const {
         vmvConfig,
@@ -27,13 +92,12 @@ const publishSignal = (data) => {
             const s = xs.create({
                 start(listener) {
                     view.addSignalListener(publish.signal, (name, value) => {
-                        listener.next(value);
+                        listener.next(processChangeDataset(publish.dataset, value));
                     });
                 },
                 stop() {
                     view.removeSignalListener(publish.signal);
                 },
-
                 id: streamId,
             });
             streamId += 1;
@@ -42,7 +106,6 @@ const publishSignal = (data) => {
             console.error(e.message);
         }
     }, publishes);
-
     return streams;
 };
 
@@ -71,6 +134,7 @@ const subscribeToSignal = (data, streams) => {
         }
         s.addListener({
             next: (value) => {
+                console.log(value);
                 if (typeof value.dataset !== 'undefined') {
                     const {
                         dataset,

@@ -22,7 +22,7 @@ signals:
   on:
   - events:
       signal: changeAmount
-    update: "changeAmount.amount === 0 ? [
+    update: "changeAmount.amount < 10 ? [
         [selectedCategory.category],
     ] : {}"
 - name: selectedCategory

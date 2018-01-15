@@ -30,10 +30,10 @@ There are 5 possible actions that you can perform on a dataset:
  - replace a complete dataset
  - remove a complete dataset
 
-Below the type definition of a query. The `test` key in the `select` object is only required when `action` is set to "change" or "remove".
+Below the type definition of a query object. The `test` key in the `select` object is only required when `action` is set to "change" or "remove".
 
 ```javascript
-type DatasetType = {
+type QueryType = {
     [dataset: string]: string,
     [action: string]: ActionUnionType
     [select: string]?: {

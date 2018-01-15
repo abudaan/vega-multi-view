@@ -42,7 +42,7 @@ specs:
         - signal: updateFromView1
         - signal: hover1
           as: info
-debug: false
+debug: true
 element: example9a
 styling:
     classes: view

@@ -75,13 +75,21 @@ gulp.task('build_css', () => gulp.src('./src/styles/main.sass')
 
 
 gulp.task('copy', () => gulp.src('./build/*')
-    .pipe(copy('./examples'))
-    .pipe(gulp.dest('./examples')));
+    // .pipe(copy('./examples'))
+    .pipe(gulp.dest('./examples'))
+    // .pipe(copy('./docs/assets'))
+    .pipe(gulp.dest('./docs/assets')));
 
 
 gulp.task('build', gulp.series(
     'build_css',
     'build_js',
     'build_js_min',
+    'copy',
+));
+
+gulp.task('build_fast', gulp.series(
+    'build_css',
+    'build_js',
     'copy',
 ));

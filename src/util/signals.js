@@ -1,16 +1,17 @@
 // @no-flow
 import R from 'ramda';
 import xs from 'xstream';
-import { change, replaceAll } from './process';
+import { change, replaceDataset } from './process';
 
 let streamId = 0;
+let streams = {};
+let logDebugMessages = false;
 
 const publishSignal = (data) => {
     const {
         vmvConfig,
         view,
     } = data;
-    const streams = {};
 
     if (R.isNil(vmvConfig.publish)) {
         return streams;
@@ -22,30 +23,37 @@ const publishSignal = (data) => {
     }
 
     R.forEach((publish) => {
-        // console.log(publish);
-        try {
-            const s = xs.create({
-                start(listener) {
-                    view.addSignalListener(publish.signal, (name, value) => {
-                        listener.next({ query: publish.query, value });
-                    });
-                },
-                stop() {
-                    view.removeSignalListener(publish.signal);
-                },
-                id: streamId,
-            });
-            streamId += 1;
-            streams[publish.as || publish.signal] = s;
-        } catch (e) {
-            console.error(e.message);
+        const alias = publish.as || publish.signal;
+        if (R.isNil(streams[alias]) === false) {
+            console.error(`There is already a stream published as "${alias}", skipping this one. Please use another name or unpublish this signal first`);
+        } else {
+            try {
+                const s = xs.create({
+                    start(listener) {
+                        view.addSignalListener(publish.signal, (name, value) => {
+                            listener.next({ query: publish.query, value });
+                        });
+                    },
+                    stop() {
+                        view.removeSignalListener(publish.signal);
+                    },
+                    id: streamId,
+                });
+                streamId += 1;
+                if (logDebugMessages) {
+                    console.log(`publishing signal ${publish.signal} as ${alias} with stream id ${streamId}`);
+                }
+                streams[alias] = s;
+            } catch (e) {
+                console.error(e.message);
+            }
         }
     }, publishes);
     return streams;
 };
 
 
-const subscribeToSignal = (data, streams) => {
+const subscribeToSignal = (data) => {
     const {
         view,
         spec,
@@ -78,7 +86,7 @@ const subscribeToSignal = (data, streams) => {
                     ({ action } = query);
                 }
                 if (action === 'replace_all' || action === 'replaceAll') {
-                    replaceAll(view, query, value);
+                    replaceDataset(view, query, value);
                 } else if (action === 'change') {
                     change(view, query, value);
                 } else { // if (R.isEmpty(value) === false) {
@@ -100,8 +108,8 @@ const subscribeToSignal = (data, streams) => {
     }, subscribes);
 };
 
-const connectSignals = (data) => {
-    let streams = {};
+const connectSignals = (data, debug) => {
+    logDebugMessages = debug;
     R.forEach((d) => {
         if (d.view !== null) {
             streams = { ...streams, ...publishSignal(d) };

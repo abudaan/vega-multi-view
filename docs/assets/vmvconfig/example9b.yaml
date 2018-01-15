@@ -1,30 +1,35 @@
 specs:
-  spec1:
-    - assets/specs/example9_view1.yaml
+  spec3:
+    - assets/specs/example9b_view1.yaml
     - renderer: svg
       publish:
         - signal: exportData
-          as: updateFromView1
-          dataset:
-            name: table
-            action: change
-            select:
-                field: category
-                test: ==
-            update:
-                fields:
-                  - amount
-                  - color
-        -   signal: tooltip
-            as: hover1
-  spec2:
-    - assets/specs/example9_view2.yaml
-    - renderer: svg
+          as: updateFromView3
+          query:
+            dataset: table
+            action: replace_all
+        - signal: tooltip
+          as: hover3
       subscribe:
-        - signal: updateFromView1
-        - signal: hover1
+        - signal: updateFromView4
+        - signal: hover4
+          as: tooltip
+  spec4:
+    - assets/specs/example9b_view2.yaml
+    - renderer: svg
+      publish:
+        - signal: exportData
+          as: updateFromView4
+          query:
+            dataset: table
+            action: replace_all
+        - signal: info
+          as: hover4
+      subscribe:
+        - signal: updateFromView3
+        - signal: hover3
           as: info
-debug: false
+debug: true
 element: example9b
 styling:
     classes: view

@@ -1,9 +1,10 @@
 ---
 "$schema": https://vega.github.io/schema/vega/v3.0.json
 description: bars
-width: 400
-height: 200
-padding: 5
+width: 390
+height: 250
+padding: 10
+autosize: fit
 data:
 - name: table
   url: "assets/data/table-data.json"
@@ -17,10 +18,7 @@ signals:
   on:
   - events:
       signal: changeAmount
-    update: "[
-        [selectedCategory.category, changeAmount.amount],
-        ['A', changeAmount.amount * 0.5, changeAmount.amount > 50 ? 'red' : 'steelblue']
-    ]"
+    update: "{data: data('table')}"
 - name: selectedCategory
   value: {}
   on:
@@ -121,7 +119,6 @@ axes:
 marks:
 - name: feedback
   type: text
-  zindex: 3
   encode:
     enter:
       x:
@@ -138,7 +135,7 @@ marks:
         value: ''
     update:
       text:
-        signal: "changeAmount.amount + ' ' + selectedCategory ? selectedCategory.category : ''"
+        signal: "selectedCategory.category ? selectedCategory.category + ': ' + changeAmount.amount : ''"
 - type: rect
   name: bar
   from:

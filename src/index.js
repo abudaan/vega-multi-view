@@ -101,9 +101,10 @@ export const addViews = async (cfg, type = null) => {
             return Promise.reject(new Error('You have passed an empty string!'));
         }
         try {
-            config = await load(config, type);
+            config = await load(config, type)
+                .catch(e => Promise.reject(e));
         } catch (e) {
-            console.error(e);
+            return Promise.reject(e);
         }
     }
 
@@ -132,7 +133,7 @@ export const addViews = async (cfg, type = null) => {
         if (inStore.length === 1) {
             console.info(`view with id "${inStore[0]}" is overwritten`);
         } else if (inStore.length > 1) {
-            console.info(`views with ids "${inStore.join('", "')}" is overwritten`);
+            console.info(`views with ids "${inStore.join('", "')}" are overwritten`);
         }
         specsArray = R.keys(specs);
     } else {
@@ -185,7 +186,7 @@ export const addViews = async (cfg, type = null) => {
     let data = await createSpecData(specsArray, type);
     data = addElements(data, containerElement);
     addTooltips(data);
-    connectSignals(data);
+    connectSignals(data, debug);
     if (debug) {
         await addDebug(data);
     }
@@ -213,6 +214,63 @@ export const addViews = async (cfg, type = null) => {
         }, 0);
     });
 };
+
+
+const asyncPromises = promises => new Promise((resolve, reject) => {
+    let index = 0;
+    const max = promises.length;
+    const errors = [];
+    const results = [];
+
+    const startPromise = (promise, cb) => {
+        const {
+            func,
+            args,
+        } = promise;
+        func(...args)
+            .then((result) => {
+                results.push(result);
+                cb();
+            })
+            .catch((error) => {
+                errors.push(error);
+                cb();
+            });
+    };
+
+    const next = () => {
+        index += 1;
+        if (index < max) {
+            startPromise(promises[index], next);
+        } else if (errors.length === max) {
+            reject(new Error('None of the config files could be loaded'));
+        } else if (errors.length === 0) {
+            resolve(results[0]);
+        } else {
+            resolve({
+                errors,
+                result: results[0],
+            });
+        }
+    };
+
+    startPromise(promises[index], next);
+});
+
+export const addMultipleConfigs = async (configs) => {
+    if (Array.isArray(configs) === false) {
+        return Promise.reject(new Error('Please pass an array with urls to config files!'));
+    }
+    const promises = [];
+    configs.forEach((config) => {
+        promises.push({
+            func: addViews,
+            args: [config],
+        });
+    });
+    return asyncPromises(promises);
+};
+
 
 /*
     credits: https://stackoverflow.com/questions/27705640/display-json-in-a-readable-format-in-a-new-tab

@@ -4,24 +4,29 @@ base: /
 ---
 {% assign url = page.url | remove:'index.html' %}
 <div class="page-centered page-main">
-  {% if layout.sidebar %}
-  <aside class="page-sidebar">
-    <ul class="sidebar-nav">{% for entry in layout.sidebar %}
-      {% assign link = layout.base | append:entry.page | downcase | replace:' ','-' | append:'/' | replace:'//','/' %}
-      <li class="sidebar-nav-item">
-        <a {% if link == url %}class="active"{% endif %} href="{{ site.baseurl }}{{ link }}">{% if entry.text %}{{ entry.text }}{% else %}{{ entry.page }}{% endif %}</a>
-      </li>
-      {% if layout.parent == entry.page %}
-      <ul class="sub-menu-nav">{% for sub in layout.submenu %}
-        {% assign link = layout.base | append:layout.parent | append:'/' | append:sub.page | downcase | append:'/' | replace:'//','/' %}
-        <li class="sidebar-nav-item sub-item">
-          <a {% if link == url %}class="active"{% endif %} href="{{ site.baseurl }}{{ link }}">{{ sub.page }}</a>
-        </li>{% endfor %}
-      </ul>
-      {% endif %}{% endfor %}
-    </ul>
-  </aside>{% endif %}
   <section class="page-content">
     {{ content }}
   </section>
+  {% if layout.sidebar %}
+    <aside class="page-sidebar">
+      <ul class="sidebar-nav">
+        {% for entry in layout.sidebar %}
+          {% assign link = layout.base | append:entry.page | downcase | replace:' ','-' | append:'/' | replace:'//','/' %}
+          <li class="sidebar-nav-item222">
+            <a {% if link == url %}class="active"{% endif %} href="{{ site.baseurl }}{{ link }}">{% if entry.text %}{{ entry.text }}{% else %}{{ entry.page }}{% endif %}</a>
+            {% if entry.children %}
+              <ul>
+              {% for sub in entry.children %}
+                {% assign link = layout.base | append:sub.page | downcase | replace:' ','-' | append:'/' | replace:'//','/' %}
+                <li class="sidebar-nav-item222">
+                  <a {% if link == url %}class="active"{% endif %} href="{{ site.baseurl }}{{ link }}">{% if sub.text %}{{ sub.text }}{% else %}{{ sub.page }}{% endif %}</a>
+                </li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </aside>
+  {% endif %}
 </div>

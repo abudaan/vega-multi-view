@@ -1,9 +1,10 @@
 ---
 "$schema": https://vega.github.io/schema/vega/v3.0.json
 description: points and line
-width: 400
-height: 200
-padding: 5
+width: 390
+height: 250
+padding: 10
+autosize: fit
 config:
   axis:
     grid: true
@@ -21,7 +22,7 @@ signals:
   on:
   - events:
       signal: changeAmount
-    update: "{name: 'table', values: data('table')}"
+    update: "{data: data('table')}"
 - name: selectedCategory
   value: {}
   on:
@@ -166,7 +167,7 @@ marks:
         value: bold
     update:
       text:
-        signal: info.category
+        signal: "selectedCategory.category ? selectedCategory.category + ': ' + changeAmount.amount : ''"
 - type: symbol
   name: point
   from:

@@ -119,12 +119,14 @@ We can draw the following conclusion: a global or view specific configuration pr
 
 ## Replace a complete dataset
 
+{% include example.html id="example9b" vmvconfig="assets/vmvconfig/example9b.yaml" %}
+
 Your vmv config would look something like this:
 
 ```yaml
 publish:
 - signal: exportData
-  as: updateDataFromView1
+  as: updateDataFromView3
   query:
     dataset: table
     action: replace_all
@@ -139,5 +141,5 @@ signals:
   on:
   - events:
       signal: changeAmount
-    update: "data('table')"
+    update: "{data: data('table')}"
 ```

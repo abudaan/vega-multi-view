@@ -36,9 +36,9 @@ kramdown:
   syntax_highlighter: rouge
   auto_id_stripping: true
 
-exclude:
-  - Gemfile
-  - Gemfile.lock
+# exclude:
+#   - Gemfile
+#   - Gemfile.lock
 
 sass:
     sass_dir: _sass

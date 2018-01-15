@@ -116,15 +116,16 @@ const insert = (view, query, signal) => {
 };
 
 const replaceDataset = (view, query, signal) => {
-    const { dataset } = query;
-    view.remove(dataset, () => true).run();
-    view.insert(dataset, signal).run();
+    if (R.isNil(signal.data) === false) {
+        const { dataset } = query;
+        view.remove(dataset, () => true).run();
+        view.insert(dataset, signal.data).run();
+    }
 };
 
 const removeDataset = (view, query) => {
     const { dataset } = query;
     view.remove(dataset, () => true).run();
-    view.insert(dataset, {}).run();
 };
 
 export {

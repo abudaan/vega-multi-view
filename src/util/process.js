@@ -79,26 +79,19 @@ const remove = (view, query, signal) => {
         const {
             dataset,
             select,
-            update,
         } = query;
         const cs = changeset();
+        // console.log('remove', signal);
         signal.forEach((tuple) => {
-            let i = 0;
-            R.tail(tuple).forEach((value) => {
-                const field = update.fields[i];
-                i += 1;
-                if (value !== null) {
-                    if (select.test === '==') {
-                        cs.remove(d => d[select.field] === tuple[0], field, value);
-                    } else if (select.test === '!=') {
-                        cs.remove(d => d[select.field] !== tuple[0], field, value);
-                    } else if (select.test === '<') {
-                        cs.remove(d => d[select.field] < tuple[0], field, value);
-                    } else if (select.test === '>') {
-                        cs.remove(d => d[select.field] > tuple[0], field, value);
-                    }
-                }
-            });
+            if (select.test === '==') {
+                cs.remove(d => d[select.field] === tuple[0]);
+            } else if (select.test === '!=') {
+                cs.remove(d => d[select.field] !== tuple[0]);
+            } else if (select.test === '<') {
+                cs.remove(d => d[select.field] < tuple[0]);
+            } else if (select.test === '>') {
+                cs.remove(d => d[select.field] > tuple[0]);
+            }
         });
         view.change(dataset, cs).run();
     }
@@ -107,11 +100,8 @@ const remove = (view, query, signal) => {
 const insert = (view, query, signal) => {
     if (typeof signal !== 'undefined' && Array.isArray(signal)) {
         const { dataset } = query;
-        const cs = changeset();
-        signal.forEach((tuple) => {
-            cs.insert(dataset, tuple);
-        });
-        view.change(dataset, cs).run();
+        console.log('insert', dataset, signal);
+        view.insert(dataset, signal).run();
     }
 };
 

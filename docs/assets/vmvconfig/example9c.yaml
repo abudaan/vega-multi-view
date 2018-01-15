@@ -1,0 +1,41 @@
+specs:
+  spec5:
+    - assets/specs/example9c_view1.yaml
+    - renderer: svg
+      publish:
+        - signal: exportData
+          as: updateFromView5
+          query:
+            dataset: table
+            action: remove
+            select:
+                field: category
+                test: ==
+        - signal: tooltip
+          as: hover5
+      subscribe:
+        - signal: updateFromView6
+        - signal: hover6
+          as: tooltip
+  spec6:
+    - assets/specs/example9c_view2.yaml
+    - renderer: svg
+      publish:
+        - signal: exportData
+          as: updateFromView6
+          query:
+            dataset: table
+            action: remove
+            select:
+                field: category
+                test: ==
+        - signal: info
+          as: hover6
+      subscribe:
+        - signal: updateFromView5
+        - signal: hover5
+          as: info
+debug: false
+element: example9c
+styling:
+    classes: view

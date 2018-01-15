@@ -119,6 +119,8 @@ We can draw the following conclusion: a global or view specific configuration pr
 
 ## Replace a complete dataset
 
+The example below is a more 'brute force' solution for keeping the values of the categories in sync between the 2 views: every time you change a value by dragging a dot or a bar, the complete dataset is copied over to the other view.
+
 {% include example.html id="example9b" vmvconfig="assets/vmvconfig/example9b.yaml" %}
 
 Your vmv config would look something like this:
@@ -142,4 +144,70 @@ signals:
   - events:
       signal: changeAmount
     update: "{data: data('table')}"
+```
+
+
+## Remove fields in selected data rows
+
+When the value of a category is less than 10, this category will be removed in the other view.
+
+{% include example.html id="example9c" vmvconfig="assets/vmvconfig/example9c.yaml" %}
+
+Excerpt of the vmv config:
+
+```yaml
+publish:
+- signal: exportData
+    as: updateFromView5
+    query:
+    dataset: table
+    action: remove
+    select:
+        field: category
+        test: ==
+```
+
+And the `exportData` signal:
+
+```yaml
+signals:
+- name: exportData
+  value: {}
+  on:
+  - events:
+      signal: changeAmount
+    update: "changeAmount.amount < 10 ? [
+        [selectedCategory.category],
+    ] : {}"
+```
+
+## Insert new data rows
+
+When the value of a category is more than 10, a new category will be added to the other view.
+
+{% include example.html id="example9d" vmvconfig="assets/vmvconfig/example9d.yaml" %}
+
+Excerpt of the vmv config:
+
+```yaml
+      publish:
+        - signal: exportData
+          as: updateFromView7
+          query:
+            dataset: table
+            action: insert
+```
+
+And the `exportData` signal:
+
+```yaml
+signals:
+- name: exportData
+  value: {}
+  on:
+  - events:
+      signal: changeAmount
+    update: "(changeAmount.amount > 100 && changeAmount.amount < 103)? [
+        {'category': selectedCategory.category + '-' + changeAmount.amount, 'amount': 30, 'color': 'yellow'},
+    ] : {}"
 ```

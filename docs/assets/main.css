@@ -19,7 +19,7 @@ header {
 }
 .container {
     margin: auto;
-    max-width: 1100px;
+    max-width: 1024px;
 }
 .title {
   color: white;
@@ -196,7 +196,7 @@ nav a:hover {
 
 /* Special classes */
 .page-centered {
-  max-width: 1400px;
+  max-width: 1200px;
   min-width: 720px;
   margin: 0 auto;
   padding: 0;

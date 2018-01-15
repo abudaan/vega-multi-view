@@ -1,0 +1,14 @@
+publish:
+- signal: exportData
+  as: updateFromView7
+  query:
+    dataset: table
+    action: insert
+    update:
+      fields:
+        - category
+        - amount
+        - color
+
+# so you can pass an array of values instead of an object
+

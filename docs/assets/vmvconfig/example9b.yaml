@@ -29,7 +29,7 @@ specs:
         - signal: updateFromView3
         - signal: hover3
           as: info
-debug: true
+debug: false
 element: example9b
 styling:
     classes: view

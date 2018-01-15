@@ -1,7 +1,7 @@
 // @no-flow
 import R from 'ramda';
 import xs from 'xstream';
-import { change, replaceDataset } from './process';
+import { change, remove, insert, replaceDataset, removeDataset } from './process';
 
 let streamId = 0;
 let streams = {};
@@ -87,8 +87,14 @@ const subscribeToSignal = (data) => {
                 }
                 if (action === 'replace_all' || action === 'replaceAll') {
                     replaceDataset(view, query, value);
+                } else if (action === 'remove_all' || action === 'removeAll') {
+                    removeDataset(view, query, value);
                 } else if (action === 'change') {
                     change(view, query, value);
+                } else if (action === 'remove') {
+                    remove(view, query, value);
+                } else if (action === 'insert') {
+                    insert(view, query, value);
                 } else { // if (R.isEmpty(value) === false) {
                     const signalName = subscribe.as || subscribe.signal;
                     if (R.isNil(R.find(R.propEq('name', signalName))(spec.signals))) {

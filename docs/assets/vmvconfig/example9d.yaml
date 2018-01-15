@@ -1,0 +1,35 @@
+specs:
+  spec7:
+    - assets/specs/example9d_view1.yaml
+    - renderer: svg
+      publish:
+        - signal: exportData
+          as: updateFromView7
+          query:
+            dataset: table
+            action: insert
+        - signal: tooltip
+          as: hover7
+      subscribe:
+        - signal: updateFromView8
+        - signal: hover8
+          as: tooltip
+  spec8:
+    - assets/specs/example9d_view2.yaml
+    - renderer: svg
+      publish:
+        - signal: exportData
+          as: updateFromView8
+          query:
+            dataset: table
+            action: insert
+        - signal: info
+          as: hover8
+      subscribe:
+        - signal: updateFromView7
+        - signal: hover7
+          as: info
+debug: false
+element: example9d
+styling:
+    classes: view

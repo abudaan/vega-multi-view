@@ -1,5 +1,5 @@
 
-document.onload = function () {
+window.onload = function embedExamples() {
     const addMultipleConfigs = window.vmv.addMultipleConfigs;
     const examples = document.getElementsByClassName('example');
     const configUrls = [];

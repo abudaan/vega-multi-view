@@ -45,7 +45,7 @@ const change = (view, query, signal) => {
                     value: red
     */
 
-    if (Array.isArray(signal)) {
+    if (typeof signal !== 'undefined' && Array.isArray(signal)) {
         const {
             dataset,
             select,
@@ -75,7 +75,7 @@ const change = (view, query, signal) => {
 };
 
 const remove = (view, query, signal) => {
-    if (Array.isArray(signal)) {
+    if (typeof signal !== 'undefined' && Array.isArray(signal)) {
         const {
             dataset,
             select,
@@ -105,7 +105,7 @@ const remove = (view, query, signal) => {
 };
 
 const insert = (view, query, signal) => {
-    if (Array.isArray(signal)) {
+    if (typeof signal !== 'undefined' && Array.isArray(signal)) {
         const { dataset } = query;
         const cs = changeset();
         signal.forEach((tuple) => {
@@ -116,7 +116,7 @@ const insert = (view, query, signal) => {
 };
 
 const replaceDataset = (view, query, signal) => {
-    if (R.isNil(signal.data) === false) {
+    if (typeof signal !== 'undefined' && typeof signal.data !== 'undefined') {
         const { dataset } = query;
         view.remove(dataset, () => true).run();
         view.insert(dataset, signal.data).run();

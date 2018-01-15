@@ -1,12 +1,12 @@
 import R from 'ramda';
 import { changeset } from 'vega';
 
-const change = (view, publish, signal) => {
+const change = (view, query, signal) => {
     /*
-        example publish:
+        example query:
 
-        dataset:
-            name: table
+        query:
+            dataset: table
             action: change
             select:
                 field: category
@@ -46,77 +46,85 @@ const change = (view, publish, signal) => {
     */
 
     if (Array.isArray(signal)) {
-        const { dataset } = publish;
+        const {
+            dataset,
+            select,
+            update,
+        } = query;
         const cs = changeset();
         signal.forEach((tuple) => {
             let i = 0;
             R.tail(tuple).forEach((value) => {
-                const field = dataset.update.fields[i];
+                const field = update.fields[i];
                 i += 1;
                 if (value !== null) {
-                    if (dataset.select.test === '==') {
-                        cs.modify(d => d[dataset.select.field] === tuple[0], field, value);
-                    } else if (dataset.select.test === '!=') {
-                        cs.modify(d => d[dataset.select.field] !== tuple[0], field, value);
-                    } else if (dataset.select.test === '<') {
-                        cs.modify(d => d[dataset.select.field] < tuple[0], field, value);
-                    } else if (dataset.select.test === '>') {
-                        cs.modify(d => d[dataset.select.field] > tuple[0], field, value);
+                    if (select.test === '==') {
+                        cs.modify(d => d[select.field] === tuple[0], field, value);
+                    } else if (select.test === '!=') {
+                        cs.modify(d => d[select.field] !== tuple[0], field, value);
+                    } else if (select.test === '<') {
+                        cs.modify(d => d[select.field] < tuple[0], field, value);
+                    } else if (select.test === '>') {
+                        cs.modify(d => d[select.field] > tuple[0], field, value);
                     }
                 }
             });
         });
-        view.change(publish.dataset.name, cs).run();
+        view.change(dataset, cs).run();
     }
 };
 
-const remove = (view, publish, signal) => {
+const remove = (view, query, signal) => {
     if (Array.isArray(signal)) {
-        const { dataset } = publish;
+        const {
+            dataset,
+            select,
+            update,
+        } = query;
         const cs = changeset();
         signal.forEach((tuple) => {
             let i = 0;
             R.tail(tuple).forEach((value) => {
-                const field = dataset.update.fields[i];
+                const field = update.fields[i];
                 i += 1;
                 if (value !== null) {
-                    if (dataset.select.test === '==') {
-                        cs.remove(d => d[dataset.select.field] === tuple[0], field, value);
-                    } else if (dataset.select.test === '!=') {
-                        cs.remove(d => d[dataset.select.field] !== tuple[0], field, value);
-                    } else if (dataset.select.test === '<') {
-                        cs.remove(d => d[dataset.select.field] < tuple[0], field, value);
-                    } else if (dataset.select.test === '>') {
-                        cs.remove(d => d[dataset.select.field] > tuple[0], field, value);
+                    if (select.test === '==') {
+                        cs.remove(d => d[select.field] === tuple[0], field, value);
+                    } else if (select.test === '!=') {
+                        cs.remove(d => d[select.field] !== tuple[0], field, value);
+                    } else if (select.test === '<') {
+                        cs.remove(d => d[select.field] < tuple[0], field, value);
+                    } else if (select.test === '>') {
+                        cs.remove(d => d[select.field] > tuple[0], field, value);
                     }
                 }
             });
         });
-        view.change(publish.dataset.name, cs).run();
+        view.change(dataset, cs).run();
     }
 };
 
-const insert = (view, publish, signal) => {
+const insert = (view, query, signal) => {
     if (Array.isArray(signal)) {
-        const { dataset } = publish;
+        const { dataset } = query;
         const cs = changeset();
         signal.forEach((tuple) => {
-            cs.insert(dataset.name, tuple);
+            cs.insert(dataset, tuple);
         });
-        view.change(publish.dataset.name, cs).run();
+        view.change(dataset, cs).run();
     }
 };
 
-const replaceDataset = (view, publish, signal) => {
-    const { dataset } = publish;
-    view.remove(dataset.name, () => true).run();
-    view.insert(dataset.name, signal).run();
+const replaceDataset = (view, query, signal) => {
+    const { dataset } = query;
+    view.remove(dataset, () => true).run();
+    view.insert(dataset, signal).run();
 };
 
-const removeDataset = (view, publish) => {
-    const { dataset } = publish;
-    view.remove(dataset.name, () => true).run();
-    view.insert(dataset.name, {}).run();
+const removeDataset = (view, query) => {
+    const { dataset } = query;
+    view.remove(dataset, () => true).run();
+    view.insert(dataset, {}).run();
 };
 
 export {

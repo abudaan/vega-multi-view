@@ -27,7 +27,7 @@ const publishSignal = (data) => {
             const s = xs.create({
                 start(listener) {
                     view.addSignalListener(publish.signal, (name, value) => {
-                        listener.next({ publish, value });
+                        listener.next({ query: publish.query, value });
                     });
                 },
                 stop() {
@@ -70,17 +70,17 @@ const subscribeToSignal = (data, streams) => {
         s.addListener({
             next: (d) => {
                 const {
-                    publish,
+                    query,
                     value,
                 } = d;
                 let action = null;
-                if (publish && publish.dataset) {
-                    ({ dataset: { action } } = publish);
+                if (query) {
+                    ({ action } = query);
                 }
                 if (action === 'replace_all' || action === 'replaceAll') {
-                    replaceAll(view, publish, value);
+                    replaceAll(view, query, value);
                 } else if (action === 'change') {
-                    change(view, publish, value);
+                    change(view, query, value);
                 } else { // if (R.isEmpty(value) === false) {
                     const signalName = subscribe.as || subscribe.signal;
                     if (R.isNil(R.find(R.propEq('name', signalName))(spec.signals))) {

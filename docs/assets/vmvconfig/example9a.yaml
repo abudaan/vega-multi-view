@@ -5,8 +5,8 @@ specs:
       publish:
         - signal: exportData
           as: updateFromView1
-          dataset:
-            name: table
+          query:
+            dataset: table
             action: change
             select:
                 field: category
@@ -27,8 +27,8 @@ specs:
       publish:
         - signal: exportData
           as: updateFromView2
-          dataset:
-            name: table
+          query:
+            dataset: table
             action: change
             select:
                 field: category

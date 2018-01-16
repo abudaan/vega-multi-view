@@ -183,7 +183,7 @@ signals:
 
 ## Insert new data rows
 
-When the value of a category is more than 10, a new category will be added to the other view.
+When the value of a category is 101 or 102, a new category will be added to the other view.
 
 {% include example.html id="example9d" vmvconfig="assets/vmvconfig/example9d.yaml" %}
 

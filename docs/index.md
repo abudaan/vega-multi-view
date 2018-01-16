@@ -211,3 +211,7 @@ signals:
         {'category': selectedCategory.category + '-' + changeAmount.amount, 'amount': 30, 'color': 'yellow'},
     ] : {}"
 ```
+
+## Remove a complete data set
+
+{% include example.html id="example9e" vmvconfig="assets/vmvconfig/example9e.yaml" %}

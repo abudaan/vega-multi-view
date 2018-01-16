@@ -108,8 +108,11 @@ const insert = (view, query, signal) => {
 const replaceDataset = (view, query, signal) => {
     if (typeof signal !== 'undefined' && typeof signal.data !== 'undefined') {
         const { dataset } = query;
-        // deep clone
-        const clones = R.map(val => ({ ...val }), signal.data);
+        // deep clone, remove Symbol key vega_id
+        const clones = R.map(value => R.reduce((acc, val) => ({
+            ...acc,
+            [val]: value[val],
+        }), {}, R.keys(value)), signal.data);
         view.remove(dataset, () => true).run();
         view.insert(dataset, clones).run();
     }
@@ -120,9 +123,12 @@ const replaceDataset = (view, query, signal) => {
     // }
 };
 
-const removeDataset = (view, query) => {
-    const { dataset } = query;
-    view.remove(dataset, () => true).run();
+const removeDataset = (view, query, signal) => {
+    // console.log('remove_all', signal);
+    if (typeof signal !== 'undefined') {
+        const { dataset } = query;
+        view.remove(dataset, () => true).run();
+    }
 };
 
 export {

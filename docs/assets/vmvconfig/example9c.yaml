@@ -46,7 +46,7 @@ specs:
           query:
             dataset: table
             action: replace_all
-debug: true
+debug: false
 element: example9c
 styling:
     classes: view

@@ -274,7 +274,7 @@ And in the spec of the toggle button the signals are defined as follows:
         signal: addData
       update: "buttonLabel === '[add data]' ? '[remove data]' : '[add data]'"
 ```
-As you can see, the state of the toggle is based on the label of the button. The signal `removeData` sends a boolean and the signal `addData` sends either an empty object or the complete dataset. Both signal fire on every button click; it would have been much neater if the button only triggers one signal per click. This can be done if we use `replace_all` to remove the dataset, in the vmv config:
+As you can see, the state of the toggle is based on the value of the label on the button. The signal `removeData` sends a boolean and the signal `addData` sends either an empty object or the complete dataset. Note that both signals change on every button click; it would have been much neater if the button only triggers one signal change per click. This can be done if we use `replace_all` and send an empty dataset which effectively removes the dataset as well. In the vmv config:
 
 ```yaml
 publish:
@@ -293,8 +293,7 @@ And in the toggle button spec:
     update: "buttonLabel === '[add data]' ? {data: data('table')} : {}"
 ```
 
-But of course the purpose of this example was to demonstrate the use of `remove_all`.
-
+Obviously this is a better solution but of course the purpose of this example was to demonstrate the use of `remove_all`.
 
 > Source files of this example:
  - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml){:target="_blank"}

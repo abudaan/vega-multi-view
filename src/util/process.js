@@ -100,7 +100,7 @@ const remove = (view, query, signal) => {
 const insert = (view, query, signal) => {
     if (typeof signal !== 'undefined' && Array.isArray(signal)) {
         const { dataset } = query;
-        console.log('insert', dataset, signal);
+        // console.log('insert', dataset, signal);
         view.insert(dataset, signal).run();
     }
 };
@@ -108,9 +108,16 @@ const insert = (view, query, signal) => {
 const replaceDataset = (view, query, signal) => {
     if (typeof signal !== 'undefined' && typeof signal.data !== 'undefined') {
         const { dataset } = query;
+        // deep clone
+        const clones = R.map(val => ({ ...val }), signal.data);
         view.remove(dataset, () => true).run();
-        view.insert(dataset, signal.data).run();
+        view.insert(dataset, clones).run();
     }
+    // if (typeof signal !== 'undefined' && Array.isArray(signal)) {
+    //     const { dataset } = query;
+    //     view.remove(dataset, () => true).run();
+    //     view.insert(dataset, signal).run();
+    // }
 };
 
 const removeDataset = (view, query) => {

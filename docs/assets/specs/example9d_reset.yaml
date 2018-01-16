@@ -1,0 +1,39 @@
+---
+"$schema": https://vega.github.io/schema/vega/v3.0.json
+description: reset button d
+width: 100
+height: 250
+padding: 10
+autosize: fit
+data:
+- name: table
+  url: assets/data/table-data.json
+signals:
+- name: exportData
+  on:
+  - events: "@reset_button:click"
+    update: "{data: data('table')}"
+marks:
+- name: reset_button
+  type: text
+  encode:
+    enter:
+      x:
+        signal: width/2
+      y:
+        signal: height/2
+      align:
+        value: center
+      baseline:
+        value: bottom
+      fill:
+        value: "#fff"
+      text:
+        value: '[reset]'
+      fontWeight:
+        value: bold
+      fontSize:
+        value: 20
+    # update:
+    #   text:
+    #     signal: "selectedCategory.category ? selectedCategory.category + ': ' + changeAmount.amount : ''"

@@ -1,6 +1,6 @@
 specs:
   spec7:
-    - assets/specs/example9d_view1.yaml
+    - assets/specs/example9d_bars.yaml
     - renderer: svg
       publish:
         - signal: exportData
@@ -12,10 +12,11 @@ specs:
           as: hover7
       subscribe:
         - signal: updateFromView8
+        - signal: resetExampleD
         - signal: hover8
           as: tooltip
   spec8:
-    - assets/specs/example9d_view2.yaml
+    - assets/specs/example9d_dots.yaml
     - renderer: svg
       publish:
         - signal: exportData
@@ -27,8 +28,18 @@ specs:
           as: hover8
       subscribe:
         - signal: updateFromView7
+        - signal: resetExampleD
         - signal: hover7
           as: info
+  resetc:
+    - assets/specs/example9d_reset.yaml
+    - renderer: svg
+      publish:
+        - signal: exportData
+          as: resetExampleD
+          query:
+            dataset: table
+            action: replace_all
 debug: false
 element: example9d
 styling:

@@ -1,6 +1,6 @@
 specs:
   spec5:
-    - assets/specs/example9c_view1.yaml
+    - assets/specs/example9c_bars.yaml
     - renderer: svg
       publish:
         - signal: exportData
@@ -15,10 +15,11 @@ specs:
           as: hover5
       subscribe:
         - signal: updateFromView6
+        - signal: resetExampleC
         - signal: hover6
           as: tooltip
   spec6:
-    - assets/specs/example9c_view2.yaml
+    - assets/specs/example9c_dots.yaml
     - renderer: svg
       publish:
         - signal: exportData
@@ -33,9 +34,19 @@ specs:
           as: hover6
       subscribe:
         - signal: updateFromView5
+        - signal: resetExampleC
         - signal: hover5
           as: info
-debug: false
+  resetc:
+    - assets/specs/example9c_reset.yaml
+    - renderer: svg
+      publish:
+        - signal: exportData
+          as: resetExampleC
+          query:
+            dataset: table
+            action: replace_all
+debug: true
 element: example9c
 styling:
     classes: view

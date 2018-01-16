@@ -118,10 +118,10 @@ In the first tuple we set the value of the currently selected category to the cu
 We can draw the following conclusion: a global or view specific configuration provides the logic and the signal of a spec provides the values that this logic acts upon.
 
 > Source files of this example:
- - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml)
- - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9a_bars.yaml)
- - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9a_dots.yaml)
- - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9a.yaml)
+ - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml){:target="_blank"}
+ - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9a_bars.yaml){:target="_blank"}
+ - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9a_dots.yaml){:target="_blank"}
+ - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9a.yaml){:target="_blank"}
 
 
 ## Replace a complete dataset
@@ -155,10 +155,10 @@ signals:
 Note that the dataset is wrapped in an object; this seems useless but if we sent the plain dataset like this `update: "data('table')"`, then Vega doesn't recognize that the value of the signal has changed for some reason.
 
 > Source files of this example:
- - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml)
- - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9b_bars.yaml)
- - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9b_dots.yaml)
- - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9b.yaml)
+ - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml){:target="_blank"}
+ - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9b_bars.yaml){:target="_blank"}
+ - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9b_dots.yaml){:target="_blank"}
+ - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9b.yaml){:target="_blank"}
 
 ## Remove fields in selected data rows
 
@@ -194,11 +194,11 @@ signals:
     ] : {}"
 ```
 > Source files of this example:
- - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml)
- - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9c_bars.yaml)
- - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9c_dots.yaml)
- - [reset button](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9c_reset.yaml)
- - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9c.yaml)
+ - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml){:target="_blank"}
+ - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9c_bars.yaml){:target="_blank"}
+ - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9c_dots.yaml){:target="_blank"}
+ - [reset button](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9c_reset.yaml){:target="_blank"}
+ - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9c.yaml){:target="_blank"}
 
 ## Insert new data rows
 
@@ -232,11 +232,11 @@ signals:
 ```
 
 > Source files of this example:
- - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml)
- - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9d_bars.yaml)
- - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9d_dots.yaml)
- - [reset button](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9d_reset.yaml)
- - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9d.yaml)
+ - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml){:target="_blank"}
+ - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9d_bars.yaml){:target="_blank"}
+ - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9d_dots.yaml){:target="_blank"}
+ - [reset button](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9d_reset.yaml){:target="_blank"}
+ - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9d.yaml){:target="_blank"}
 
 ## Remove a complete data set
 
@@ -297,8 +297,8 @@ But of course the purpose of this example was to demonstrate the use of `remove_
 
 
 > Source files of this example:
- - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml)
- - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9e_bars.yaml)
- - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9e_dots.yaml)
- - [remove/add data button](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9e_reset.yaml)
- - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9e.yaml)
+ - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml){:target="_blank"}
+ - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9e_bars.yaml){:target="_blank"}
+ - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9e_dots.yaml){:target="_blank"}
+ - [remove/add data button](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9e_reset.yaml){:target="_blank"}
+ - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9e.yaml){:target="_blank"}

@@ -87,7 +87,7 @@ publish:
 
 The `query` object behaves like a sort of SQL query where `dataset` tells us in which dataset the changes will be applied.
 
-The `select` object tells us how to select the right data row in the dataset. In this example we want to select a row by category so `field` is set to "category" and `test` is set to "==". The value that we are going to test against will be provided by the signal, see below.
+The `select` object tells us how to select the right data row in the dataset. In this example we want to select a row by category and therefor `field` is set to "category" and `test` is set to "==". The value that we are going to test against will be provided by the signal, see below.
 
 Then we have an `update` object, in this object we list the field(s) in the data row that will be replaced by the new value(s). These new values will be provided by the signal as well. In this case we want to update the fields "amount" and "color".
 
@@ -113,7 +113,7 @@ The first value of every tuple is the value that will be used for the test. The 
 
 In the first tuple we test against the value of the `selectedCategory` signal which holds the datum that is coupled to the bar or dot as soon as we start dragging it. In this datum the `category` key gives us the name of the currently selected category. In the 2nd tuple we simply select category "A", and in the 3rd tuple category "B" is selected.
 
-In the first tuple we set the value of the currently selected category to the current value of the `amount` key of the `changeAmount` signal. In the 2nd and 3rd tuple we set the amount to a fraction of this value and we set a different color when this value surpasses a certain value. Note that these changes only occur in the view(s) that are subscribed to the "exportData" signal.
+In the first tuple we set the value of the currently selected category to the current value of the `amount` key of the `changeAmount` signal. In the 2nd and 3rd tuple we set the amount to a fraction of this value and we set a different color when this value surpasses a certain value. Note that these changes only occur in the view(s) that are subscribed to the "exportData" signal and not in the view that publishes the signal.
 
 We can draw the following conclusion: a global or view specific configuration provides the logic and the signal of a spec provides the values that this logic acts upon.
 
@@ -226,7 +226,7 @@ signals:
   on:
   - events:
       signal: changeAmount
-    update: "(changeAmount.amount > 100 && changeAmount.amount < 103)? [
+    update: "(changeAmount.amount > 100 && changeAmount.amount < 103) ? [
         {'category': selectedCategory.category + '-' + changeAmount.amount, 'amount': 30, 'color': 'yellow'},
     ] : {}"
 ```
@@ -244,7 +244,7 @@ Click on [remove data] to remove the complete dataset in both views.
 
 {% include example.html id="example9e" vmvconfig="assets/vmvconfig/example9e.yaml" %}
 
-In the vmv config the signals of the toggle button remove/add data are published:
+In the vmv config the signals of the toggle button for removing and adding data are published:
 
 ```yaml
 publish:
@@ -291,6 +291,12 @@ And in the toggle button spec:
   on:
   - events: "@add_data_button:click"
     update: "buttonLabel === '[add data]' ? {data: data('table')} : {}"
+- name: buttonLabel
+  value: '[remove data]'
+  on:
+    - events:
+        signal: toggleData
+      update: "buttonLabel === '[add data]' ? '[remove data]' : '[add data]'"
 ```
 
 Obviously this is a better solution but of course the purpose of this example was to demonstrate the use of `remove_all`.

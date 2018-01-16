@@ -33,7 +33,7 @@ specs:
         - signal: removeData
         - signal: hover9
           as: info
-  resetc:
+  toggleData:
     - assets/specs/example9e_reset.yaml
     - renderer: svg
       publish:
@@ -45,7 +45,7 @@ specs:
           query:
             dataset: table
             action: replace_all
-debug: true
+debug: false
 element: example9e
 styling:
     classes: view

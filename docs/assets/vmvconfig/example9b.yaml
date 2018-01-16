@@ -1,6 +1,6 @@
 specs:
   spec3:
-    - assets/specs/example9b_view1.yaml
+    - assets/specs/example9b_bars.yaml
     - renderer: svg
       publish:
         - signal: exportData
@@ -15,7 +15,7 @@ specs:
         - signal: hover4
           as: tooltip
   spec4:
-    - assets/specs/example9b_view2.yaml
+    - assets/specs/example9b_dots.yaml
     - renderer: svg
       publish:
         - signal: exportData

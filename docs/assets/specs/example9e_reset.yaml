@@ -9,7 +9,6 @@ data:
 - name: table
   url: assets/data/table-data.json
 signals:
-- name: undefined
 - name: addData
   on:
   - events: "@add_data_button:click"
@@ -17,7 +16,7 @@ signals:
 - name: removeData
   on:
   - events: "@add_data_button:click"
-    update: "buttonLabel === '[remove data]' ? {} : undefined"
+    update: "buttonLabel === '[remove data]' ? true : false"
 - name: buttonLabel
   value: '[remove data]'
   on:
@@ -44,7 +43,7 @@ marks:
       fontWeight:
         value: bold
       fontSize:
-        value: 15
+        value: 18
     update:
       text:
         signal: buttonLabel

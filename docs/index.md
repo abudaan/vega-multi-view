@@ -117,6 +117,13 @@ In the first tuple we set the value of the currently selected category to the cu
 
 We can draw the following conclusion: a global or view specific configuration provides the logic and the signal of a spec provides the values that this logic acts upon.
 
+> Source files of this example:
+ - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml)
+ - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9a_bars.yaml)
+ - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9a_dots.yaml)
+ - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9a.yaml)
+
+
 ## Replace a complete dataset
 
 The example below is a more 'brute force' solution for keeping the values of the categories in sync between the 2 views: every time you change a value by dragging a dot or a bar, the complete dataset is copied over to the other view.
@@ -145,11 +152,17 @@ signals:
       signal: changeAmount
     update: "{data: data('table')}"
 ```
+Note that the dataset is wrapped in an object; this seems useless but if we sent the plain dataset like this `update: "data('table')"`, then Vega doesn't recognize that the value of the signal has changed for some reason.
 
+> Source files of this example:
+ - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml)
+ - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9b_bars.yaml)
+ - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9b_dots.yaml)
+ - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9b.yaml)
 
 ## Remove fields in selected data rows
 
-When the value of a category is less than 10, this category will be removed in the other view.
+When the value of a category is less than 10, this category will be removed in the other view. Click on [reset] to restore the original data.
 
 {% include example.html id="example9c" vmvconfig="assets/vmvconfig/example9c.yaml" %}
 
@@ -180,22 +193,28 @@ signals:
         [selectedCategory.category],
     ] : {}"
 ```
+> Source files of this example:
+ - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml)
+ - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9c_bars.yaml)
+ - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9c_dots.yaml)
+ - [reset button](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9c_reset.yaml)
+ - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9c.yaml)
 
 ## Insert new data rows
 
-When the value of a category is 101 or 102, a new category will be added to the other view.
+When the value of a category is 101 or 102, a new category will be added to the other view. Click on [reset] to restore the original data.
 
 {% include example.html id="example9d" vmvconfig="assets/vmvconfig/example9d.yaml" %}
 
 Excerpt of the vmv config:
 
 ```yaml
-      publish:
-        - signal: exportData
-          as: updateFromView7
-          query:
-            dataset: table
-            action: insert
+publish:
+- signal: exportData
+    as: updateFromView7
+    query:
+    dataset: table
+    action: insert
 ```
 
 And the `exportData` signal:
@@ -212,6 +231,74 @@ signals:
     ] : {}"
 ```
 
+> Source files of this example:
+ - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml)
+ - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9d_bars.yaml)
+ - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9d_dots.yaml)
+ - [reset button](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9d_reset.yaml)
+ - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9d.yaml)
+
 ## Remove a complete data set
 
+Click on [remove data] to remove the complete dataset in both views.
+
 {% include example.html id="example9e" vmvconfig="assets/vmvconfig/example9e.yaml" %}
+
+In the vmv config the signals of the toggle button remove/add data are published:
+
+```yaml
+publish:
+    - signal: removeData
+    query:
+        dataset: table
+        action: remove_all
+    - signal: addData
+    query:
+        dataset: table
+        action: replace_all
+```
+And in the spec of the toggle button the signals are defined as follows:
+```yaml
+- name: addData
+  on:
+  - events: "@add_data_button:click"
+    update: "buttonLabel === '[add data]' ? {data: data('table')} : {}"
+- name: removeData
+  on:
+  - events: "@add_data_button:click"
+    update: "buttonLabel === '[remove data]' ? true : false"
+- name: buttonLabel
+  value: '[remove data]'
+  on:
+    - events:
+        signal: addData
+      update: "buttonLabel === '[add data]' ? '[remove data]' : '[add data]'"
+```
+As you can see, the state of the toggle is based on the label of the button. The signal `removeData` sends a boolean and the signal `addData` sends either an empty object or the complete dataset. Both signal fire on every button click; it would have been much neater if the button only triggers one signal per click. This can be done if we use `replace_all` to remove the dataset, in the vmv config:
+
+```yaml
+publish:
+    - signal: toggleData
+    query:
+        dataset: table
+        action: remove_all
+```
+
+And in the toggle button spec:
+
+```yaml
+- name: toggleData
+  on:
+  - events: "@add_data_button:click"
+    update: "buttonLabel === '[add data]' ? {data: data('table')} : {}"
+```
+
+But of course the purpose of this example was to demonstrate the use of `remove_all`.
+
+
+> Source files of this example:
+ - [data](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/data/table-data.yaml)
+ - [bars view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9e_bars.yaml)
+ - [dots view](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9e_dots.yaml)
+ - [remove/add data button](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/specs/example9e_reset.yaml)
+ - [global config file](https://github.com/abudaan/vega-multi-view/blob/master/docs/assets/vmvconfig/example9e.yaml)

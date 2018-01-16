@@ -106,6 +106,7 @@ const insert = (view, query, signal) => {
 };
 
 const replaceDataset = (view, query, signal) => {
+    // console.log('replace_all', signal, typeof signal === 'undefined');
     if (typeof signal !== 'undefined' && typeof signal.data !== 'undefined') {
         const { dataset } = query;
         // deep clone, remove Symbol key vega_id
@@ -124,8 +125,8 @@ const replaceDataset = (view, query, signal) => {
 };
 
 const removeDataset = (view, query, signal) => {
-    // console.log('remove_all', signal);
-    if (typeof signal !== 'undefined') {
+    // console.log('remove_all', signal, typeof signal === 'undefined');
+    if (signal === true) {
         const { dataset } = query;
         view.remove(dataset, () => true).run();
     }

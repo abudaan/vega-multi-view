@@ -281,7 +281,7 @@ publish:
     - signal: toggleData
     query:
         dataset: table
-        action: remove_all
+        action: replace_all
 ```
 
 And in the toggle button spec:

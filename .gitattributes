@@ -1,0 +1,14 @@
+* text=auto
+# folders
+/docs export-ignore
+/examples export-ignore
+# hidden files
+/.babelrc export-ignore
+/.eslintrc export-ignore
+/.gitignore export-ignore
+/.gitattributes export-ignore
+/.npmignore export-ignore
+# other files
+/editorconfig export-ignore
+/gulpfile.babel.js export-ignore
+/toc.sh export-ignore

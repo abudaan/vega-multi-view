@@ -22,12 +22,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var streamId = 0; // @no-flow
 
+var streams = {};
+var logDebugMessages = false;
 
 var publishSignal = function publishSignal(data) {
     var vmvConfig = data.vmvConfig,
         view = data.view;
 
-    var streams = {};
 
     if (_ramda2.default.isNil(vmvConfig.publish)) {
         return streams;
@@ -39,30 +40,37 @@ var publishSignal = function publishSignal(data) {
     }
 
     _ramda2.default.forEach(function (publish) {
-        // console.log(publish);
-        try {
-            var s = _xstream2.default.create({
-                start: function start(listener) {
-                    view.addSignalListener(publish.signal, function (name, value) {
-                        listener.next({ publish: publish, value: value });
-                    });
-                },
-                stop: function stop() {
-                    view.removeSignalListener(publish.signal);
-                },
+        var alias = publish.as || publish.signal;
+        if (_ramda2.default.isNil(streams[alias]) === false) {
+            console.error('There is already a stream published as "' + alias + '", skipping this one. Please use another name or unpublish this signal first');
+        } else {
+            try {
+                var s = _xstream2.default.create({
+                    start: function start(listener) {
+                        view.addSignalListener(publish.signal, function (name, value) {
+                            listener.next({ query: publish.query, value: value });
+                        });
+                    },
+                    stop: function stop() {
+                        view.removeSignalListener(publish.signal);
+                    },
 
-                id: streamId
-            });
-            streamId += 1;
-            streams[publish.as || publish.signal] = s;
-        } catch (e) {
-            console.error(e.message);
+                    id: streamId
+                });
+                streamId += 1;
+                if (logDebugMessages) {
+                    console.log('publishing signal ' + publish.signal + ' as ' + alias + ' with stream id ' + streamId);
+                }
+                streams[alias] = s;
+            } catch (e) {
+                console.error(e.message);
+            }
         }
     }, publishes);
     return streams;
 };
 
-var subscribeToSignal = function subscribeToSignal(data, streams) {
+var subscribeToSignal = function subscribeToSignal(data) {
     var view = data.view,
         spec = data.spec,
         vmvConfig = data.vmvConfig;
@@ -85,17 +93,23 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
         }
         s.addListener({
             next: function next(d) {
-                var publish = d.publish,
+                var query = d.query,
                     value = d.value;
 
                 var action = null;
-                if (publish && publish.dataset) {
-                    action = publish.dataset.action;
+                if (query) {
+                    action = query.action;
                 }
                 if (action === 'replace_all' || action === 'replaceAll') {
-                    (0, _process.replaceAll)(view, publish, value);
+                    (0, _process.replaceDataset)(view, query, value);
+                } else if (action === 'remove_all' || action === 'removeAll') {
+                    (0, _process.removeDataset)(view, query, value);
                 } else if (action === 'change') {
-                    (0, _process.change)(view, publish, value);
+                    (0, _process.change)(view, query, value);
+                } else if (action === 'remove') {
+                    (0, _process.remove)(view, query, value);
+                } else if (action === 'insert') {
+                    (0, _process.insert)(view, query, value);
                 } else {
                     // if (R.isEmpty(value) === false) {
                     var signalName = subscribe.as || subscribe.signal;
@@ -116,8 +130,8 @@ var subscribeToSignal = function subscribeToSignal(data, streams) {
     }, subscribes);
 };
 
-var connectSignals = function connectSignals(data) {
-    var streams = {};
+var connectSignals = function connectSignals(data, debug) {
+    logDebugMessages = debug;
     _ramda2.default.forEach(function (d) {
         if (d.view !== null) {
             streams = (0, _extends3.default)({}, streams, publishSignal(d));

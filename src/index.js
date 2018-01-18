@@ -26,7 +26,7 @@ const renderViews = (data, renderer, container) => {
                     view: d.view,
                     renderer: d.renderer || renderer,
                     container,
-                    mapElement: element,
+                    mapContainer: element,
                 };
                 vegaAsLeafletLayer(config);
             } else {

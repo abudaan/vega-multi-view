@@ -1,0 +1,10 @@
+live_data:
+  - signal: verkeers_data
+    url: "wss://anwb/live"
+    protocols:
+      - proto1
+      - proto2
+  - signal: weer_data
+    url: "wss://knmi/live"
+    protocols:
+      - proto1

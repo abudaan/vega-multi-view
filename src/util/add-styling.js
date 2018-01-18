@@ -32,8 +32,8 @@ const addStyling = (id, styling, divElement, globalStyling = {}) => {
         divElement.className = viewClasses.join(' ');
     } else if (globalClasses.length > 0) {
         divElement.className = globalClasses.join(' ');
-    } else {
-        divElement.className = '';
+        // } else {
+        //     divElement.className = '';
     }
 
     if (addToHead === true) {

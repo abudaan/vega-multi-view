@@ -4,17 +4,17 @@ This library is a wrapper of the [Vega](https://github.com/vega/vega) runtime AP
 
 It is also possible to update each other's datasets. The wrapper accepts specs in json, cson, bson and notably the much leaner yaml format. For documentation see the [wiki](https://github.com/abudaan/vega-multi-view/wiki) on Github.
 
-You can [clone](https://github.com/abudaan/vega-multi-view) this repository or embed the library using [Rawgit](https://rawgit.com/) urls:
+You can clone the Github repository or embed the library using [Rawgit](https://rawgit.com/) urls:
 
 for development:
 ```
-https://rawgit.com/abudaan/vega-multi-view/v1.1.6/build/vmv.css
-https://rawgit.com/abudaan/vega-multi-view/v1.1.6/build/vmv.js
-https://rawgit.com/abudaan/vega-multi-view/v1.1.6/build/vmv.min.js
+https://rawgit.com/abudaan/vega-multi-view/v1.1.7/build/vmv.css
+https://rawgit.com/abudaan/vega-multi-view/v1.1.7/build/vmv.js
+https://rawgit.com/abudaan/vega-multi-view/v1.1.7/build/vmv.min.js
 ```
 for production:
 ```
-https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.6/build/vmv.css
-https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.6/build/vmv.js
-https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.6/build/vmv.min.js
+https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.7/build/vmv.css
+https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.7/build/vmv.js
+https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.7/build/vmv.min.js
 ```

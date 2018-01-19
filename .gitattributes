@@ -13,4 +13,5 @@
 /gulpfile.babel.js export-ignore
 /package.json export-ignore
 /toc.sh export-ignore
+/websocket.yaml
 /yarn.lock export-ignore

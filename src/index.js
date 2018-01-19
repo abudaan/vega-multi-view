@@ -13,6 +13,19 @@ import { version } from '../package.json';
 const mapIndexed = R.addIndex(R.map);
 const store = {};
 
+const resize = () => {
+    R.forEach((value) => {
+        const bounds = value.element.getBoundingClientRect();
+        // console.log(value, bounds);
+        value.view.width(bounds.width).height(bounds.height).resize().run();
+        // value.view.run();
+        // console.log('no span');
+    }, R.values(store));
+};
+
+window.addEventListener('resize', resize);
+
+
 const renderViews = (data, renderer, container) => {
     data.forEach((d) => {
         const {
@@ -198,6 +211,7 @@ export const addViews = async (cfg, type = null) => {
             renderViews(data, renderer, containerElement);
             data.forEach((d) => {
                 if (d.view !== null) {
+                    // d.view.resize().run();
                     if (d.vmvConfig.run === true ||
                         (run === true && d.vmvConfig.run !== false)) {
                         d.view.run();
@@ -206,8 +220,11 @@ export const addViews = async (cfg, type = null) => {
                         (hover === true && d.vmvConfig.hover !== false)) {
                         d.view.hover();
                     }
-                    addStyling(d.id, d.vmvConfig.styling, d.element, styling);
+                    resize();
+                    // if (d.vmvConfig.resize !== false) {
+                    // }
                 }
+                addStyling(d.id, d.vmvConfig.styling, d.element, styling);
                 store[d.id] = d;
             });
             resolve(store);

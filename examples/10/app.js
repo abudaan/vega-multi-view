@@ -43,7 +43,7 @@ const data = {
         // spec1: ['../specs/map.yaml', vmvConfig],
         spec1: ['../specs/bars_resize.yaml', vmvConfig],
     },
-    debug: true,
+    debug: false,
 };
 
 addViews(data).then((result) => {

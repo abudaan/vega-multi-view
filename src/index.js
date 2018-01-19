@@ -1,5 +1,4 @@
 import R from 'ramda';
-import { parse, View } from 'vega';
 import vegaAsLeafletLayer from 'vega-as-leaflet-layer/dist';
 import { load } from 'fetch-helpers';
 import addDebug from './util/debug';
@@ -12,7 +11,7 @@ import { version } from '../package.json';
 
 const mapIndexed = R.addIndex(R.map);
 const store = {};
-
+/*
 const resize = () => {
     R.forEach((value) => {
         const bounds = value.element.getBoundingClientRect();
@@ -22,8 +21,8 @@ const resize = () => {
         // console.log('no span');
     }, R.values(store));
 };
-
-window.addEventListener('resize', resize);
+*/
+// window.addEventListener('resize', resize);
 
 
 const renderViews = (data, renderer, container) => {
@@ -76,12 +75,20 @@ const createSpecData = (specs, type) => {
         if (R.isNil(vmvConfig.styling)) {
             vmvConfig.styling = {};
         }
-        const view = new View(parse(specClone));
+
+        // const bounds = document.getElementById('example-10').getBoundingClientRect();
+        // console.log(data.element, bounds);
+        // specClone.width = bounds.width;
+        // specClone.height = bounds.height;
+        // d.view.width(bounds.width).height(bounds.height).resize();
+
+
+        // const view = new View(parse(specClone));
         return new Promise((resolve) => {
             resolve({
                 id: data.id,
                 spec: specClone,
-                view,
+                // view,
                 vmvConfig,
             });
         });
@@ -220,7 +227,11 @@ export const addViews = async (cfg, type = null) => {
                         (hover === true && d.vmvConfig.hover !== false)) {
                         d.view.hover();
                     }
-                    resize();
+                    // d.view.resize();
+                    // const bounds = d.element.getBoundingClientRect();
+                    // console.log('bounds', bounds);
+                    // d.view.width(bounds.width).height(bounds.height).resize();
+                    // resize();
                     // if (d.vmvConfig.resize !== false) {
                     // }
                 }

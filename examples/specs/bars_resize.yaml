@@ -2,8 +2,8 @@
 "$schema": https://vega.github.io/schema/vega/v3.0.json
 description: bars
 autosize: none
-# width: 100
-# height: 100
+width: 300
+height: 300
 padding:
   left: 20
   right: 20

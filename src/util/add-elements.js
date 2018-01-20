@@ -2,7 +2,8 @@ import R from 'ramda';
 import { parse, View } from 'vega';
 
 const addElements = (data, container) => R.map((d) => {
-    if (d.view === null) {
+    console.log(d);
+    if (d.vmvConfig === null) {
         return {
             ...d,
             element: null,
@@ -38,29 +39,28 @@ const addElements = (data, container) => R.map((d) => {
         divElement.id = d.id;
         container.appendChild(divElement);
     }
-    const bounds = divElement.getBoundingClientRect();
-    // console.log(data.element, bounds);
-    const pad = (typeof d.spec.padding === 'number') ? d.spec.padding : 0;
-    // console.log('pad', pad, d.spec.padding);
-    const {
-        left: paddingLeft = pad,
-        right: paddingRight = pad,
-        top: paddingTop = pad,
-        bottom: paddingBottom = pad,
-    } = d.spec.padding;
-    // console.log(paddingTop);
-    // console.log(paddingRight);
-    // console.log(paddingBottom);
-    // console.log(paddingLeft);
-    console.log(bounds);
-    d.spec.width = bounds.width - paddingLeft - paddingRight;
-    d.spec.height = bounds.height - paddingTop - paddingBottom;
+
+    // assume responsive if no width or height has been defined in the spec
+    if ((R.isNil(d.spec.width) || R.isNil(d.spec.height)) || d.vmvConfig.responsive === true) {
+        const bounds = divElement.getBoundingClientRect();
+        // check if the padding is set as an object or as a numeric value for all each padding side
+        const pad = (typeof d.spec.padding === 'number') ? d.spec.padding : 0;
+        const {
+            left: paddingLeft = pad,
+            right: paddingRight = pad,
+            top: paddingTop = pad,
+            bottom: paddingBottom = pad,
+        } = d.spec.padding || {};
+        // put the width and the height in the spec; otherwise the view won't be visible
+        // the first time the spec is rendered to the page
+        d.spec.width = bounds.width - paddingLeft - paddingRight;
+        d.spec.height = bounds.height - paddingTop - paddingBottom;
+    }
     const view = new View(parse(d.spec));
     return {
         ...d,
         view,
         element: divElement,
-        // parent: container,
     };
 }, data);
 

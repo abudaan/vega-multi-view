@@ -28,7 +28,7 @@
         "fetch-helpers": "git+https://github.com/abudaan/fetch-helpers.git",
         "ramda": "^0.23.0",
         "vega": "^3.0.9",
-        "vega-as-leaflet-layer": "^1.1.6",
+        "vega-as-leaflet-layer": "^1.1.7",
         "vega-tooltip": "^0.4.4",
         "xstream": "^10.9.0"
     },

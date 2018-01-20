@@ -6,24 +6,11 @@ import addTooltips from './util/add-tooltips';
 import connectSignals from './util/signals';
 import addElements from './util/add-elements';
 import addStyling from './util/add-styling';
-import { loadSpec } from './util/load-specs';
+import createSpecData from './util/create-spec-data';
+import syncPromises from './util/promise-helpers';
 import { version } from '../package.json';
 
-const mapIndexed = R.addIndex(R.map);
 const store = {};
-/*
-const resize = () => {
-    R.forEach((value) => {
-        const bounds = value.element.getBoundingClientRect();
-        // console.log(value, bounds);
-        value.view.width(bounds.width).height(bounds.height).resize().run();
-        // value.view.run();
-        // console.log('no span');
-    }, R.values(store));
-};
-*/
-// window.addEventListener('resize', resize);
-
 
 const renderViews = (data, renderer, container) => {
     data.forEach((d) => {
@@ -47,53 +34,6 @@ const renderViews = (data, renderer, container) => {
             }
         }
     });
-};
-
-const createSpecData = (specs, type) => {
-    const promises = mapIndexed(async (data) => {
-        let spec = null;
-        try {
-            const t = data.spec.type || type;
-            spec = await loadSpec(data.spec, t);
-        } catch (e) {
-            console.error(e);
-        }
-        if (spec === null) {
-            return Promise.resolve({
-                id: data.id,
-                spec: `Vega spec ${data.spec} could not be loaded`,
-                view: null,
-                vmvConfig: null,
-            });
-        }
-        const specClone = { ...spec };
-        let vmvConfig = data.vmvConfig || { styling: {} };
-        if (R.isNil(specClone.vmvConfig) === false) {
-            vmvConfig = { ...specClone.vmvConfig };
-            delete specClone.vmvConfig;
-        }
-        if (R.isNil(vmvConfig.styling)) {
-            vmvConfig.styling = {};
-        }
-
-        // const bounds = document.getElementById('example-10').getBoundingClientRect();
-        // console.log(data.element, bounds);
-        // specClone.width = bounds.width;
-        // specClone.height = bounds.height;
-        // d.view.width(bounds.width).height(bounds.height).resize();
-
-
-        // const view = new View(parse(specClone));
-        return new Promise((resolve) => {
-            resolve({
-                id: data.id,
-                spec: specClone,
-                // view,
-                vmvConfig,
-            });
-        });
-    }, specs);
-    return Promise.all(promises);
 };
 
 
@@ -140,50 +80,10 @@ export const addViews = async (cfg, type = null) => {
         styling = {},
     } = config;
 
+    // add global styling
     addStyling('global', styling, document.body);
 
-    let specsArray;
-    const [
-        inStore,
-        outStore,
-    ] = R.splitWhen(key => R.isNil(store[key]), R.keys(specs));
-
-    if (overwrite) {
-        removeViews(inStore);
-        if (inStore.length === 1) {
-            console.info(`view with id "${inStore[0]}" is overwritten`);
-        } else if (inStore.length > 1) {
-            console.info(`views with ids "${inStore.join('", "')}" are overwritten`);
-        }
-        specsArray = R.keys(specs);
-    } else {
-        if (inStore.length === 1) {
-            console.warn(`view with id "${inStore[0]}" already exist!`);
-        } else if (inStore.length > 1) {
-            console.warn(`views with ids "${inStore.join('", "')}" already exist!`);
-        }
-        specsArray = outStore;
-    }
-
-    specsArray = R.map((key) => {
-        const s = specs[key];
-        const data = {
-            spec: s,
-            id: key,
-        };
-
-        if (Array.isArray(s)) {
-            if (s.length === 2) {
-                [data.spec, data.vmvConfig] = s;
-            } else if (s.length === 1) {
-                [data.spec] = s;
-            }
-        }
-
-        return data;
-    }, specsArray);
-
-    // default to document.body
+    // set up the containing HTML element, defaults to document.body
     let containerElement = document.body;
     if (typeof element === 'string') {
         containerElement = document.getElementById(element);
@@ -196,14 +96,16 @@ export const addViews = async (cfg, type = null) => {
         }
     } else if (element instanceof HTMLElement) {
         containerElement = element;
-        if (document.getElementById(element) === null) {
+        // check if the element has been added to the DOM
+        if (document.getElementById(element.id) === null) {
             document.body.appendChild(containerElement);
         }
     } else if (typeof element !== 'undefined') {
         console.warn('invalid element, using document.body instead');
     }
 
-    let data = await createSpecData(specsArray, type);
+    // parse all views
+    let data = await createSpecData(store, specs, overwrite, type);
     data = addElements(data, containerElement);
     addTooltips(data);
     connectSignals(data, debug);
@@ -211,6 +113,7 @@ export const addViews = async (cfg, type = null) => {
         await addDebug(data);
     }
 
+    // add all views to the HTML
     return new Promise((resolve) => {
         // wait until the next paint cycle so the created elements
         // are added to the DOM, add the views, then resolve
@@ -218,7 +121,6 @@ export const addViews = async (cfg, type = null) => {
             renderViews(data, renderer, containerElement);
             data.forEach((d) => {
                 if (d.view !== null) {
-                    // d.view.resize().run();
                     if (d.vmvConfig.run === true ||
                         (run === true && d.vmvConfig.run !== false)) {
                         d.view.run();
@@ -227,15 +129,10 @@ export const addViews = async (cfg, type = null) => {
                         (hover === true && d.vmvConfig.hover !== false)) {
                         d.view.hover();
                     }
-                    // d.view.resize();
-                    // const bounds = d.element.getBoundingClientRect();
-                    // console.log('bounds', bounds);
-                    // d.view.width(bounds.width).height(bounds.height).resize();
-                    // resize();
-                    // if (d.vmvConfig.resize !== false) {
-                    // }
                 }
+                // add view specific styling
                 addStyling(d.id, d.vmvConfig.styling, d.element, styling);
+                // store view so we can remove or edit it after initialization
                 store[d.id] = d;
             });
             resolve(store);
@@ -243,47 +140,6 @@ export const addViews = async (cfg, type = null) => {
     });
 };
 
-
-const asyncPromises = promises => new Promise((resolve, reject) => {
-    let index = 0;
-    const max = promises.length;
-    const errors = [];
-    const results = [];
-
-    const startPromise = (promise, cb) => {
-        const {
-            func,
-            args,
-        } = promise;
-        func(...args)
-            .then((result) => {
-                results.push(result);
-                cb();
-            })
-            .catch((error) => {
-                errors.push(error);
-                cb();
-            });
-    };
-
-    const next = () => {
-        index += 1;
-        if (index < max) {
-            startPromise(promises[index], next);
-        } else if (errors.length === max) {
-            reject(new Error('None of the config files could be loaded'));
-        } else if (errors.length === 0) {
-            resolve(results[0]);
-        } else {
-            resolve({
-                errors,
-                result: results[0],
-            });
-        }
-    };
-
-    startPromise(promises[index], next);
-});
 
 export const addMultipleConfigs = async (configs) => {
     if (Array.isArray(configs) === false) {
@@ -296,7 +152,7 @@ export const addMultipleConfigs = async (configs) => {
             args: [config],
         });
     });
-    return asyncPromises(promises);
+    return syncPromises(promises);
 };
 
 

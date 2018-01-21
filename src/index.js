@@ -136,7 +136,7 @@ export const addViews = async (cfg, type = null) => {
                 store[d.id] = d;
             });
             resolve(store);
-        }, 0);
+        }, 10);
     });
 };
 

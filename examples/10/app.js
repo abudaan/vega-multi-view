@@ -7,7 +7,6 @@ console.log('vega', version);
 const vmvConfig = {
     cssClass: null,
     element: 'example-10',
-    responsive: true,
     // leaflet: true,
     // publish: [
     //     {

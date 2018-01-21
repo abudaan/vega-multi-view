@@ -9,21 +9,9 @@ var _stringify = require('babel-runtime/core-js/json/stringify');
 
 var _stringify2 = _interopRequireDefault(_stringify);
 
-var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
-
-var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
-
-var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
-
 var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
-
-var _extends2 = require('babel-runtime/helpers/extends');
-
-var _extends3 = _interopRequireDefault(_extends2);
 
 var _promise = require('babel-runtime/core-js/promise');
 
@@ -36,8 +24,6 @@ var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 var _ramda = require('ramda');
 
 var _ramda2 = _interopRequireDefault(_ramda);
-
-var _vega = require('vega');
 
 var _dist = require('vega-as-leaflet-layer/dist');
 
@@ -65,13 +51,18 @@ var _addStyling = require('./util/add-styling');
 
 var _addStyling2 = _interopRequireDefault(_addStyling);
 
-var _loadSpecs = require('./util/load-specs');
+var _createSpecData = require('./util/create-spec-data');
+
+var _createSpecData2 = _interopRequireDefault(_createSpecData);
+
+var _promiseHelpers = require('./util/promise-helpers');
+
+var _promiseHelpers2 = _interopRequireDefault(_promiseHelpers);
 
 var _package = require('../package.json');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var mapIndexed = _ramda2.default.addIndex(_ramda2.default.map);
 var store = {};
 
 var renderViews = function renderViews(data, renderer, container) {
@@ -96,80 +87,6 @@ var renderViews = function renderViews(data, renderer, container) {
     });
 };
 
-var createSpecData = function createSpecData(specs, type) {
-    var promises = mapIndexed(function () {
-        var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(data) {
-            var spec, t, specClone, vmvConfig, view;
-            return _regenerator2.default.wrap(function _callee$(_context) {
-                while (1) {
-                    switch (_context.prev = _context.next) {
-                        case 0:
-                            spec = null;
-                            _context.prev = 1;
-                            t = data.spec.type || type;
-                            _context.next = 5;
-                            return (0, _loadSpecs.loadSpec)(data.spec, t);
-
-                        case 5:
-                            spec = _context.sent;
-                            _context.next = 11;
-                            break;
-
-                        case 8:
-                            _context.prev = 8;
-                            _context.t0 = _context['catch'](1);
-
-                            console.error(_context.t0);
-
-                        case 11:
-                            if (!(spec === null)) {
-                                _context.next = 13;
-                                break;
-                            }
-
-                            return _context.abrupt('return', _promise2.default.resolve({
-                                id: data.id,
-                                spec: 'Vega spec ' + data.spec + ' could not be loaded',
-                                view: null,
-                                vmvConfig: null
-                            }));
-
-                        case 13:
-                            specClone = (0, _extends3.default)({}, spec);
-                            vmvConfig = data.vmvConfig || { styling: {} };
-
-                            if (_ramda2.default.isNil(specClone.vmvConfig) === false) {
-                                vmvConfig = (0, _extends3.default)({}, specClone.vmvConfig);
-                                delete specClone.vmvConfig;
-                            }
-                            if (_ramda2.default.isNil(vmvConfig.styling)) {
-                                vmvConfig.styling = {};
-                            }
-                            view = new _vega.View((0, _vega.parse)(specClone));
-                            return _context.abrupt('return', new _promise2.default(function (resolve) {
-                                resolve({
-                                    id: data.id,
-                                    spec: specClone,
-                                    view: view,
-                                    vmvConfig: vmvConfig
-                                });
-                            }));
-
-                        case 19:
-                        case 'end':
-                            return _context.stop();
-                    }
-                }
-            }, _callee, undefined, [[1, 8]]);
-        }));
-
-        return function (_x) {
-            return _ref.apply(this, arguments);
-        };
-    }(), specs);
-    return _promise2.default.all(promises);
-};
-
 var removeViews = exports.removeViews = function removeViews() {
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
@@ -191,101 +108,56 @@ var removeViews = exports.removeViews = function removeViews() {
 };
 
 var addViews = exports.addViews = function () {
-    var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(cfg) {
+    var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(cfg) {
         var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-        var config, _config, _config$run, run, _config$hover, hover, specs, element, _config$renderer, renderer, _config$debug, debug, _config$overwrite, overwrite, _config$styling, styling, specsArray, _R$splitWhen, _R$splitWhen2, inStore, outStore, containerElement, data;
+        var config, _config, _config$run, run, _config$hover, hover, specs, element, _config$renderer, renderer, _config$debug, debug, _config$overwrite, overwrite, _config$styling, styling, containerElement, data;
 
-        return _regenerator2.default.wrap(function _callee2$(_context2) {
+        return _regenerator2.default.wrap(function _callee$(_context) {
             while (1) {
-                switch (_context2.prev = _context2.next) {
+                switch (_context.prev = _context.next) {
                     case 0:
                         config = cfg;
 
                         if (!(typeof config === 'string')) {
-                            _context2.next = 13;
+                            _context.next = 13;
                             break;
                         }
 
                         if (!(config.length === 0)) {
-                            _context2.next = 4;
+                            _context.next = 4;
                             break;
                         }
 
-                        return _context2.abrupt('return', _promise2.default.reject(new Error('You have passed an empty string!')));
+                        return _context.abrupt('return', _promise2.default.reject(new Error('You have passed an empty string!')));
 
                     case 4:
-                        _context2.prev = 4;
-                        _context2.next = 7;
+                        _context.prev = 4;
+                        _context.next = 7;
                         return (0, _fetchHelpers.load)(config, type).catch(function (e) {
                             return _promise2.default.reject(e);
                         });
 
                     case 7:
-                        config = _context2.sent;
-                        _context2.next = 13;
+                        config = _context.sent;
+                        _context.next = 13;
                         break;
 
                     case 10:
-                        _context2.prev = 10;
-                        _context2.t0 = _context2['catch'](4);
-                        return _context2.abrupt('return', _promise2.default.reject(_context2.t0));
+                        _context.prev = 10;
+                        _context.t0 = _context['catch'](4);
+                        return _context.abrupt('return', _promise2.default.reject(_context.t0));
 
                     case 13:
 
                         // console.log(config);
                         _config = config, _config$run = _config.run, run = _config$run === undefined ? true : _config$run, _config$hover = _config.hover, hover = _config$hover === undefined ? false : _config$hover, specs = _config.specs, element = _config.element, _config$renderer = _config.renderer, renderer = _config$renderer === undefined ? 'canvas' : _config$renderer, _config$debug = _config.debug, debug = _config$debug === undefined ? false : _config$debug, _config$overwrite = _config.overwrite, overwrite = _config$overwrite === undefined ? false : _config$overwrite, _config$styling = _config.styling, styling = _config$styling === undefined ? {} : _config$styling;
 
+                        // add global styling
 
                         (0, _addStyling2.default)('global', styling, document.body);
 
-                        specsArray = void 0;
-                        _R$splitWhen = _ramda2.default.splitWhen(function (key) {
-                            return _ramda2.default.isNil(store[key]);
-                        }, _ramda2.default.keys(specs)), _R$splitWhen2 = (0, _slicedToArray3.default)(_R$splitWhen, 2), inStore = _R$splitWhen2[0], outStore = _R$splitWhen2[1];
-
-
-                        if (overwrite) {
-                            removeViews(inStore);
-                            if (inStore.length === 1) {
-                                console.info('view with id "' + inStore[0] + '" is overwritten');
-                            } else if (inStore.length > 1) {
-                                console.info('views with ids "' + inStore.join('", "') + '" are overwritten');
-                            }
-                            specsArray = _ramda2.default.keys(specs);
-                        } else {
-                            if (inStore.length === 1) {
-                                console.warn('view with id "' + inStore[0] + '" already exist!');
-                            } else if (inStore.length > 1) {
-                                console.warn('views with ids "' + inStore.join('", "') + '" already exist!');
-                            }
-                            specsArray = outStore;
-                        }
-
-                        specsArray = _ramda2.default.map(function (key) {
-                            var s = specs[key];
-                            var data = {
-                                spec: s,
-                                id: key
-                            };
-
-                            if (Array.isArray(s)) {
-                                if (s.length === 2) {
-                                    var _s = (0, _slicedToArray3.default)(s, 2);
-
-                                    data.spec = _s[0];
-                                    data.vmvConfig = _s[1];
-                                } else if (s.length === 1) {
-                                    var _s2 = (0, _slicedToArray3.default)(s, 1);
-
-                                    data.spec = _s2[0];
-                                }
-                            }
-
-                            return data;
-                        }, specsArray);
-
-                        // default to document.body
+                        // set up the containing HTML element, defaults to document.body
                         containerElement = document.body;
 
                         if (typeof element === 'string') {
@@ -299,33 +171,35 @@ var addViews = exports.addViews = function () {
                             }
                         } else if (element instanceof HTMLElement) {
                             containerElement = element;
-                            if (document.getElementById(element) === null) {
+                            // check if the element has been added to the DOM
+                            if (document.getElementById(element.id) === null) {
                                 document.body.appendChild(containerElement);
                             }
                         } else if (typeof element !== 'undefined') {
                             console.warn('invalid element, using document.body instead');
                         }
 
-                        _context2.next = 23;
-                        return createSpecData(specsArray, type);
+                        // parse all views
+                        _context.next = 19;
+                        return (0, _createSpecData2.default)(store, specs, overwrite, type);
 
-                    case 23:
-                        data = _context2.sent;
+                    case 19:
+                        data = _context.sent;
 
                         data = (0, _addElements2.default)(data, containerElement);
                         (0, _addTooltips2.default)(data);
                         (0, _signals2.default)(data, debug);
 
                         if (!debug) {
-                            _context2.next = 30;
+                            _context.next = 26;
                             break;
                         }
 
-                        _context2.next = 30;
+                        _context.next = 26;
                         return (0, _debug2.default)(data);
 
-                    case 30:
-                        return _context2.abrupt('return', new _promise2.default(function (resolve) {
+                    case 26:
+                        return _context.abrupt('return', new _promise2.default(function (resolve) {
                             // wait until the next paint cycle so the created elements
                             // are added to the DOM, add the views, then resolve
                             setTimeout(function () {
@@ -338,80 +212,42 @@ var addViews = exports.addViews = function () {
                                         if (d.vmvConfig.hover === true || hover === true && d.vmvConfig.hover !== false) {
                                             d.view.hover();
                                         }
-                                        (0, _addStyling2.default)(d.id, d.vmvConfig.styling, d.element, styling);
                                     }
+                                    // add view specific styling
+                                    (0, _addStyling2.default)(d.id, d.vmvConfig.styling, d.element, styling);
+                                    // store view so we can remove or edit it after initialization
                                     store[d.id] = d;
                                 });
                                 resolve(store);
-                            }, 0);
+                            }, 10);
                         }));
 
-                    case 31:
+                    case 27:
                     case 'end':
-                        return _context2.stop();
+                        return _context.stop();
                 }
             }
-        }, _callee2, undefined, [[4, 10]]);
+        }, _callee, undefined, [[4, 10]]);
     }));
 
-    return function addViews(_x3) {
-        return _ref2.apply(this, arguments);
+    return function addViews(_x2) {
+        return _ref.apply(this, arguments);
     };
 }();
 
-var asyncPromises = function asyncPromises(promises) {
-    return new _promise2.default(function (resolve, reject) {
-        var index = 0;
-        var max = promises.length;
-        var errors = [];
-        var results = [];
-
-        var startPromise = function startPromise(promise, cb) {
-            var func = promise.func,
-                args = promise.args;
-
-            func.apply(undefined, (0, _toConsumableArray3.default)(args)).then(function (result) {
-                results.push(result);
-                cb();
-            }).catch(function (error) {
-                errors.push(error);
-                cb();
-            });
-        };
-
-        var next = function next() {
-            index += 1;
-            if (index < max) {
-                startPromise(promises[index], next);
-            } else if (errors.length === max) {
-                reject(new Error('None of the config files could be loaded'));
-            } else if (errors.length === 0) {
-                resolve(results[0]);
-            } else {
-                resolve({
-                    errors: errors,
-                    result: results[0]
-                });
-            }
-        };
-
-        startPromise(promises[index], next);
-    });
-};
-
 var addMultipleConfigs = exports.addMultipleConfigs = function () {
-    var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(configs) {
+    var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(configs) {
         var promises;
-        return _regenerator2.default.wrap(function _callee3$(_context3) {
+        return _regenerator2.default.wrap(function _callee2$(_context2) {
             while (1) {
-                switch (_context3.prev = _context3.next) {
+                switch (_context2.prev = _context2.next) {
                     case 0:
                         if (!(Array.isArray(configs) === false)) {
-                            _context3.next = 2;
+                            _context2.next = 2;
                             break;
                         }
 
-                        return _context3.abrupt('return', _promise2.default.reject(new Error('Please pass an array with urls to config files!')));
+                        return _context2.abrupt('return', _promise2.default.reject(new Error('Please pass an array with urls to config files!')));
 
                     case 2:
                         promises = [];
@@ -422,18 +258,18 @@ var addMultipleConfigs = exports.addMultipleConfigs = function () {
                                 args: [config]
                             });
                         });
-                        return _context3.abrupt('return', asyncPromises(promises));
+                        return _context2.abrupt('return', (0, _promiseHelpers2.default)(promises));
 
                     case 5:
                     case 'end':
-                        return _context3.stop();
+                        return _context2.stop();
                 }
             }
-        }, _callee3, undefined);
+        }, _callee2, undefined);
     }));
 
-    return function addMultipleConfigs(_x4) {
-        return _ref3.apply(this, arguments);
+    return function addMultipleConfigs(_x3) {
+        return _ref2.apply(this, arguments);
     };
 }();
 

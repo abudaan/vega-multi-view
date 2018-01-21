@@ -2,14 +2,14 @@
 "$schema": https://vega.github.io/schema/vega/v3.0.json
 description: bars
 autosize: none
-width: 300
-height: 300
+width: 100
+height: 100
+resize: true
 padding:
   left: 20
   right: 20
   top: 50
   bottom: 20
-# resize: true
 data:
 - name: table
   url: "../data/table-data.json"
@@ -19,16 +19,16 @@ data:
     values: "{category: changeAmount.datum.category, amount: changeAmount.amount}"
 signals:
 - name: width
-  # value: "containerSize()[0] - padding.left - padding.right"
-  # update: "containerSize()[0] - padding.left - padding.right"
+  value: "containerSize()[0] - padding.left - padding.right"
+  update: "containerSize()[0] - padding.left - padding.right"
   on:
     - events:
         source: window
         type: resize
       update: "containerSize()[0] - padding.left - padding.right"
 - name: height
-  # value: "containerSize()[1] - padding.top - padding.bottom"
-  # update: "containerSize()[1] - padding.top - padding.bottom"
+  value: "containerSize()[1] - padding.top - padding.bottom"
+  update: "containerSize()[1] - padding.top - padding.bottom"
   on:
     - events:
         source: window

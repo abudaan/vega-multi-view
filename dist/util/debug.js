@@ -15,7 +15,7 @@ var _ramda2 = _interopRequireDefault(_ramda);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var addDebug = function addDebug(datas) {
-    console.log(datas);
+    // console.log(datas);
     _ramda2.default.forEach(function (d) {
         var spec = d.spec,
             view = d.view;

@@ -21,4 +21,4 @@ https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.8/build/vmv.min.js
 
 ## Acknowledgements
 
-Special thanks to Ronald Vendelmans for the original idea of connecting Vega signals using publish-subscribe and [Richard Bastiaans](https://ministryofdata.nl/) for his thinking along.
+Special thanks to [Ronald Vendelmans](https://vendel.home.xs4all.nl/) and [Richard Bastiaans](https://ministryofdata.nl/): Ronald for the original idea of connecting Vega signals using publish-subscribe and both Richard and Ronald for their highly constructive thinking along.

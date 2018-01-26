@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.version = exports.showSpecInTab = exports.addMultipleConfigs = exports.addViews = exports.removeViews = undefined;
+exports.vega = exports.version = exports.showSpecInTab = exports.addMultipleConfigs = exports.addViews = exports.removeViews = undefined;
 
 var _stringify = require('babel-runtime/core-js/json/stringify');
 
@@ -24,6 +24,10 @@ var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 var _ramda = require('ramda');
 
 var _ramda2 = _interopRequireDefault(_ramda);
+
+var _vega = require('vega');
+
+var vega = _interopRequireWildcard(_vega);
 
 var _dist = require('vega-as-leaflet-layer/dist');
 
@@ -60,6 +64,8 @@ var _promiseHelpers = require('./util/promise-helpers');
 var _promiseHelpers2 = _interopRequireDefault(_promiseHelpers);
 
 var _package = require('../package.json');
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -288,3 +294,4 @@ var showSpecInTab = exports.showSpecInTab = function showSpecInTab(spec) {
 
 var v = 'vega-multi-view ' + _package.version;
 exports.version = v;
+exports.vega = vega;

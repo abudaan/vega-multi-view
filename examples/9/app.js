@@ -1,4 +1,6 @@
-import { addViews } from '../../src/index';
+import { addViews, vega } from '../../src/index';
+
+console.log('vega', vega);
 
 const data = {
     specs: {

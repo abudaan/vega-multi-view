@@ -1,4 +1,5 @@
 import R from 'ramda';
+import * as vega from 'vega';
 import vegaAsLeafletLayer from 'vega-as-leaflet-layer/dist';
 import { load } from 'fetch-helpers';
 import addDebug from './util/debug';
@@ -172,5 +173,9 @@ export const showSpecInTab = (spec) => {
 const v = `vega-multi-view ${version}`;
 export {
     v as version,
+};
+
+export {
+    vega,
 };
 

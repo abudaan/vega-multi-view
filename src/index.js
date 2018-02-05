@@ -8,7 +8,7 @@ import connectSignals from './util/signals';
 import addElements from './util/add-elements';
 import addStyling from './util/add-styling';
 import createSpecData from './util/create-spec-data';
-import syncPromises from './util/promise-helpers';
+import { syncPromises } from './util/promise-helpers';
 import { version } from '../package.json';
 
 const store = {};
@@ -22,11 +22,13 @@ const renderViews = (data, renderer, container) => {
         } = d;
         if (view !== null) {
             if (vmvConfig.leaflet === true) {
+                // console.log('element', element);
+                // console.log('container', container);
                 const config = {
                     view: d.view,
                     renderer: d.renderer || renderer,
-                    container,
-                    mapContainer: element,
+                    // container,
+                    container: element,
                 };
                 vegaAsLeafletLayer(config);
             } else {
@@ -143,6 +145,7 @@ export const addViews = async (cfg, type = null) => {
 
 
 export const addMultipleConfigs = async (configs) => {
+    // console.log(configs);
     if (Array.isArray(configs) === false) {
         return Promise.reject(new Error('Please pass an array with urls to config files!'));
     }

@@ -8,15 +8,15 @@ You can clone the Github repository or embed the library using [Rawgit](https://
 
 for development:
 ```
-https://rawgit.com/abudaan/vega-multi-view/v1.1.9/build/vmv.css
-https://rawgit.com/abudaan/vega-multi-view/v1.1.9/build/vmv.js
-https://rawgit.com/abudaan/vega-multi-view/v1.1.9/build/vmv.min.js
+https://rawgit.com/abudaan/vega-multi-view/v1.1.10/build/vmv.css
+https://rawgit.com/abudaan/vega-multi-view/v1.1.10/build/vmv.js
+https://rawgit.com/abudaan/vega-multi-view/v1.1.10/build/vmv.min.js
 ```
 for production:
 ```
-https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.9/build/vmv.css
-https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.9/build/vmv.js
-https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.9/build/vmv.min.js
+https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.10/build/vmv.css
+https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.10/build/vmv.js
+https://cdn.rawgit.com/abudaan/vega-multi-view/v1.1.10/build/vmv.min.js
 ```
 
 ## Acknowledgements

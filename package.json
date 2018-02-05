@@ -22,6 +22,7 @@
         "gulp:build": "gulp build",
         "compile": "babel ./src --out-dir ./dist",
         "update": "npm run compile && npm run gulp:build",
+        "build:fast": "gulp build_fast",
         "postpublish": "git push && git push --tags"
     },
     "dependencies": {

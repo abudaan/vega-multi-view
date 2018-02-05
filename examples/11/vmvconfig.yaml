@@ -1,0 +1,7 @@
+specs:
+  spec1:
+    - ../specs/map_responsive.yaml
+    - renderer: svg
+      leaflet: true
+debug: false
+element: example11

@@ -1,7 +1,7 @@
 import { addViews, vega } from '../../src/index';
 
 console.log('vega', vega);
-
+/*
 const data = {
     specs: {
         spec1: ['../specs/dataset_change_view1.yaml', {
@@ -30,20 +30,20 @@ const data = {
             ],
             // subscribe: [
             //     {
-            //         signal: 'updateFromView2',12
+            //         signal: 'updateFromView2',
             //         dataUpdate: true,
             //     },
             // ],
         }],
         spec2: ['../specs/view2.vg.json', {
             renderer: 'svg',
-            publish: [
-                {
-                    // signal: 'exportData',
-                    // as: 'updateFromView2',
-                    // dataUpdate: true,
-                },
-            ],
+            // publish: [
+            //     {
+            //         signal: 'exportData',
+            //         as: 'updateFromView2',
+            //         dataUpdate: true,
+            //     },
+            // ],
             subscribe: [
                 {
                     signal: 'updateFromView1',
@@ -60,9 +60,10 @@ const data = {
     },
     debug: false,
 };
-
-addViews(data).then((result) => {
-    console.log(result);
-}).catch((error) => {
-    console.error(error);
-});
+*/
+addViews('./example9e.yaml')
+    .then((result) => {
+        console.log(result);
+    }).catch((error) => {
+        console.error(error);
+    });

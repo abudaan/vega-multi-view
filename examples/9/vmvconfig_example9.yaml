@@ -1,28 +1,28 @@
 specs:
   spec1:
-    - ../specs/dataset_change_view1.yaml
-    - renderer: svg
-      publish:
-        - signal: exportData
-          as: updateFromView1
-          dataset:
-            name: table
-            action: change
-            select:
-                field: category
-                test: ==
-            update:
-                fields:
-                  - amount
-                  - color
-        -   signal: tooltip
-            as: hover1
+  - ../specs/dataset_change_view1.yaml
+  - renderer: svg
+    publish:
+    - signal: exportData
+      as: updateFromView1
+      dataset:
+        name: table
+        action: change
+        select:
+            field: category
+            test: ==
+        update:
+            fields:
+              - amount
+              - color
+    -   signal: tooltip
+        as: hover1
   spec2:
-    - ../specs/view2.vg.json
-    - renderer: svg
-      subscribe:
-        - signal: updateFromView1
-        - signal: hover1
-          as: info
+  - ../specs/view2.vg.json
+  - renderer: svg
+    subscribe:
+    - signal: updateFromView1
+    - signal: hover1
+      as: info
 debug: false
 element: example9

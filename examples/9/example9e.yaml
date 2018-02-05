@@ -1,0 +1,51 @@
+specs:
+  spec9:
+    - ./example9e_bars.yaml
+    - renderer: svg
+      publish:
+        - signal: exportData
+          as: updateFromView9
+          query:
+            dataset: table
+            action: replace_all
+        - signal: tooltip
+          as: hover9
+      subscribe:
+        - signal: updateFromView10
+        - signal: addData
+        - signal: removeData
+        - signal: hover10
+          as: tooltip
+  spec10:
+    - ./example9e_dots.yaml
+    - renderer: svg
+      publish:
+        - signal: exportData
+          as: updateFromView10
+          query:
+            dataset: table
+            action: replace_all
+        - signal: info
+          as: hover10
+      subscribe:
+        - signal: updateFromView9
+        - signal: addData
+        - signal: removeData
+        - signal: hover9
+          as: info
+  toggleData:
+    - ./example9e_reset.yaml
+    - renderer: svg
+      publish:
+        - signal: removeData
+          query:
+            dataset: table
+            action: remove_all
+        - signal: addData
+          query:
+            dataset: table
+            action: replace_all
+debug: false
+element: example9e
+styling:
+    classes: view

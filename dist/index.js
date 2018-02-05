@@ -61,8 +61,6 @@ var _createSpecData2 = _interopRequireDefault(_createSpecData);
 
 var _promiseHelpers = require('./util/promise-helpers');
 
-var _promiseHelpers2 = _interopRequireDefault(_promiseHelpers);
-
 var _package = require('../package.json');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -79,11 +77,13 @@ var renderViews = function renderViews(data, renderer, container) {
 
         if (view !== null) {
             if (vmvConfig.leaflet === true) {
+                // console.log('element', element);
+                // console.log('container', container);
                 var config = {
                     view: d.view,
                     renderer: d.renderer || renderer,
-                    container: container,
-                    mapContainer: element
+                    // container,
+                    container: element
                 };
                 (0, _dist2.default)(config);
             } else {
@@ -264,7 +264,7 @@ var addMultipleConfigs = exports.addMultipleConfigs = function () {
                                 args: [config]
                             });
                         });
-                        return _context2.abrupt('return', (0, _promiseHelpers2.default)(promises));
+                        return _context2.abrupt('return', (0, _promiseHelpers.syncPromises)(promises));
 
                     case 5:
                     case 'end':

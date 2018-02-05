@@ -1,0 +1,49 @@
+---
+"$schema": https://vega.github.io/schema/vega/v3.0.json
+description: reset button e
+width: 100
+height: 250
+padding: 10
+autosize: fit
+data:
+- name: table
+  url: ../data/table-data.json
+signals:
+- name: addData
+  on:
+  - events: "@add_data_button:click"
+    update: "buttonLabel === '[add data]' ? {data: data('table')} : {}"
+- name: removeData
+  on:
+  - events: "@add_data_button:click"
+    update: "buttonLabel === '[remove data]' ? true : false"
+- name: buttonLabel
+  value: '[remove data]'
+  on:
+    - events:
+        signal: addData
+      update: "buttonLabel === '[add data]' ? '[remove data]' : '[add data]'"
+marks:
+- name: add_data_button
+  type: text
+  encode:
+    enter:
+      x:
+        signal: width/2
+      y:
+        signal: height/2
+      align:
+        value: center
+      baseline:
+        value: bottom
+      fill:
+        value: "#fff"
+      text:
+        signal: buttonLabel
+      fontWeight:
+        value: bold
+      fontSize:
+        value: 18
+    update:
+      text:
+        signal: buttonLabel

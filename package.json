@@ -1,6 +1,6 @@
 {
     "name": "vega-multi-view",
-    "version": "1.1.9",
+    "version": "1.1.10",
     "description": "Add multiple separate Vega views to a page and connect the signals of these views",
     "license": "MIT",
     "author": "abudaan",
@@ -27,8 +27,8 @@
     "dependencies": {
         "fetch-helpers": "git+https://github.com/abudaan/fetch-helpers.git",
         "ramda": "^0.23.0",
-        "vega": "^3.0.9",
-        "vega-as-leaflet-layer": "^1.1.7",
+        "vega": "^3.0.10",
+        "vega-as-leaflet-layer": "^1.1.8",
         "vega-tooltip": "^0.4.4",
         "xstream": "^10.9.0"
     },

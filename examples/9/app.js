@@ -10,16 +10,17 @@ const data = {
                 {
                     signal: 'exportData',
                     as: 'updateFromView1',
-                    dataset: {
+                    query: {
                         name: 'table',
-                        action: 'change',
-                        select: {
-                            field: 'category',
-                            test: '==',
-                        },
-                        update: {
-                            fields: ['amount', 'color'],
-                        },
+                        action: 'replace_all',
+                        // action: 'change',
+                        // select: {
+                        //     field: 'category',
+                        //     test: '==',
+                        // },
+                        // update: {
+                        //     fields: ['amount', 'color'],
+                        // },
                     },
                 },
                 {
@@ -46,6 +47,9 @@ const data = {
             subscribe: [
                 {
                     signal: 'updateFromView1',
+                    query: {
+                        action: 'update_all',
+                    },
                 },
                 {
                     signal: 'hover1',

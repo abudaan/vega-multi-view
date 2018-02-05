@@ -85,6 +85,7 @@ const subscribeToSignal = (data) => {
                 if (query) {
                     ({ action } = query);
                 }
+                console.log('KUT', action);
                 if (action === 'replace_all' || action === 'replaceAll') {
                     replaceDataset(view, query, value);
                 } else if (action === 'remove_all' || action === 'removeAll') {

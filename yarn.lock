@@ -6066,13 +6066,17 @@ value-or-function@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/value-or-function/-/value-or-function-3.0.0.tgz#1c243a50b595c1be54a754bfece8563b9ff8d813"
 
-vega-as-leaflet-layer@^1.1.7:
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/vega-as-leaflet-layer/-/vega-as-leaflet-layer-1.1.7.tgz#7fd82256e0e1f27765e269381f7bae52405df5b2"
+vega-as-leaflet-layer@^1.1.8:
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/vega-as-leaflet-layer/-/vega-as-leaflet-layer-1.1.8.tgz#85d0ddb7aaccf4af30522e01a4935ae36a6017b8"
   dependencies:
     fetch-helpers "https://github.com/abudaan/fetch-helpers"
     leaflet "^1.2.0"
-    vega "^3.0.9"
+    vega "^3.0.10"
+
+vega-canvas@1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/vega-canvas/-/vega-canvas-1.0.1.tgz#22cfa510af0cfbd920fc6af8b6111d3de5e63c44"
 
 vega-crossfilter@2:
   version "2.0.0"
@@ -6210,6 +6214,16 @@ vega-scenegraph@2, vega-scenegraph@^2.1:
     canvas "^1.6"
     canvas-prebuilt "^1.6"
 
+vega-scenegraph@^2.2:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/vega-scenegraph/-/vega-scenegraph-2.2.0.tgz#a72e44b286a19d1f38dc8ceaf2a1a20cabc48000"
+  dependencies:
+    d3-path "1"
+    d3-shape "1"
+    vega-canvas "1"
+    vega-loader "2"
+    vega-util "^1.1"
+
 vega-statistics@^1.2:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/vega-statistics/-/vega-statistics-1.2.1.tgz#a35b3fc3d0039f8bb0a8ba1381d42a1df79ecb34"
@@ -6278,7 +6292,17 @@ vega-wordcloud@2:
     canvas "^1.6"
     canvas-prebuilt "^1.6"
 
-vega@^3.0.0, vega@^3.0.9:
+vega-wordcloud@^2.1:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/vega-wordcloud/-/vega-wordcloud-2.1.0.tgz#fb3187ab667ada14daffb7f175082a9a9736cab1"
+  dependencies:
+    vega-canvas "1"
+    vega-dataflow "3"
+    vega-scale "2"
+    vega-statistics "^1.2"
+    vega-util "1"
+
+vega@^3.0.0:
   version "3.0.9"
   resolved "https://registry.yarnpkg.com/vega/-/vega-3.0.9.tgz#91e4470f0a9cfaf0fba3fb7c3e850a9dd4c2bcce"
   dependencies:
@@ -6303,6 +6327,35 @@ vega@^3.0.0, vega@^3.0.9:
     vega-voronoi "2"
     vega-wordcloud "2"
     yargs "4"
+
+vega@^3.0.10:
+  version "3.0.10"
+  resolved "https://registry.yarnpkg.com/vega/-/vega-3.0.10.tgz#35af3a6224e1c7d67d49ffce5c5282461370f36a"
+  dependencies:
+    vega-crossfilter "2"
+    vega-dataflow "3"
+    vega-encode "2"
+    vega-expression "2"
+    vega-force "2"
+    vega-geo "^2.1"
+    vega-hierarchy "^2.1"
+    vega-loader "2"
+    vega-parser "^2.4"
+    vega-projection "1"
+    vega-runtime "2"
+    vega-scale "^2.1"
+    vega-scenegraph "^2.2"
+    vega-statistics "^1.2"
+    vega-transforms "^1.1"
+    vega-util "^1.6"
+    vega-view "^2.1"
+    vega-view-transforms "^1.1"
+    vega-voronoi "2"
+    vega-wordcloud "^2.1"
+    yargs "4"
+  optionalDependencies:
+    canvas "^1.6"
+    canvas-prebuilt "^1.6"
 
 verror@1.10.0:
   version "1.10.0"
